@@ -139,7 +139,8 @@ public class Simulation implements UserInterface {
 				int pinId = entryPin.getKey();
 				Pin pin = entryPin.getValue();
 				if (pin.getClass().getSimpleName().equals(Util.PIN_IN) && pin.getPinState() == PinState.UNKNOWN) {
-					System.out.println("UnknownStateException");
+					System.out.println("UnknownStateException: chipId: " + chipId + ", pinId: " + pinId + ", pinState" +
+											   ": " + pin.getPinState());
 					throw new UnknownStateException(new ComponentPinState(chipId, pinId, PinState.UNKNOWN));
 				}
 			}
@@ -170,10 +171,17 @@ public class Simulation implements UserInterface {
 			++tick;
 		} while (!previousState.equals(currentState));  // 3.3 Porównanie stanu bieżącego z poprzednim
 
-		// 4. Walidacja stanu końcowego na pinach wyjściowych
-		// tu walidować piny wejściowe czy wyjsciowe czy wszystkie?
+		//4.0. Wyciągnięcie listw wejściowych
 		System.out.println("stationaryState: 4. walidacja stanów pinów listw wyjściowych");
-		for (Map.Entry<Integer, Chip> entry : chips.entrySet()) {
+		Map<Integer,Chip> headerOutChips = chips.entrySet().stream()
+				.filter(entry -> entry.getValue().getClass().getSimpleName().equals(Util.HEADER_OUT))
+				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+		System.out.println("headerOutChips:");
+		headerOutChips.forEach((key, value) -> System.out.println(key + " : " + value));
+
+		// 4.1 Walidacja stanu końcowego na pinach wyjściowych
+		// tu walidować piny wejściowe czy wyjsciowe czy wszystkie?
+		for (Map.Entry<Integer, Chip> entry : headerOutChips.entrySet()) {
 			int chipId = entry.getKey();
 			Chip chip = entry.getValue();
 
@@ -181,6 +189,8 @@ public class Simulation implements UserInterface {
 				int pinId = entryPin.getKey();
 				Pin pin = entryPin.getValue();
 				if (pin.getClass().getCanonicalName().equals(Util.PIN_OUT) && pin.getPinState() == PinState.UNKNOWN) {
+					System.out.println("UnknownStateException: chipId: " + chipId + ", pinId: " + pinId + ", pinState" +
+											   ": " + pin.getPinState());
 					throw new UnknownStateException(new ComponentPinState(chipId, pinId, PinState.UNKNOWN));
 				}
 			}
