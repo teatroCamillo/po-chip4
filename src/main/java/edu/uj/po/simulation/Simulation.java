@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 public class Simulation implements UserInterface {
 
 	private final Set<Integer> availableChipCodes;
-	private final Map<Integer, Chip> chips;
+	final Map<Integer, Chip> chips;
 	private final Creator creator;
 	private Integer chipId;
 
@@ -23,6 +23,8 @@ public class Simulation implements UserInterface {
 		availableChipCodes.add(7400);
 		availableChipCodes.add(7402);
 		availableChipCodes.add(7404);
+		availableChipCodes.add(7408);
+		availableChipCodes.add(7410);
 
 		this.chips = new HashMap<>();
 		this.creator = new ChipCreator();
@@ -200,9 +202,40 @@ public class Simulation implements UserInterface {
 	@Override
 	public Map<Integer, Set<ComponentPinState>> simulation(Set<ComponentPinState> states0,
 														   int ticks) throws UnknownStateException{
-		// po każdym ticku stan na wysztkich komponentach i pinach jest wrzucany do mapy gdzie tick to klucz a Set<CPS>
-		// to wartość na dany tic
-		return null;
+		System.out.println("simulation: 1. ustawianie pinów na listwach w stan w chwili 0");
+		states0.stream()
+				.filter(state -> chips.containsKey(state.componentId()))
+				.forEach(state -> {
+					Chip chip = chips.get(state.componentId());
+					Pin pin = chip.getPinMap().get(state.pinId());
+					if (pin != null) {
+						pin.setPinState(state.state());
+					}
+				});
+		// czy powninienem spropagować syganł na listwach z PinIn na PinOut w tym miejscu?
+
+		System.out.println("simulation: 2. deklaracja zasobów i zapis w czasie 0");
+
+		Map<Integer, Set<ComponentPinState>> resultMap = new HashMap<>();
+		Set<ComponentPinState> currentState;
+		currentState = Util.saveCircuitState(chips);
+		System.out.println("STATE: 0");
+		currentState.forEach(System.out::println);
+		resultMap.put(0, new HashSet<>(currentState));
+
+		System.out.println("simulation: 3. petla symulacji");
+		for(int i=1; i<=ticks; i++){
+			chips.values().forEach(Chip::execute);
+			chips.values().forEach(chip -> chip.propagateSignal(chips));
+
+			currentState.clear();
+			currentState = Util.saveCircuitState(chips);
+			resultMap.put(i, new HashSet<>(currentState));
+			System.out.println("TICK: " + i);
+			currentState.forEach(System.out::println);
+		}
+		System.out.println("simulation: 4. return resultMap");
+		return resultMap;
 	}
 
 	@Override

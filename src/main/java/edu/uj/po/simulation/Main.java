@@ -3,6 +3,7 @@ package edu.uj.po.simulation;
 import edu.uj.po.simulation.interfaces.*;
 
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 public class Main{
@@ -33,5 +34,16 @@ public class Main{
 
 		simulation.stationaryState(states);
 
+		System.out.println("\n***SIMULATION**");
+		Set<ComponentPinState> states0 = new HashSet<>();
+		states0.add(new ComponentPinState(headerId0, 1, PinState.HIGH));
+		states0.add(new ComponentPinState(headerId0, 3, PinState.HIGH));
+		Map<Integer, Set<ComponentPinState>> result = simulation.simulation(states0, 4);
+
+		System.out.println("\n***RESULT MAP**");
+		result.forEach((key, value) -> {
+			System.out.println("Tick: " + key);
+			value.forEach(System.out::println);
+		});
 	}
 }
