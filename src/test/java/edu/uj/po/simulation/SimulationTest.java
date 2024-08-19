@@ -80,7 +80,7 @@ class SimulationTest {
 
 		simulation.connect(chipId1, 3, chipId2, 1);
 
-		assertTrue(chip1.getDirectConnections().stream()
+		assertTrue(simulation.directConnections.stream()
 						   .anyMatch(connection -> connection.targetChipId() == chipId2 && connection.targetPinId() == 1),
 				   "Chip1 should be connected to Chip2.");
 	}

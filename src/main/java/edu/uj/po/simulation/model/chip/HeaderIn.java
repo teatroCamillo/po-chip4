@@ -33,6 +33,6 @@ public class HeaderIn extends Chip{
 
 	@Override
 	public String toString(){
-		return "HeaderIn{\npinMap=" + this.getPinMap() + ",\ndirectConnections=" + this.getDirectConnections() + "}\n";
+		return "HeaderIn{\npinMap=" + this.getPinMap() + "}\n";
 	}
 }

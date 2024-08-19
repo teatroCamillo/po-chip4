@@ -15,8 +15,9 @@ public class Simulation implements UserInterface {
 
 	private final Set<Integer> availableChipCodes;
 	final Map<Integer, Chip> chips;
+	final Set<Connection> directConnections;
 	private final Creator creator;
-	private Integer chipId;
+	private Integer uniqueChipIdGenerator;
 
 	public Simulation(){
 		this.availableChipCodes = new HashSet<>();
@@ -27,8 +28,9 @@ public class Simulation implements UserInterface {
 		availableChipCodes.add(7410);
 
 		this.chips = new HashMap<>();
+		this.directConnections = new HashSet<>();
 		this.creator = new ChipCreator();
-		this.chipId = 0;
+		this.uniqueChipIdGenerator = 0;
 	}
 
 	public void getInfo(Set<Integer> chipIds) {
@@ -37,10 +39,37 @@ public class Simulation implements UserInterface {
 				.filter(entry -> chipIds.contains(entry.getKey()))
 				.forEach(entry -> System.out.println("ID: " + entry.getKey() + ", Chip: " + entry.getValue().toString()));
 	}
+
+	//TODO: pomyśl o innym miejscu dla tej metody
+	public void addNewConnection(int sourceChipId, int sourcePinId, int targetChipId, int targetPinId) {
+		this.directConnections.add(new Connection(sourceChipId, sourcePinId, targetChipId, targetPinId));
+	}
+
+	// to powinno być zrobione według wzorca Obserwator
+	// to jest naiwan implementacja póki co
+	// do poprawy na jakiś wzorzec
+	//TODO: pomyśl o innym miejscu dla tej metody
+	public void propagateSignal(){
+		// 1. przechodze po wszystkich połączeniach
+		// 2. mapuje stan pinu docelowego na źródłowy
+
+		directConnections.forEach(connection -> {
+			int sourceChipId = connection.sourceChipId();
+			int sourceId = connection.sourcePinId();
+			int targetChipId = connection.targetChipId();
+			int targetPinId = connection.targetPinId();
+
+			Pin sourcePin = chips.get(sourceChipId).getPinMap().get(sourceId);
+			// 0. sprawdź czy outputPin biezącego componentu jest w odpowiednim stanie - != UNKNOWN
+			if(sourcePin.getPinState() != PinState.UNKNOWN)
+				chips.get(targetChipId).getPinMap().get(targetPinId).setPinState(sourcePin.getPinState());
+		});
+	}
+
 	@Override
 	public int createChip(int code) throws UnknownChip {
 		if(!availableChipCodes.contains(code)) throw new UnknownChip();
-		int id = chipId++;
+		int id = uniqueChipIdGenerator++;
 		chips.put(id, creator.create(code));
 		return id;
 	}
@@ -48,7 +77,7 @@ public class Simulation implements UserInterface {
 	// milczące założenie że size=0 się nie trafi - bo interfejs tego nie określ
 	@Override
 	public int createInputPinHeader(int size){
-		int id = chipId++;
+		int id = uniqueChipIdGenerator++;
 		chips.put(id, creator.createHeaderIn(size));
 		return id;
 	}
@@ -56,7 +85,7 @@ public class Simulation implements UserInterface {
 	// milczące założenie że size=0 się nie trafi - bo interfejs tego nie określ
 	@Override
 	public int createOutputPinHeader(int size){
-		int id = chipId++;
+		int id = uniqueChipIdGenerator++;
 		chips.put(id, creator.createHeaderOut(size));
 		return id;
 	}
@@ -67,7 +96,7 @@ public class Simulation implements UserInterface {
 	public void connect(int component1,
 						int pin1,
 						int component2,
-						int pin2) throws UnknownComponent, UnknownPin, ShortCircuitException{
+						int pin2) throws UnknownComponent, UnknownPin, ShortCircuitException {
 
 		// Sprawdź, czy komponenty istnieją
 		if (!chips.containsKey(component1)) {
@@ -88,19 +117,61 @@ public class Simulation implements UserInterface {
 			throw new UnknownPin(component2, pin2);
 		}
 
-		// Sprawdź, czy nie dochodzi do zwarcia (dwa piny nie mogą być połączone ze sobą więcej niż raz)
-		Set<Connection> chip1Connections = chip1.getDirectConnections();
-		for (Connection connection : chip1Connections) {
-			// 1. połączenie wyjścia z tym samym wyjściem w tym samym komponecie
-			if (connection.targetChipId()  == component2 && connection.targetPinId() == pin2) {
-				System.out.println("Pin " + pin1 + " in component " + component1 + " is already connected to pin " + pin2 + " in component " + component2);
-				throw new ShortCircuitException();
-			}
-			// 2. połączenie dwóch wyjść
+		//TODO: przypadki zwarc
+		// 1. Dwa piny nie mogą być połączone ze sobą więcej niż raz - czyli dwa lub więcej takich samych rekordów
+		// 2. Sprawdzenie, czy połączenie nie powoduje zwarcia (wiele wyjścia do jednego wejścia)
+		// 3. Sprawdzenie, czy nie ma połączenia wyjścia układu z wejściami użytkownika (HeaderIn)
+		// 4. Sprawdz czy nie ma połączenia wyjście do wyjścia.
+		// -
+		// Note:
+		// Czy lepszym sposobme byłoby dodanie stanu na każdy Pin np. CONNECTED żeby to określić, niż sprawdzać w
+		// pętli. Co więcje teraz directConnections są unidirectional wiec tylko jedna strona ma info o połączeniu.
+		// To generuje problem że gdy PinOut z C1 jest aktualnie połączony z PinIn z C2, to dane zapisane są u C1. Wiec
+		// pojawia się błąd gdy PinOut z C3 będzie próbować połączyć się z tym samym PinIn z C2.
+		// - Gdzie przechowywać dane o połączeniach żeby łatwo było tworzyć nowe, usówać, przeszukiwać i wykrywać błędy?
+
+		//TODO: do zastanowienia ten for
+		// 1. Dwa piny nie mogą być połączone ze sobą więcej niż raz) - czyli dwa lub więcjet takich same rekordów
+//		Set<Connection> chip1Connections = chip1.getDirectConnections();
+//		for (Connection connection : chip1Connections) {
+//			// 1. Sprawdzenie, czy połączenie już istnieje
+//			if (connection.targetChipId() == component2 && connection.targetPinId() == pin2) {
+//				System.out.println("Pin " + pin1 + " in component " + component1 +
+//										   " is already connected to pin " + pin2 +
+//										   " in component " + component2);
+//				return; // Nic nie zmienia, ponieważ połączenie już istnieje
+//			}
+//		}
+
+		//TODO:
+		// 2. Sprawdzenie, czy połączenie nie powoduje zwarcia (wiele wyjścia do jednego wejścia)
+		if (chip1.getPinMap().get(pin1).getClass().getSimpleName().equals(Util.PIN_OUT) &&
+				chip2.getPinMap().get(pin2).getClass().getSimpleName().equals(Util.PIN_OUT)) {
+			System.out.println("Cannot connect two outputs: " + pin1 + " in component " + component1 + " and " + pin2 + " in component " + component2);
+			throw new ShortCircuitException();
 		}
 
-		// Połącz komponenty
-		chip1.addNewConnection(pin1, component2, pin2);
+		//TODO:
+		// 2
+//		for (Connection connection : chip2.getDirectConnections()) {
+//			if (connection.targetPinId() == pin2 && chip2.getPinMap().get(pin2).getClass().getSimpleName().equals(Util.PIN_IN)) {
+//				System.out.println("Multiple outputs cannot be connected to the same input: " + pin2 + " in component " + component2);
+//				throw new ShortCircuitException();
+//			}
+//		}
+
+		//TODO:
+		// 3. Sprawdzenie, czy nie ma połączenia wyjścia układu z wejściami użytkownika (HeaderIn)
+		if (chip2.getClass().getSimpleName().equals(Util.HEADER_IN) &&
+				chip1.getPinMap().get(pin1).getClass().getSimpleName().equals(Util.PIN_OUT)) {
+			System.out.println("Cannot connect an output pin to a HeaderIn input pin: " + pin2 + " in component " + component2);
+			throw new ShortCircuitException();
+		}
+
+		//TODO: OK
+		// 4. Sprawdz czy nie ma połączenia wyjście do wyjścia.
+
+		addNewConnection(component1, pin1, component2, pin2);
 	}
 
 	//Wykrycie stanu UNKNOWN i zgłoszenie stosownego wyjątki (UnknownStateException)
@@ -165,7 +236,7 @@ public class Simulation implements UserInterface {
 			// 3.1 Wykonanie kroku symulacji - uruchomienie wszystkich chipów (bramek logicznych)
 			chips.values().forEach(Chip::execute);
 			// 3.1.1 Przekazanie z wyjść na wejścia połącoznych componetów - cz moze to zrobic w exec?
-			chips.values().forEach(chip -> chip.propagateSignal(chips));
+			propagateSignal();
 
 			// 3.2 Zapis aktualnych stanów pinów
 			currentState.clear();
@@ -226,7 +297,7 @@ public class Simulation implements UserInterface {
 		System.out.println("simulation: 3. petla symulacji");
 		for(int i=1; i<=ticks; i++){
 			chips.values().forEach(Chip::execute);
-			chips.values().forEach(chip -> chip.propagateSignal(chips));
+			propagateSignal();
 
 			currentState.clear();
 			currentState = Util.saveCircuitState(chips);
@@ -240,6 +311,10 @@ public class Simulation implements UserInterface {
 
 	@Override
 	public Set<Integer> optimize(Set<ComponentPinState> states0, int ticks) throws UnknownStateException{
-		return null;
+		Set<Integer> result = new HashSet<>();
+		result.add(1);
+
+
+		return result;
 	}
 }

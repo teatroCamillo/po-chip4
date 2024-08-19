@@ -41,6 +41,6 @@ public class Chip7431 extends Chip {
 
 	@Override
 	public String toString(){
-		return "Chip7400{\npinMap=" + this.getPinMap() + ",\ndirectConnections=" + this.getDirectConnections() + "}\n";
+		return "Chip7400{\npinMap=" + this.getPinMap() + "}\n";
 	}
 }

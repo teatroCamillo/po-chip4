@@ -2,17 +2,10 @@ package edu.uj.po.simulation.model.chip;
 
 import edu.uj.po.simulation.interfaces.PinState;
 import edu.uj.po.simulation.model.Chip;
-import edu.uj.po.simulation.model.Connection;
-import edu.uj.po.simulation.model.Pin;
 import edu.uj.po.simulation.model.pin.PinIn;
 import edu.uj.po.simulation.model.pin.PinOut;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 class ChipTest {
@@ -37,31 +30,6 @@ class ChipTest {
 		assertEquals(PinState.UNKNOWN, headerIn.getPinMap().get(1).getPinState(), "Initial state of PinIn in HeaderIn should be UNKNOWN.");
 		assertEquals(PinState.UNKNOWN, headerOut.getPinMap().get(1).getPinState(), "Initial state of PinOut in HeaderOut should be UNKNOWN.");
 		assertEquals(PinState.UNKNOWN, chip7400.getPinMap().get(1).getPinState(), "Initial state of PinIn in Chip7400 should be UNKNOWN.");
-	}
-
-	@Test
-	void testAddNewConnection() {
-		headerIn.addNewConnection(1, 2, 1);
-		Set<Connection> connections = headerIn.getDirectConnections();
-
-		assertEquals(1, connections.size(), "There should be one connection in the HeaderIn.");
-	}
-
-	@Test
-	void testPropagateSignal() {
-		headerIn.putToPinMap(1, new PinIn());
-		headerOut.putToPinMap(1, new PinOut());
-
-		headerIn.getPinMap().get(1).setPinState(PinState.HIGH);
-		headerIn.addNewConnection(1, 2, 1);
-
-		Map<Integer, Chip> chipMap = new HashMap<>();
-		chipMap.put(1, headerIn);
-		chipMap.put(2, headerOut);
-
-		headerIn.propagateSignal(chipMap);
-
-		assertEquals(PinState.HIGH, headerOut.getPinMap().get(1).getPinState(), "Signal should propagate from HeaderIn to HeaderOut.");
 	}
 
 	@Test

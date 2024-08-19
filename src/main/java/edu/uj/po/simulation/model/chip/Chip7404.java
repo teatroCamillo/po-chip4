@@ -41,6 +41,6 @@ public class Chip7404 extends Chip {
 
 	@Override
 	public String toString(){
-		return this.getClass().getSimpleName() + "{\npinMap=" + this.getPinMap() + ",\ndirectConnections=" + this.getDirectConnections() + "}\n";
+		return this.getClass().getSimpleName() + "{\npinMap=" + this.getPinMap() + "}\n";
 	}
 }
