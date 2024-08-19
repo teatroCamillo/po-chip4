@@ -82,7 +82,7 @@ public class Simulation implements UserInterface {
 		return id;
 	}
 
-	// milczące założenie że size=0 się nie trafi - bo interfejs tego nie określ
+	// Określone przez prowadzącego założenie że size=0 się nie trafi - bo interfejs tego nie określ
 	@Override
 	public int createOutputPinHeader(int size){
 		int id = uniqueChipIdGenerator++;
@@ -129,38 +129,31 @@ public class Simulation implements UserInterface {
 		// To generuje problem że gdy PinOut z C1 jest aktualnie połączony z PinIn z C2, to dane zapisane są u C1. Wiec
 		// pojawia się błąd gdy PinOut z C3 będzie próbować połączyć się z tym samym PinIn z C2.
 		// - Gdzie przechowywać dane o połączeniach żeby łatwo było tworzyć nowe, usówać, przeszukiwać i wykrywać błędy?
+		// Naiwnie dodana na chwilę obecną do obecnej klasy: directConnections, addNewConnection i propagateSignal
+		// to rozwiązuje problem:
+		// 		- Set - unikatowe rekordy - czyli nie trzeba sprawdzać warunku nr.1
+		//		- wszystkie połączenia w jednym miejscu - łatwy dostęp, przeszukiwanie, dodawanie etc
+		//		- nie ma porblemu bi-/uni- directional na Chip'ach
+		// -
+		// Inny problem:
+		// Czy recordy Connection(1,1,2,2) i Connection(2,2,1,1) to to samo połączenie?
+		// Czy powinienem ustlaić że gdy dodaję pierwszy rekord do setu to dodaję też drugi żeby było jasne?
 
-		//TODO: do zastanowienia ten for
-		// 1. Dwa piny nie mogą być połączone ze sobą więcej niż raz) - czyli dwa lub więcjet takich same rekordów
-//		Set<Connection> chip1Connections = chip1.getDirectConnections();
-//		for (Connection connection : chip1Connections) {
-//			// 1. Sprawdzenie, czy połączenie już istnieje
-//			if (connection.targetChipId() == component2 && connection.targetPinId() == pin2) {
-//				System.out.println("Pin " + pin1 + " in component " + component1 +
-//										   " is already connected to pin " + pin2 +
-//										   " in component " + component2);
-//				return; // Nic nie zmienia, ponieważ połączenie już istnieje
-//			}
-//		}
-
-		//TODO:
+		// TODO: warunek do poprawy
 		// 2. Sprawdzenie, czy połączenie nie powoduje zwarcia (wiele wyjścia do jednego wejścia)
-		if (chip1.getPinMap().get(pin1).getClass().getSimpleName().equals(Util.PIN_OUT) &&
-				chip2.getPinMap().get(pin2).getClass().getSimpleName().equals(Util.PIN_OUT)) {
-			System.out.println("Cannot connect two outputs: " + pin1 + " in component " + component1 + " and " + pin2 + " in component " + component2);
+		if (directConnections
+				.stream()
+				.anyMatch(connection -> connection.targetChipId() == component2
+								  		&& connection.targetPinId() == pin2
+								  		//&& connection.sourcePinId() != pin1
+								  		&& (connection.sourceChipId() != component1 || connection.sourcePinId() != pin1)
+						)) {
+			System.out.println("Cannot connect this pin: " + pin2 + " in component "
+									   + component2 + ". It is already connected.");
 			throw new ShortCircuitException();
 		}
 
-		//TODO:
-		// 2
-//		for (Connection connection : chip2.getDirectConnections()) {
-//			if (connection.targetPinId() == pin2 && chip2.getPinMap().get(pin2).getClass().getSimpleName().equals(Util.PIN_IN)) {
-//				System.out.println("Multiple outputs cannot be connected to the same input: " + pin2 + " in component " + component2);
-//				throw new ShortCircuitException();
-//			}
-//		}
-
-		//TODO:
+		// TODO: do sprawdzenia
 		// 3. Sprawdzenie, czy nie ma połączenia wyjścia układu z wejściami użytkownika (HeaderIn)
 		if (chip2.getClass().getSimpleName().equals(Util.HEADER_IN) &&
 				chip1.getPinMap().get(pin1).getClass().getSimpleName().equals(Util.PIN_OUT)) {
@@ -168,8 +161,13 @@ public class Simulation implements UserInterface {
 			throw new ShortCircuitException();
 		}
 
-		//TODO: OK
+		// TODO: do sprawdzenia
 		// 4. Sprawdz czy nie ma połączenia wyjście do wyjścia.
+		if (chip1.getPinMap().get(pin1).getClass().getSimpleName().equals(Util.PIN_OUT) &&
+				chip2.getPinMap().get(pin2).getClass().getSimpleName().equals(Util.PIN_OUT)) {
+			System.out.println("Cannot connect two output pins!");
+			throw new ShortCircuitException();
+		}
 
 		addNewConnection(component1, pin1, component2, pin2);
 	}

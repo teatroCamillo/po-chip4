@@ -1,23 +1,17 @@
 package edu.uj.po.simulation;
 
 import edu.uj.po.simulation.interfaces.UnknownChip;
-import edu.uj.po.simulation.interfaces.UnknownComponent;
-import edu.uj.po.simulation.interfaces.UnknownPin;
-import edu.uj.po.simulation.interfaces.ShortCircuitException;
 import edu.uj.po.simulation.model.Chip;
-import edu.uj.po.simulation.model.pin.PinIn;
-import edu.uj.po.simulation.model.pin.PinOut;
 import edu.uj.po.simulation.model.chip.HeaderIn;
 import edu.uj.po.simulation.model.chip.HeaderOut;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class SimulationTest {
+class CreateChipTest{
 
 	private Simulation simulation;
 
@@ -65,62 +59,11 @@ class SimulationTest {
 	}
 
 	@Test
-	void testConnect() throws UnknownComponent, UnknownPin, ShortCircuitException, UnknownChip{
-		int chipId1 = simulation.createChip(7400);
-		int chipId2 = simulation.createOutputPinHeader(1);
+	void testCreateChipThrowsUnknownChip() {
+		int unsupportedChipCode = 1111;
 
-		Chip chip1 = simulation.chips.get(chipId1);
-		Chip chip2 = simulation.chips.get(chipId2);
-
-		chip1.putToPinMap(1, new PinIn());
-		chip1.putToPinMap(2, new PinIn());
-		chip1.putToPinMap(3, new PinOut());
-
-		chip2.putToPinMap(1, new PinIn());
-
-		simulation.connect(chipId1, 3, chipId2, 1);
-
-		assertTrue(simulation.directConnections.stream()
-						   .anyMatch(connection -> connection.targetChipId() == chipId2 && connection.targetPinId() == 1),
-				   "Chip1 should be connected to Chip2.");
-	}
-
-	@Test
-	void testConnectThrowsUnknownComponent() {
-		assertThrows(UnknownComponent.class, () -> {
-			simulation.connect(100, 1, 101, 1);
-		}, "Should throw UnknownComponent if component does not exist.");
-	}
-
-	@Test
-	void testConnectThrowsUnknownPin() throws UnknownChip{
-		int chipId1 = simulation.createChip(7400);
-		int chipId2 = simulation.createOutputPinHeader(1);
-
-		assertThrows(UnknownPin.class, () -> {
-			simulation.connect(chipId1, 7, chipId2, 1);
-		}, "Should throw UnknownPin if pin does not exist.");
-	}
-
-	//TODO: do sprawdzenia
-	@Disabled
-	void testConnectThrowsShortCircuitException() throws UnknownComponent, UnknownPin, ShortCircuitException, UnknownChip{
-		int chipId1 = simulation.createChip(7400);
-		int chipId2 = simulation.createOutputPinHeader(1);
-
-		Chip chip1 = simulation.chips.get(chipId1);
-		Chip chip2 = simulation.chips.get(chipId2);
-
-		chip1.putToPinMap(1, new PinIn());
-		chip1.putToPinMap(2, new PinIn());
-		chip1.putToPinMap(3, new PinOut());
-
-		chip2.putToPinMap(1, new PinIn());
-
-		simulation.connect(chipId1, 3, chipId2, 1);
-
-		assertThrows(ShortCircuitException.class, () -> {
-			simulation.connect(chipId1, 3, chipId2, 1);
-		}, "Should throw ShortCircuitException if connection already exists.");
+		assertThrows(UnknownChip.class, () -> {
+			simulation.createChip(unsupportedChipCode);
+		}, "Should throw UnknownChip if the chip code is not supported.");
 	}
 }
