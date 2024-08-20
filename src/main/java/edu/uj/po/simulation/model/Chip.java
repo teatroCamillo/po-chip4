@@ -1,11 +1,7 @@
 package edu.uj.po.simulation.model;
 
-import edu.uj.po.simulation.interfaces.PinState;
-
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 public abstract class Chip {
 
@@ -25,7 +21,6 @@ public abstract class Chip {
 		}
 	}
 
-	// Zwracamy kopię mapy, aby uniknąć wycieku referencji
 	public Map<Integer, Pin> getPinMap() {
 		return pinMap;
 	}

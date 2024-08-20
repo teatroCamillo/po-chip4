@@ -47,15 +47,15 @@ class CreateChipTest{
 		assertTrue(headerId >= 0, "Input Pin Header ID should be greater or equal to 0.");
 		Chip chip = simulation.chips.get(headerId);
 		assertTrue(chip instanceof HeaderIn, "Created input pin header should be an instance of HeaderIn.");
-		assertEquals(4, chip.getPinMap().size(), "Input pin header should have correct number of pins.");
+		assertEquals(2, chip.getPinMap().size(), "Input pin header should have correct number of pins.");
 	}
 
 	@Test
 	void testCreateOutputPinHeader() {
-		int headerId = simulation.createOutputPinHeader(2);
+		int headerId = simulation.createOutputPinHeader(3);
 		Chip chip = simulation.chips.get(headerId);
 		assertTrue(chip instanceof HeaderOut, "Created output pin header should be an instance of HeaderOut.");
-		assertEquals(4, chip.getPinMap().size(), "Output pin header should have correct number of pins.");
+		assertEquals(3, chip.getPinMap().size(), "Output pin header should have correct number of pins.");
 	}
 
 	@Test

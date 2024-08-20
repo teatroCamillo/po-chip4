@@ -74,6 +74,15 @@ public class Simulation implements UserInterface {
 		return id;
 	}
 
+	// TODO: WAŻNE!
+	// Q5: Rozumiem, że metoda createInputPinHeader() tworzy listwe kołkową na którą użytkownik podaje sygnały
+	//	i ona jest "punktem startowym propagacji" dla całej symulacji. A wywołanie createOutputPinHeader()
+	//	tworzy listwę kołkowa, na której będą obecne sygnały już po przejściu przez cała symulacje? Czyli
+	//	simulation() zwraca wynik tylko tych listw kołkowych, stworzonych za pomocą createOutputPinHeader()?
+	//	Pytam ponieważ w pytaniach pojęcia wejście/wyjście jest trochę inaczej zdefiniowane, z innej perspektywy
+	//	i krótko mówiąc się pogubiłem.
+	//A5. Generalnie TAK. Uruchamiając obliczenia używam wyłącznie listw wejściowych. W wyniku oczekuję wyłącznie informacji z list wyjściowych.
+
 	// milczące założenie że size=0 się nie trafi - bo interfejs tego nie określ
 	@Override
 	public int createInputPinHeader(int size){
@@ -117,7 +126,7 @@ public class Simulation implements UserInterface {
 			throw new UnknownPin(component2, pin2);
 		}
 
-		//TODO: przypadki zwarc
+		// TODO: przypadki zwarc
 		// 1. Dwa piny nie mogą być połączone ze sobą więcej niż raz - czyli dwa lub więcej takich samych rekordów
 		// 2. Sprawdzenie, czy połączenie nie powoduje zwarcia (wiele wyjścia do jednego wejścia)
 		// 3. Sprawdzenie, czy nie ma połączenia wyjścia układu z wejściami użytkownika (HeaderIn)
@@ -139,13 +148,12 @@ public class Simulation implements UserInterface {
 		// Czy recordy Connection(1,1,2,2) i Connection(2,2,1,1) to to samo połączenie?
 		// Czy powinienem ustlaić że gdy dodaję pierwszy rekord do setu to dodaję też drugi żeby było jasne?
 
-		// TODO: warunek do poprawy
+		// TODO: OK - przetestowane
 		// 2. Sprawdzenie, czy połączenie nie powoduje zwarcia (wiele wyjścia do jednego wejścia)
 		if (directConnections
 				.stream()
 				.anyMatch(connection -> connection.targetChipId() == component2
 								  		&& connection.targetPinId() == pin2
-								  		//&& connection.sourcePinId() != pin1
 								  		&& (connection.sourceChipId() != component1 || connection.sourcePinId() != pin1)
 						)) {
 			System.out.println("Cannot connect this pin: " + pin2 + " in component "
@@ -153,7 +161,7 @@ public class Simulation implements UserInterface {
 			throw new ShortCircuitException();
 		}
 
-		// TODO: do sprawdzenia
+		// TODO: OK - przetestowane
 		// 3. Sprawdzenie, czy nie ma połączenia wyjścia układu z wejściami użytkownika (HeaderIn)
 		if (chip2.getClass().getSimpleName().equals(Util.HEADER_IN) &&
 				chip1.getPinMap().get(pin1).getClass().getSimpleName().equals(Util.PIN_OUT)) {
@@ -161,7 +169,7 @@ public class Simulation implements UserInterface {
 			throw new ShortCircuitException();
 		}
 
-		// TODO: do sprawdzenia
+		// TODO: OK - przetestowane
 		// 4. Sprawdz czy nie ma połączenia wyjście do wyjścia.
 		if (chip1.getPinMap().get(pin1).getClass().getSimpleName().equals(Util.PIN_OUT) &&
 				chip2.getPinMap().get(pin2).getClass().getSimpleName().equals(Util.PIN_OUT)) {
@@ -306,6 +314,19 @@ public class Simulation implements UserInterface {
 		System.out.println("simulation: 4. return resultMap");
 		return resultMap;
 	}
+
+
+	// TODO: WAŻNE!
+	// Q6: Do metody optimize() podajemy ilość ticków, to rozumiem, że symulacja po usunięciu komponentów,
+	// które wydają się zbędne, powinna przez określoną ilość ticków być stabilna i nie wyrzucić UnknownStateException.
+	// Ale czy scenariusz, gdy podamy mniejszą ilość ticków, niż jest potrzebna na wykrycie wyjątku powinien być
+	// akceptowalny? Czyli scenariusz, gdy optimize() nie wyrzuci UnknownStateException bo nie dotarł jeszcze do
+	// problematycznego pinu/komponentu i zwróci - według programu - poprawny wynik, tych komponentów, które mogą byc
+	// usunięte mimo że w kolejnych tickach, wyjątek już by się pojawił?
+	// A6. Wyrzucenie UnknownStateException powinno nastąpić natychmiast, albo wcale. Proszę zauważyć, że
+	// operacje na wszystkich układach wykonywane są w tym samym czasie. Są takie, których stan bezpośrednio
+	// określa użytkownik, ale są i takie, które rozpoczynają pracę, od stanu ustalonego w trakcie stationaryState
+	// - po to on jest.
 
 	@Override
 	public Set<Integer> optimize(Set<ComponentPinState> states0, int ticks) throws UnknownStateException{
