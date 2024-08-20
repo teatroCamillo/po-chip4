@@ -19,6 +19,10 @@ public class Simulation implements UserInterface {
 	private final Creator creator;
 	private Integer uniqueChipIdGenerator;
 
+	public Map<Integer, Chip> getChips(){
+		return chips;
+	}
+
 	public Simulation(){
 		this.availableChipCodes = new HashSet<>();
 		availableChipCodes.add(7400);
