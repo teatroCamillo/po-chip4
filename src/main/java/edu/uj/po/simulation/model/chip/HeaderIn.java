@@ -2,7 +2,7 @@ package edu.uj.po.simulation.model.chip;
 
 import edu.uj.po.simulation.logic.ChipLogicCalculation;
 import edu.uj.po.simulation.model.Chip;
-import edu.uj.po.simulation.model.pin.PinIn;
+import edu.uj.po.simulation.model.pin.PinOut;
 
 
 // TODO: aby zgaddzała się numeracja pinów na listwach
@@ -19,7 +19,7 @@ public class HeaderIn extends Chip{
 	public HeaderIn(Chip target, int size){
 		super(target);
 		for(int i = 1; i <= size; i++)
-			this.putToPinMap(i, new PinIn());
+			this.putToPinMap(i, new PinOut());
 	}
 
 	@Override

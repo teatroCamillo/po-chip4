@@ -188,7 +188,7 @@ public class Simulation implements UserInterface {
 		// 1. Ustawienie stanów początkowych na pinach wejściowych komponentów
 		System.out.println("stationaryState: 1. ustawianie pinów na listwach");
 		states.stream()
-				.filter(state -> chips.containsKey(state.componentId())) // Filtrujemy tylko istniejące komponenty
+				.filter(state -> chips.containsKey(state.componentId()))
 				.forEach(state -> {
 					Chip chip = chips.get(state.componentId());
 					Pin pin = chip.getPinMap().get(state.pinId());
@@ -201,39 +201,18 @@ public class Simulation implements UserInterface {
 		// tu walidować piny wejściowe czy wyjsciowe czy wszystkie?
 		System.out.println("stationaryState: 2. walidacja stanów pinów listw wejściowych");
 
-		//2.0. Wyciągnięcie listw wejściowych
-		Map<Integer,Chip> headerInChips = chips.entrySet().stream()
-				.filter(entry -> entry.getValue().getClass().getSimpleName().equals(Util.HEADER_IN))
-				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-		System.out.println("headerInChips:");
-		headerInChips.forEach((key, value) -> System.out.println(key + " : " + value));
-
-		//2.1. Walidacja
-		for (Map.Entry<Integer, Chip> entry : headerInChips.entrySet()) {
-
-			int chipId = entry.getKey();
-			Chip chip = entry.getValue();
-
-			for (Map.Entry<Integer, Pin> entryPin : chip.getPinMap().entrySet()) {
-				int pinId = entryPin.getKey();
-				Pin pin = entryPin.getValue();
-				if (pin.getClass().getSimpleName().equals(Util.PIN_IN) && pin.getPinState() == PinState.UNKNOWN) {
-					System.out.println("UnknownStateException: chipId: " + chipId + ", pinId: " + pinId + ", pinState" +
-											   ": " + pin.getPinState());
-					throw new UnknownStateException(new ComponentPinState(chipId, pinId, PinState.UNKNOWN));
-				}
-			}
-		}
+		validateHeaders(Util.HEADER_IN, Util.PIN_OUT);
 
 		// 3. Propagacja sygnału do pinów wyjściowych do osiągnięcia stanu stacjonarnego
-		System.out.println("stationaryState: 3. propagacja syganłu");
+		System.out.println("stationaryState: 3. propagacja syganłu z HeaderIn na piny wejściowe układów");
+		propagateSignal();
 
 		// 3.0 zapis stanu układu i deklaracja TICK'a
 		Set<ComponentPinState> previousState;
 		Set<ComponentPinState> currentState;
 		currentState = Util.saveCircuitState(chips);
 		int tick = 0;
-
+		System.out.println("stationaryState: 3. propagacja syganłu w pętli");
 		do {
 			previousState = new HashSet<>(currentState);
 			System.out.println("TICK: " + tick);
@@ -250,24 +229,28 @@ public class Simulation implements UserInterface {
 			++tick;
 		} while (!previousState.equals(currentState));  // 3.3 Porównanie stanu bieżącego z poprzednim
 
+		validateHeaders(Util.HEADER_OUT, Util.PIN_IN);
+	}
+
+	private void validateHeaders(String headerClassName, String pinClassName) throws UnknownStateException{
 		//4.0. Wyciągnięcie listw wejściowych
-		System.out.println("stationaryState: 4. walidacja stanów pinów listw wyjściowych");
-		Map<Integer,Chip> headerOutChips = chips.entrySet().stream()
-				.filter(entry -> entry.getValue().getClass().getSimpleName().equals(Util.HEADER_OUT))
+		System.out.println("validateHeaders: 1 pull out correct header");
+		Map<Integer,Chip> headerChips = chips.entrySet().stream()
+				.filter(entry -> entry.getValue().getClass().getSimpleName().equals(headerClassName))
 				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-		System.out.println("headerOutChips:");
-		headerOutChips.forEach((key, value) -> System.out.println(key + " : " + value));
+		System.out.println("Class: " + headerClassName + " headerChips:");
+		headerChips.forEach((key, value) -> System.out.println(key + " : " + value));
 
 		// 4.1 Walidacja stanu końcowego na pinach wyjściowych
 		// tu walidować piny wejściowe czy wyjsciowe czy wszystkie?
-		for (Map.Entry<Integer, Chip> entry : headerOutChips.entrySet()) {
+		for (Map.Entry<Integer, Chip> entry : headerChips.entrySet()) {
 			int chipId = entry.getKey();
 			Chip chip = entry.getValue();
 
 			for (Map.Entry<Integer, Pin> entryPin : chip.getPinMap().entrySet()) {
 				int pinId = entryPin.getKey();
 				Pin pin = entryPin.getValue();
-				if (pin.getClass().getCanonicalName().equals(Util.PIN_OUT) && pin.getPinState() == PinState.UNKNOWN) {
+				if (pin.getClass().getCanonicalName().equals(pinClassName) && pin.getPinState() == PinState.UNKNOWN) {
 					System.out.println("UnknownStateException: chipId: " + chipId + ", pinId: " + pinId + ", pinState" +
 											   ": " + pin.getPinState());
 					throw new UnknownStateException(new ComponentPinState(chipId, pinId, PinState.UNKNOWN));
