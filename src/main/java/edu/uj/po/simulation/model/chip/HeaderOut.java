@@ -1,6 +1,5 @@
 package edu.uj.po.simulation.model.chip;
 
-import edu.uj.po.simulation.logic.ChipLogicCalculation;
 import edu.uj.po.simulation.model.Chip;
 import edu.uj.po.simulation.model.pin.PinIn;
 
@@ -11,11 +10,6 @@ public class HeaderOut extends Chip{
 		super(target);
 		for(int i = 1; i <= size; i++)
 			this.putToPinMap(i, new PinIn());
-	}
-
-	@Override
-	public void execute(){
-		ChipLogicCalculation.headerCalculation(this);
 	}
 
 	@Override
