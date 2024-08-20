@@ -136,4 +136,18 @@ public class StationaryStateTest {
 
 		assertEquals(PinState.HIGH, simulation.chips.get(chipId3).getPinMap().get(1).getPinState());
 	}
+
+
+	@Test
+	void testSetMomentZero(){
+		int chipId1 = simulation.createInputPinHeader(2);
+
+		Set<ComponentPinState> states0 = new HashSet<>();
+		states0.add(new ComponentPinState(chipId1, 1, PinState.HIGH));
+		states0.add(new ComponentPinState(chipId1, 2, PinState.LOW));
+
+		simulation.setMomentZero(states0);
+
+		assertEquals(PinState.HIGH, simulation.chips.get(chipId1).getPinMap().get(1).getPinState());
+	}
 }

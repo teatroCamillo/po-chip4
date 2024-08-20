@@ -81,7 +81,8 @@ public class Simulation implements UserInterface {
 	//	simulation() zwraca wynik tylko tych listw kołkowych, stworzonych za pomocą createOutputPinHeader()?
 	//	Pytam ponieważ w pytaniach pojęcia wejście/wyjście jest trochę inaczej zdefiniowane, z innej perspektywy
 	//	i krótko mówiąc się pogubiłem.
-	//A5. Generalnie TAK. Uruchamiając obliczenia używam wyłącznie listw wejściowych. W wyniku oczekuję wyłącznie informacji z list wyjściowych.
+	//A5. Generalnie TAK. Uruchamiając obliczenia używam wyłącznie listw wejściowych.
+	// W wyniku oczekuję wyłącznie informacji z listw wyjściowych.
 
 	// milczące założenie że size=0 się nie trafi - bo interfejs tego nie określ
 	@Override
@@ -187,17 +188,18 @@ public class Simulation implements UserInterface {
 	public void stationaryState(Set<ComponentPinState> states) throws UnknownStateException {
 		// 1. Ustawienie stanów początkowych na pinach wejściowych komponentów
 		System.out.println("stationaryState: 1. ustawianie pinów na listwach");
-		states.stream()
-				.filter(state -> chips.containsKey(state.componentId()))
-				.forEach(state -> {
-					Chip chip = chips.get(state.componentId());
-					Pin pin = chip.getPinMap().get(state.pinId());
-					if (pin != null) {
-						pin.setPinState(state.state());
-						System.out.println("SET: chip: " + state.componentId() + " and its pin: " + state.pinId() +
-												   " with status: " + pin.getPinState());
-					}
-				});
+		setMomentZero(states);
+//		states.stream()
+//				.filter(state -> chips.containsKey(state.componentId()))
+//				.forEach(state -> {
+//					Chip chip = chips.get(state.componentId());
+//					Pin pin = chip.getPinMap().get(state.pinId());
+//					if (pin != null) {
+//						pin.setPinState(state.state());
+//						System.out.println("SET: chip: " + state.componentId() + " and its pin: " + state.pinId() +
+//												   " with status: " + pin.getPinState());
+//					}
+//				});
 
 		// 2. Walidacja: Sprawdzenie, czy wszystkie piny wejściowe mają poprawnie ustawiony stan
 		// tu walidować piny wejściowe czy wyjsciowe czy wszystkie?
@@ -238,6 +240,22 @@ public class Simulation implements UserInterface {
 		if(isHeaderOut) validateHeaders(Util.HEADER_OUT, Util.PIN_IN);
 	}
 
+	public void setMomentZero(Set<ComponentPinState> states){
+		// 1. Ustawienie stanów początkowych na pinach wejściowych komponentów
+		states.stream()
+				//.filter(state -> chips.containsKey(state.componentId())) // tego nie potrzeba
+				//.peek(System.out::println)
+				.forEach(state -> {
+					Chip chip = chips.get(state.componentId());
+					Pin pin = chip.getPinMap().get(state.pinId());
+					if (pin != null) {
+						pin.setPinState(state.state());
+						//System.out.println("SET: chip: " + state.componentId() + " and its pin: " + state.pinId() +
+						//						   " with status: " + pin.getPinState());
+					}
+				});
+	}
+
 	private void validateHeaders(String headerClassName, String pinClassName) throws UnknownStateException{
 		System.out.println("validateHeaders: 1 pull out correct header");
 		Map<Integer,Chip> headerChips = chips.entrySet().stream()
@@ -267,15 +285,16 @@ public class Simulation implements UserInterface {
 	public Map<Integer, Set<ComponentPinState>> simulation(Set<ComponentPinState> states0,
 														   int ticks) throws UnknownStateException{
 		System.out.println("simulation: 1. ustawianie pinów na listwach w stan w chwili 0");
-		states0.stream()
-				.filter(state -> chips.containsKey(state.componentId()))
-				.forEach(state -> {
-					Chip chip = chips.get(state.componentId());
-					Pin pin = chip.getPinMap().get(state.pinId());
-					if (pin != null) {
-						pin.setPinState(state.state());
-					}
-				});
+		setMomentZero(states0);
+//		states0.stream()
+//				.filter(state -> chips.containsKey(state.componentId()))
+//				.forEach(state -> {
+//					Chip chip = chips.get(state.componentId());
+//					Pin pin = chip.getPinMap().get(state.pinId());
+//					if (pin != null) {
+//						pin.setPinState(state.state());
+//					}
+//				});
 		// czy powninienem spropagować syganł na listwach z PinIn na PinOut w tym miejscu?
 
 		System.out.println("simulation: 2. deklaracja zasobów i zapis w czasie 0");
