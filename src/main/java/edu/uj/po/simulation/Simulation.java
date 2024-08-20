@@ -193,17 +193,6 @@ public class Simulation implements UserInterface {
 		// 1. Ustawienie stanów początkowych na pinach wejściowych komponentów
 		System.out.println("stationaryState: 1. ustawianie pinów na listwach");
 		setMomentZero(states);
-//		states.stream()
-//				.filter(state -> chips.containsKey(state.componentId()))
-//				.forEach(state -> {
-//					Chip chip = chips.get(state.componentId());
-//					Pin pin = chip.getPinMap().get(state.pinId());
-//					if (pin != null) {
-//						pin.setPinState(state.state());
-//						System.out.println("SET: chip: " + state.componentId() + " and its pin: " + state.pinId() +
-//												   " with status: " + pin.getPinState());
-//					}
-//				});
 
 		// 2. Walidacja: Sprawdzenie, czy wszystkie piny wejściowe mają poprawnie ustawiony stan
 		// tu walidować piny wejściowe czy wyjsciowe czy wszystkie?
@@ -246,10 +235,7 @@ public class Simulation implements UserInterface {
 
 	public void setMomentZero(Set<ComponentPinState> states){
 		// 1. Ustawienie stanów początkowych na pinach wejściowych komponentów
-		states.stream()
-				//.filter(state -> chips.containsKey(state.componentId())) // tego nie potrzeba
-				//.peek(System.out::println)
-				.forEach(state -> {
+		states.forEach(state -> {
 					Chip chip = chips.get(state.componentId());
 					Pin pin = chip.getPinMap().get(state.pinId());
 					if (pin != null) {
@@ -290,16 +276,7 @@ public class Simulation implements UserInterface {
 														   int ticks) throws UnknownStateException{
 		System.out.println("simulation: 1. ustawianie pinów na listwach w stan w chwili 0");
 		setMomentZero(states0);
-//		states0.stream()
-//				.filter(state -> chips.containsKey(state.componentId()))
-//				.forEach(state -> {
-//					Chip chip = chips.get(state.componentId());
-//					Pin pin = chip.getPinMap().get(state.pinId());
-//					if (pin != null) {
-//						pin.setPinState(state.state());
-//					}
-//				});
-		// czy powninienem spropagować syganł na listwach z PinIn na PinOut w tym miejscu?
+		propagateSignal();
 
 		System.out.println("simulation: 2. deklaracja zasobów i zapis w czasie 0");
 
@@ -311,7 +288,7 @@ public class Simulation implements UserInterface {
 		resultMap.put(0, new HashSet<>(currentState));
 
 		System.out.println("simulation: 3. petla symulacji");
-		for(int i=1; i<=ticks; i++){
+		for(int i=0; i<=ticks; i++){
 			chips.values().forEach(Chip::execute);
 			propagateSignal();
 
