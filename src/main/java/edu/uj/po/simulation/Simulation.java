@@ -161,8 +161,8 @@ public class Simulation implements UserInterface {
 								  		&& connection.targetPinId() == pin2
 								  		&& (connection.sourceChipId() != component1 || connection.sourcePinId() != pin1)
 						)) {
-			System.out.println("Cannot connect this pin: " + pin2 + " in component "
-									   + component2 + ". It is already connected.");
+			//System.out.println("Cannot connect this pin: " + pin2 + " in component "
+			//						   + component2 + ". It is already connected.");
 			throw new ShortCircuitException();
 		}
 
@@ -170,7 +170,8 @@ public class Simulation implements UserInterface {
 		// 3. Sprawdzenie, czy nie ma połączenia wyjścia układu z wejściami użytkownika (HeaderIn)
 		if (chip2.getClass().getSimpleName().equals(Util.HEADER_IN) &&
 				chip1.getPinMap().get(pin1).getClass().getSimpleName().equals(Util.PIN_OUT)) {
-			System.out.println("Cannot connect an output pin to a HeaderIn input pin: " + pin2 + " in component " + component2);
+			//System.out.println("Cannot connect an output pin to a HeaderIn input pin: " + pin2 + " in component " +
+			// component2);
 			throw new ShortCircuitException();
 		}
 
@@ -178,7 +179,7 @@ public class Simulation implements UserInterface {
 		// 4. Sprawdz czy nie ma połączenia wyjście do wyjścia.
 		if (chip1.getPinMap().get(pin1).getClass().getSimpleName().equals(Util.PIN_OUT) &&
 				chip2.getPinMap().get(pin2).getClass().getSimpleName().equals(Util.PIN_OUT)) {
-			System.out.println("Cannot connect two output pins!");
+			//System.out.println("Cannot connect two output pins!");
 			throw new ShortCircuitException();
 		}
 
@@ -191,17 +192,17 @@ public class Simulation implements UserInterface {
 	@Override
 	public void stationaryState(Set<ComponentPinState> states) throws UnknownStateException {
 		// 1. Ustawienie stanów początkowych na pinach wejściowych komponentów
-		System.out.println("stationaryState: 1. ustawianie pinów na listwach");
+		//System.out.println("stationaryState: 1. ustawianie pinów na listwach");
 		setMomentZero(states);
 
 		// 2. Walidacja: Sprawdzenie, czy wszystkie piny wejściowe mają poprawnie ustawiony stan
 		// tu walidować piny wejściowe czy wyjsciowe czy wszystkie?
-		System.out.println("\nstationaryState: 2. walidacja stanów pinów listw wejściowych");
+		//System.out.println("\nstationaryState: 2. walidacja stanów pinów listw wejściowych");
 
 		validateHeaders(Util.HEADER_IN, Util.PIN_OUT);
 
 		// 3. Propagacja sygnału do pinów wyjściowych do osiągnięcia stanu stacjonarnego
-		System.out.println("stationaryState: 3. propagacja syganłu z HeaderIn na piny wejściowe układów");
+		//System.out.println("stationaryState: 3. propagacja syganłu z HeaderIn na piny wejściowe układów");
 		propagateSignal();
 
 		// 3.0 zapis stanu układu i deklaracja TICK'a
@@ -209,11 +210,11 @@ public class Simulation implements UserInterface {
 		Set<ComponentPinState> currentState;
 		currentState = Util.saveCircuitState(chips);
 		int tick = 0;
-		System.out.println("stationaryState: 3. propagacja syganłu w pętli");
+		//System.out.println("stationaryState: 3. propagacja syganłu w pętli");
 		do {
 			previousState = new HashSet<>(currentState);
-			System.out.println("TICK: " + tick);
-			currentState.forEach(System.out::println);
+			//System.out.println("TICK: " + tick);
+			//currentState.forEach(System.out::println);
 
 			// 3.1 Wykonanie kroku symulacji - uruchomienie wszystkich chipów (bramek logicznych)
 			chips.values().forEach(Chip::execute);
@@ -229,7 +230,7 @@ public class Simulation implements UserInterface {
 		boolean isHeaderOut = chips.values()
 				.stream()
 				.anyMatch(chip -> chip.getClass().getSimpleName().equals(Util.HEADER_OUT));
-		System.out.println("validateHeaders: isHeaderOut: " + isHeaderOut);
+		//System.out.println("validateHeaders: isHeaderOut: " + isHeaderOut);
 		if(isHeaderOut) validateHeaders(Util.HEADER_OUT, Util.PIN_IN);
 	}
 
@@ -247,14 +248,14 @@ public class Simulation implements UserInterface {
 	}
 
 	private void validateHeaders(String headerClassName, String pinClassName) throws UnknownStateException{
-		System.out.println("validateHeaders: 1 pull out correct header");
+		//System.out.println("validateHeaders: 1 pull out correct header");
 		Map<Integer,Chip> headerChips = chips.entrySet().stream()
 				.filter(entry -> entry.getValue().getClass().getSimpleName().equals(headerClassName))
 				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-		System.out.println("Class: " + headerClassName + " headerChips:");
-		headerChips.forEach((key, value) -> System.out.println(key + " : " + value));
+		//System.out.println("Class: " + headerClassName + " headerChips:");
+		//headerChips.forEach((key, value) -> System.out.println(key + " : " + value));
 
-		System.out.println("validateHeaders: 2 validating");
+		//System.out.println("validateHeaders: 2 validating");
 		for (Map.Entry<Integer, Chip> entry : headerChips.entrySet()) {
 			int chipId = entry.getKey();
 			Chip chip = entry.getValue();
@@ -263,8 +264,8 @@ public class Simulation implements UserInterface {
 				int pinId = entryPin.getKey();
 				Pin pin = entryPin.getValue();
 				if (pin.getPinState() == PinState.UNKNOWN) {
-					System.out.println("UnknownStateException: chipId: " + chipId + ", pinId: " + pinId + ", pinState" +
-											   ": " + pin.getPinState());
+//					System.out.println("UnknownStateException: chipId: " + chipId + ", pinId: " + pinId + ", pinState" +
+//											   ": " + pin.getPinState());
 					throw new UnknownStateException(new ComponentPinState(chipId, pinId, PinState.UNKNOWN));
 				}
 			}
@@ -274,31 +275,31 @@ public class Simulation implements UserInterface {
 	@Override
 	public Map<Integer, Set<ComponentPinState>> simulation(Set<ComponentPinState> states0,
 														   int ticks) throws UnknownStateException{
-		System.out.println("simulation: 1. ustawianie pinów na listwach w stan w chwili 0");
+		//System.out.println("simulation: 1. ustawianie pinów na listwach w stan w chwili 0");
 		setMomentZero(states0);
 		propagateSignal();
 
-		System.out.println("simulation: 2. deklaracja zasobów i zapis w czasie 0");
+		//System.out.println("simulation: 2. deklaracja zasobów i zapis w czasie 0");
 
 		Map<Integer, Set<ComponentPinState>> resultMap = new HashMap<>();
 		Set<ComponentPinState> currentState;
-		currentState = Util.saveCircuitState(chips);
-		System.out.println("STATE: 0");
-		currentState.forEach(System.out::println);
+		currentState = Util.saveCircuitHeaderOutState(chips);
+		//System.out.println("STATE: 0");
+		//currentState.forEach(System.out::println);
 		resultMap.put(0, new HashSet<>(currentState));
 
-		System.out.println("simulation: 3. petla symulacji");
-		for(int i=0; i<=ticks; i++){
+		//System.out.println("simulation: 3. petla symulacji");
+		for(int i=1; i<=ticks; i++){
 			chips.values().forEach(Chip::execute);
 			propagateSignal();
 
 			currentState.clear();
-			currentState = Util.saveCircuitState(chips);
+			currentState = Util.saveCircuitHeaderOutState(chips);
 			resultMap.put(i, new HashSet<>(currentState));
-			System.out.println("TICK: " + i);
-			currentState.forEach(System.out::println);
+			//System.out.println("TICK: " + i);
+			//currentState.forEach(System.out::println);
 		}
-		System.out.println("simulation: 4. return resultMap");
+		//System.out.println("simulation: 4. return resultMap");
 		return resultMap;
 	}
 
