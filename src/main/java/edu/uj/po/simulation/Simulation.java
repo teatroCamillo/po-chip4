@@ -303,7 +303,6 @@ public class Simulation implements UserInterface {
 		return resultMap;
 	}
 
-
 	// TODO: WAŻNE!
 	// Q6: Do metody optimize() podajemy ilość ticków, to rozumiem, że symulacja po usunięciu komponentów,
 	// które wydają się zbędne, powinna przez określoną ilość ticków być stabilna i nie wyrzucić UnknownStateException.

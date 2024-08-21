@@ -11,6 +11,10 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class ChipTest {
 
+	// Test ze stanem UNKNOWN dla Headerów nie są wykonywane poniewż są one sprawdzane i leci wyjątek podczasa
+	// stationaryState()
+	//
+
 	private Simulation simulation;
 
 	@BeforeEach
@@ -87,5 +91,38 @@ class ChipTest {
 
 		assertEquals(PinState.LOW, chip7400.getPinMap().get(11).getPinState(),
 					 "PinOut (11) powinien mieć stan LOW po wywołaniu execute w Chip7400 dla HH.");
+	}
+
+	@Test
+	void testExecuteChip7400WithUNKONOWNState() throws UnknownChip{
+		int chip7400Id = simulation.createChip(7400);
+		Chip chip7400 = simulation.getChips().get(chip7400Id);
+
+		// LU
+		chip7400.getPinMap().get(1).setPinState(PinState.LOW);
+		chip7400.getPinMap().get(2).setPinState(PinState.UNKNOWN);
+		// UH
+		chip7400.getPinMap().get(4).setPinState(PinState.UNKNOWN);
+		chip7400.getPinMap().get(5).setPinState(PinState.HIGH);
+		// HU
+		chip7400.getPinMap().get(9).setPinState(PinState.HIGH);
+		chip7400.getPinMap().get(10).setPinState(PinState.UNKNOWN);
+		// UH
+		chip7400.getPinMap().get(12).setPinState(PinState.UNKNOWN);
+		chip7400.getPinMap().get(13).setPinState(PinState.LOW);
+
+		chip7400.execute();
+
+		assertEquals(PinState.HIGH, chip7400.getPinMap().get(3).getPinState(),
+					 "PinOut (3) powinien mieć stan HIGH po wywołaniu execute w Chip7400.");
+
+		assertEquals(PinState.UNKNOWN, chip7400.getPinMap().get(6).getPinState(),
+					 "PinOut (6) powinien mieć stan HIGH po wywołaniu execute w Chip7400.");
+
+		assertEquals(PinState.UNKNOWN, chip7400.getPinMap().get(8).getPinState(),
+					 "PinOut (8) powinien mieć stan HIGH po wywołaniu execute w Chip7400.");
+
+		assertEquals(PinState.HIGH, chip7400.getPinMap().get(11).getPinState(),
+					 "PinOut (11) powinien mieć stan HIGH po wywołaniu execute w Chip7400.");
 	}
 }
