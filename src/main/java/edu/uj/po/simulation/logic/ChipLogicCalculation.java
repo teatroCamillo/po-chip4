@@ -311,12 +311,6 @@ public class ChipLogicCalculation {
 
 	}
 
-	public static void headerCalculation(Chip chip){
-		int mapSize = chip.getPinMap().size();
-
-		for(int i=1; i<=mapSize; i=i+2) identityGateLogicFunction(chip, i, i+1);
-	}
-
 	private static PinState invertState(PinState pinState) {
 		if (pinState == HIGH) {
 			return LOW;

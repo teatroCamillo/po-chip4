@@ -13,6 +13,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class ConnectTest{
 
+	// TODO: rozszerz później testy o bardziej złożone połaczenia jak już będą zaimplementowane wszystkie układy
+
 	private Simulation simulation;
 
 	@BeforeEach
@@ -68,7 +70,7 @@ public class ConnectTest{
 	void testConnect2SameConnectGiven1DirectConnection() throws UnknownComponent, UnknownPin,
 			ShortCircuitException,
 			UnknownChip{
-		int chipId1 = simulation.createChip(7400);
+		int chipId1 = simulation.createChip(7402);
 		int chipId2 = simulation.createOutputPinHeader(1);
 
 		simulation.connect(chipId1, 3, chipId2, 1);
@@ -80,7 +82,7 @@ public class ConnectTest{
 	@Test
 	void testConnectThrowsShortCircuitExceptionOnMultipleOutputsToSameInput() throws UnknownChip, UnknownComponent, UnknownPin, ShortCircuitException{
 		int chipId1 = simulation.createChip(7400);
-		int chipId2 = simulation.createChip(7400);
+		int chipId2 = simulation.createChip(7402);
 
 		simulation.connect(chipId1, 3, chipId1, 1);
 
@@ -100,13 +102,12 @@ public class ConnectTest{
 	@Test
 	void testConnectThrowsShortCircuitExceptionOnConnectingOutputToOutput() throws UnknownChip, UnknownComponent, UnknownPin {
 		int chipId1 = simulation.createChip(7400);
-		int chipId2 = simulation.createChip(7400);
+		int chipId2 = simulation.createChip(7404);
 
-		assertThrows(ShortCircuitException.class, () -> simulation.connect(chipId1, 3, chipId2, 3),
+		assertThrows(ShortCircuitException.class, () -> simulation.connect(chipId1, 3, chipId2, 2),
 					 "Should throw ShortCircuitException when connecting two output pins.");
 	}
 
-	// TODO nowe testy
 	@Test
 	void testConnectChip7402ToHeaderOut() throws UnknownChip, UnknownComponent, UnknownPin, ShortCircuitException {
 		int chipId1 = simulation.createChip(7402);
@@ -149,7 +150,7 @@ public class ConnectTest{
 		int chipId2 = simulation.createInputPinHeader(1);
 
 		assertThrows(ShortCircuitException.class, () -> simulation.connect(chipId1, 2, chipId2, 1),
-					 "Should throw ShortCircuitException when connecting Chip7404 output to HeaderIn input.");
+					 "Should throw ShortCircuitException when connecting Chip7404 output to HeaderIn.");
 	}
 
 	@Test

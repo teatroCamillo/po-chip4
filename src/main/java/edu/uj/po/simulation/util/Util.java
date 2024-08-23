@@ -9,12 +9,25 @@ import java.util.Set;
 
 public class Util{
 
-	// Constants
 	public static final String PIN_IN = "PinIn";
 	public static final String PIN_OUT = "PinOut";
 	public static final String HEADER_IN = "HeaderIn";
 	public static final String HEADER_OUT = "HeaderOut";
 
+	// zbiera stan listew wyjściowych
+	public static Set<ComponentPinState> saveCircuitHeaderOutState(Map<Integer, Chip> chips){
+		Set<ComponentPinState> currentState = new HashSet<>();
+		chips.entrySet().stream()
+				.filter(entry -> entry.getValue().getClass().getSimpleName().equals(HEADER_OUT))
+				.forEach(entry -> {
+					entry.getValue().getPinMap().forEach((pinId, pin) -> {
+						currentState.add(new ComponentPinState(entry.getKey(), pinId, pin.getPinState()));
+					});
+		});
+		return currentState;
+	}
+
+	// zbiera cały stan układu
 	public static Set<ComponentPinState> saveCircuitState(Map<Integer, Chip> chips){
 		Set<ComponentPinState> currentState = new HashSet<>();
 		chips.forEach((componentId, chip) -> {
@@ -24,5 +37,4 @@ public class Util{
 		});
 		return currentState;
 	}
-
 }

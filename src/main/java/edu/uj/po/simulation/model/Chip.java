@@ -29,7 +29,7 @@ public abstract class Chip {
 		pinMap.put(id, pin);
 	}
 
-	public abstract void execute();
+	public void execute(){}
 
 	public abstract Chip clone();
 

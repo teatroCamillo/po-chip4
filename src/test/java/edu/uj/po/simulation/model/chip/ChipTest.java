@@ -1,82 +1,69 @@
 package edu.uj.po.simulation.model.chip;
 
+import edu.uj.po.simulation.Simulation;
 import edu.uj.po.simulation.interfaces.PinState;
+import edu.uj.po.simulation.interfaces.UnknownChip;
 import edu.uj.po.simulation.model.Chip;
-import edu.uj.po.simulation.model.pin.PinIn;
-import edu.uj.po.simulation.model.pin.PinOut;
+import edu.uj.po.simulation.model.Pin;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 class ChipTest {
 
-	private Chip headerIn;
-	private Chip headerOut;
-	private Chip chip7400;
+	// Test ze stanem UNKNOWN dla Headerów nie są wykonywane poniewż są one sprawdzane i leci wyjątek podczasa
+	// stationaryState()
+	//
+
+	private Simulation simulation;
 
 	@BeforeEach
 	void setUp() {
-		headerIn = new HeaderIn();
-		headerOut = new HeaderOut();
-		chip7400 = new Chip7400();
+		simulation = new Simulation();
 	}
 
 	@Test
-	void testInitialPinState() {
-		headerIn.putToPinMap(1, new PinIn());
-		headerOut.putToPinMap(1, new PinOut());
-		chip7400.putToPinMap(1, new PinIn());
+	void testInitialPinState() throws UnknownChip{
+		int headerIn = simulation.createInputPinHeader(2);
+		int headerOut = simulation.createOutputPinHeader(1);
+		int chip7400 = simulation.createChip(7400);
 
-		assertEquals(PinState.UNKNOWN, headerIn.getPinMap().get(1).getPinState(), "Initial state of PinIn in HeaderIn should be UNKNOWN.");
-		assertEquals(PinState.UNKNOWN, headerOut.getPinMap().get(1).getPinState(), "Initial state of PinOut in HeaderOut should be UNKNOWN.");
-		assertEquals(PinState.UNKNOWN, chip7400.getPinMap().get(1).getPinState(), "Initial state of PinIn in Chip7400 should be UNKNOWN.");
+		assertEquals(PinState.UNKNOWN, simulation.getChips().get(headerIn).getPinMap().get(1).getPinState(),
+					 "Initial state of PinOut in HeaderIn should be UNKNOWN.");
+		assertEquals(PinState.UNKNOWN, simulation.getChips().get(headerOut).getPinMap().get(1).getPinState(),
+					 "Initial state of PinIn in HeaderOut should be UNKNOWN.");
+		assertEquals(PinState.UNKNOWN, simulation.getChips().get(chip7400).getPinMap().get(1).getPinState(),
+					 "Initial state of PinIn in Chip7400 should be UNKNOWN.");
 	}
 
 	@Test
 	void testExecuteHeaderIn() {
-		headerIn.putToPinMap(1, new PinIn());
-		headerIn.putToPinMap(2, new PinOut());
+		int headerIn = simulation.createInputPinHeader(2);
 
-		headerIn.getPinMap().get(1).setPinState(PinState.HIGH);
-		headerIn.execute();
+		Pin out = simulation.getChips().get(headerIn).getPinMap().get(1);
+		out.setPinState(PinState.HIGH);
 
-		// Weryfikacja logiki wykonania, specyficzna dla implementacji HeaderIn
-		// Sprawdzenie, czy stan pinu wyjściowego (2) został ustawiony zgodnie z logiką headerCalculation (tożsamościową)
-		assertEquals(PinState.HIGH, headerIn.getPinMap().get(2).getPinState(),
+		assertEquals(PinState.HIGH, out.getPinState(),
 					 "PinOut powinien mieć stan HIGH po wywołaniu execute w HeaderIn.");
 	}
 
 	@Test
 	void testExecuteHeaderOut() {
-		headerOut.putToPinMap(1, new PinIn());
-		headerOut.putToPinMap(2, new PinOut());
+		int headerOut = simulation.createInputPinHeader(2);
 
-		headerOut.getPinMap().get(1).setPinState(PinState.LOW);
-		headerOut.execute();
+		Pin in = simulation.getChips().get(headerOut).getPinMap().get(1);
+		in.setPinState(PinState.HIGH);
 
 		// Weryfikacja logiki wykonania, specyficzna dla implementacji HeaderOut
 		// Sprawdzenie, czy stan pinu wyjściowego (2) został ustawiony zgodnie z logiką headerCalculation (tożsamościową)
-		assertEquals(PinState.LOW, headerOut.getPinMap().get(2).getPinState(),
-					 "PinOut powinien mieć stan LOW po wywołaniu execute w HeaderOut.");
+		assertEquals(PinState.HIGH, in.getPinState(),
+					 "PinIn powinien mieć stan LOW po wywołaniu execute w HeaderOut.");
 	}
 
 	@Test
-	void testExecuteChip7400() {
-		chip7400.putToPinMap(1, new PinIn());
-		chip7400.putToPinMap(2, new PinIn());
-		chip7400.putToPinMap(3, new PinOut());
-
-		chip7400.putToPinMap(4, new PinIn());
-		chip7400.putToPinMap(5, new PinIn());
-		chip7400.putToPinMap(6, new PinOut());
-
-		chip7400.putToPinMap(8, new PinOut());
-		chip7400.putToPinMap(9, new PinIn());
-		chip7400.putToPinMap(10, new PinIn());
-
-		chip7400.putToPinMap(11, new PinOut());
-		chip7400.putToPinMap(12, new PinIn());
-		chip7400.putToPinMap(13, new PinIn());
+	void testExecuteChip7400() throws UnknownChip{
+		int chip7400Id = simulation.createChip(7400);
+		Chip chip7400 = simulation.getChips().get(chip7400Id);
 
 		// LL
 		chip7400.getPinMap().get(1).setPinState(PinState.LOW);
@@ -104,5 +91,38 @@ class ChipTest {
 
 		assertEquals(PinState.LOW, chip7400.getPinMap().get(11).getPinState(),
 					 "PinOut (11) powinien mieć stan LOW po wywołaniu execute w Chip7400 dla HH.");
+	}
+
+	@Test
+	void testExecuteChip7400WithUNKONOWNState() throws UnknownChip{
+		int chip7400Id = simulation.createChip(7400);
+		Chip chip7400 = simulation.getChips().get(chip7400Id);
+
+		// LU
+		chip7400.getPinMap().get(1).setPinState(PinState.LOW);
+		chip7400.getPinMap().get(2).setPinState(PinState.UNKNOWN);
+		// UH
+		chip7400.getPinMap().get(4).setPinState(PinState.UNKNOWN);
+		chip7400.getPinMap().get(5).setPinState(PinState.HIGH);
+		// HU
+		chip7400.getPinMap().get(9).setPinState(PinState.HIGH);
+		chip7400.getPinMap().get(10).setPinState(PinState.UNKNOWN);
+		// UH
+		chip7400.getPinMap().get(12).setPinState(PinState.UNKNOWN);
+		chip7400.getPinMap().get(13).setPinState(PinState.LOW);
+
+		chip7400.execute();
+
+		assertEquals(PinState.HIGH, chip7400.getPinMap().get(3).getPinState(),
+					 "PinOut (3) powinien mieć stan HIGH po wywołaniu execute w Chip7400.");
+
+		assertEquals(PinState.UNKNOWN, chip7400.getPinMap().get(6).getPinState(),
+					 "PinOut (6) powinien mieć stan HIGH po wywołaniu execute w Chip7400.");
+
+		assertEquals(PinState.UNKNOWN, chip7400.getPinMap().get(8).getPinState(),
+					 "PinOut (8) powinien mieć stan HIGH po wywołaniu execute w Chip7400.");
+
+		assertEquals(PinState.HIGH, chip7400.getPinMap().get(11).getPinState(),
+					 "PinOut (11) powinien mieć stan HIGH po wywołaniu execute w Chip7400.");
 	}
 }

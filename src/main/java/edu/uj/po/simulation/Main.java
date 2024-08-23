@@ -8,42 +8,50 @@ import java.util.Set;
 
 public class Main{
 	public static void main(String[] args) throws UnknownChip, UnknownPin, ShortCircuitException, UnknownComponent, UnknownStateException{
-		Simulation simulation = new Simulation();
-		Set<Integer> idSet = new HashSet<>();
 
-		int headerId0 = simulation.createInputPinHeader(2);
-		idSet.add(headerId0);
+		Simulation simulation;
 
-		int headerId1 = simulation.createOutputPinHeader(1);
-		idSet.add(headerId1);
+		simulation = new Simulation();
 
-		int chipId0 = simulation.createChip(7400);
-		idSet.add(chipId0);
+		int chipIn1 = simulation.createInputPinHeader(3);
+		int chip7400 = simulation.createChip(7400);
+		int chip7402 = simulation.createChip(7402);
+		int chip7404 = simulation.createChip(7404);
+		int chipOut1 = simulation.createOutputPinHeader(2);
 
-		simulation.connect(headerId0, 2, chipId0, 1);
-		simulation.connect(headerId0, 4, chipId0, 2);
+		simulation.connect(chipIn1, 1, chip7400, 1);
+		simulation.connect(chipIn1, 2, chip7400, 2);
+		simulation.connect(chipIn1, 3, chip7402, 9);
 
-		simulation.connect(chipId0, 3, headerId1, 1);
+		simulation.connect(chip7400, 3, chip7402, 8);
+		simulation.connect(chip7400, 3, chipOut1, 1);
 
-		simulation.getInfo(idSet);
+		simulation.connect(chip7402, 10, chip7404, 3);
 
-		//stan stacjonarny - 0
+		simulation.connect(chip7404, 4, chipOut1, 2);
+
 		Set<ComponentPinState> states = new HashSet<>();
-		states.add(new ComponentPinState(headerId0, 1, PinState.HIGH));
-		states.add(new ComponentPinState(headerId0, 3, PinState.LOW));
+		states.add(new ComponentPinState(chipIn1, 1, PinState.HIGH));
+		states.add(new ComponentPinState(chipIn1, 2, PinState.LOW));
+		states.add(new ComponentPinState(chipIn1, 3, PinState.HIGH));
 
 		simulation.stationaryState(states);
 
-		System.out.println("\n***SIMULATION**");
 		Set<ComponentPinState> states0 = new HashSet<>();
-		states0.add(new ComponentPinState(headerId0, 1, PinState.HIGH));
-		states0.add(new ComponentPinState(headerId0, 3, PinState.HIGH));
+		states0.add(new ComponentPinState(chipIn1, 1, PinState.HIGH));
+		states0.add(new ComponentPinState(chipIn1, 2, PinState.HIGH));
+		states0.add(new ComponentPinState(chipIn1, 3, PinState.LOW));
+
 		Map<Integer, Set<ComponentPinState>> result = simulation.simulation(states0, 4);
 
-		System.out.println("\n***RESULT MAP**");
-		result.forEach((key, value) -> {
-			System.out.println("Tick: " + key);
-			value.forEach(System.out::println);
-		});
+		PinState pin1 = result.get(1).stream()
+				.filter(state -> state.pinId() == 1)
+				.peek(System.out::println)
+				.findFirst().orElseThrow().state();
+
+		PinState pin2 = result.get(1).stream()
+				.filter(state -> state.pinId() == 2)
+				.peek(System.out::println)
+				.findFirst().orElseThrow().state();
 	}
 }
