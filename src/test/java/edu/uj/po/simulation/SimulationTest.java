@@ -193,13 +193,5 @@ public class SimulationTest{
 		assertEquals(PinState.valueOf(headerOutInputPin3State), result.get(tick).stream()
 				.filter(state -> state.componentId() == chipOut1 && state.pinId() == 2)
 				.findFirst().orElseThrow().state());
-
-//		assertEquals(PinState.LOW, result.get(5).stream()
-//				.filter(state -> state.componentId() == chipOut1 && state.pinId() == 1)
-//				.findFirst().orElseThrow().state());
-//
-//		assertEquals(PinState.HIGH, result.get(5).stream()
-//				.filter(state -> state.componentId() == chipOut1 && state.pinId() == 2)
-//				.findFirst().orElseThrow().state());
 	}
 }
