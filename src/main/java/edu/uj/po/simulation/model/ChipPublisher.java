@@ -1,0 +1,20 @@
+package edu.uj.po.simulation.model;
+
+public class ChipPublisher implements Publisher {
+
+	public ChipPublisher() {}
+
+	public void subscribe(Subscriber subscriber) {
+		subscribers.add(subscriber);
+	}
+
+	public void unsubscribe(Subscriber subscriber) {
+		subscribers.remove(subscriber);
+	}
+
+	public void report(Chip chip) {
+		for (Subscriber subscriber : subscribers) {
+			subscriber.update(chip);
+		}
+	}
+}

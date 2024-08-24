@@ -26,6 +26,7 @@ public class Chip7400 extends Chip {
 
 	@Override
 	public void execute(){
+		this.previousPinMap = clonePinMap();
 		ChipLogicCalculation.chip7400Calculation(this);
 	}
 

@@ -1,17 +1,16 @@
 package edu.uj.po.simulation;
 
 import edu.uj.po.simulation.interfaces.*;
-import edu.uj.po.simulation.model.Chip;
-import edu.uj.po.simulation.model.Connection;
-import edu.uj.po.simulation.model.Creator;
-import edu.uj.po.simulation.model.Pin;
+import edu.uj.po.simulation.model.*;
+import edu.uj.po.simulation.model.chip.HeaderIn;
+import edu.uj.po.simulation.model.chip.HeaderOut;
 import edu.uj.po.simulation.model.creator.ChipCreator;
 import edu.uj.po.simulation.util.Util;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class Simulation implements UserInterface {
+public class Simulation implements UserInterface, Subscriber{
 
 	private final Set<Integer> availableChipCodes;
 	final Map<Integer, Chip> chips;
@@ -76,6 +75,10 @@ public class Simulation implements UserInterface {
 		int id = uniqueChipIdGenerator++;
 		chips.put(id, creator.create(code));
 		return id;
+	}
+
+	private void subscribeAllChips(){
+		chips.values().forEach(chip -> chip.subscribe(this));
 	}
 
 	// TODO: WAŻNE!
@@ -223,6 +226,7 @@ public class Simulation implements UserInterface {
 	// której jedno z wejść nie jest do niczego podłączone.
 	@Override
 	public void stationaryState(Set<ComponentPinState> states) throws UnknownStateException {
+		subscribeAllChips();
 		// 1. Ustawienie stanów początkowych na pinach wejściowych komponentów
 		//System.out.println("stationaryState: 1. ustawianie pinów na listwach");
 		setMomentZero(states);
@@ -465,7 +469,22 @@ public class Simulation implements UserInterface {
 		Set<Integer> result = new HashSet<>();
 		result.add(1);
 
+		setMomentZero(states0);
+		propagateSignal();
+
+		for(int i=1; i<=ticks; i++){
+			chips.values().forEach(Chip::execute);
+			propagateSignal();
+			chips.values().stream()
+					.filter(chip -> !(chip instanceof HeaderIn || chip instanceof HeaderOut))
+					.forEach(Chip::report);
+		}
 
 		return result;
+	}
+
+	@Override
+	public void update(Chip chip){
+		System.out.println("Info from: " + chip);
 	}
 }

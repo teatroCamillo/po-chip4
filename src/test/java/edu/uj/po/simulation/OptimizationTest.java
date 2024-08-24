@@ -26,11 +26,9 @@ public class OptimizationTest{
 
 	// dla stanu w chwili zero nie testuje póki co
 	// T1
-	@Disabled
 	@ParameterizedTest
 	@CsvSource({
-			"1, LOW, LOW, 1,2,3 ",
-			"2, HIGH, LOW, <set>"
+			"2, HIGH, LOW, 1,2"
 	})
 	void testFromTaskDescription(int tick, String headerOutInputPin1State, String headerOutInputPin2State,
 								 String setElements) throws UnknownChip, UnknownStateException, UnknownPin,
