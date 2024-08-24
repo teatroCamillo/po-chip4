@@ -22,8 +22,6 @@ public class Chip7402 extends Chip {
 		this.putToPinMap(11, new PinIn());
 		this.putToPinMap(12, new PinIn());
 		this.putToPinMap(13, new PinOut());
-
-
 	}
 
 	@Override
@@ -34,11 +32,6 @@ public class Chip7402 extends Chip {
 	@Override
 	public Chip clone(){
 		return new Chip7402(this);
-	}
-
-	@Override
-	public Chip clone(int size){
-		return null;
 	}
 
 	@Override

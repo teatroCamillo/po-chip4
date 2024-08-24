@@ -35,11 +35,6 @@ public class Chip7420 extends Chip {
 	}
 
 	@Override
-	public Chip clone(int size){
-		return null;
-	}
-
-	@Override
 	public String toString(){
 		return "Chip7400{\npinMap=" + this.getPinMap() + "}\n";
 	}

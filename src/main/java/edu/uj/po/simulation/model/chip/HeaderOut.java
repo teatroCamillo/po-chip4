@@ -12,10 +12,6 @@ public class HeaderOut extends Chip{
 			this.putToPinMap(i, new PinIn());
 	}
 
-	@Override
-	public Chip clone(){
-		return null;
-	}
 
 	@Override
 	public Chip clone(int size){

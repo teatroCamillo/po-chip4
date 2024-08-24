@@ -31,9 +31,13 @@ public abstract class Chip {
 
 	public void execute(){}
 
-	public abstract Chip clone();
+	public Chip clone(){
+		throw new UnsupportedOperationException("Method not implemented");
+	};
 
-	public abstract Chip clone(int size);
+	public Chip clone(int size){
+		throw new UnsupportedOperationException("Method not implemented");
+	};
 
 	@Override
 	public String toString() {

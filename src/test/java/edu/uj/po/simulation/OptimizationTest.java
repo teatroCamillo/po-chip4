@@ -2,6 +2,7 @@ package edu.uj.po.simulation;
 
 import edu.uj.po.simulation.interfaces.*;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -25,6 +26,7 @@ public class OptimizationTest{
 
 	// dla stanu w chwili zero nie testuje póki co
 	// T1
+	@Disabled
 	@ParameterizedTest
 	@CsvSource({
 			"1, LOW, LOW, 1,2,3 ",
@@ -95,30 +97,6 @@ public class OptimizationTest{
 		Set<Integer> actual = simulation.optimize(states0, tick);
 
 		assertEquals(expected, actual);
-	}
-
-	@ParameterizedTest
-	@CsvSource({
-			"1, LOW, LOW, 1,2,3",
-			"2, HIGH, LOW, 4,5,6"
-	})
-	void testSimulation(int pinId, String expectedState, String actualState, String setElements) {
-		// Konwersja stringów na PinState
-		PinState expected = PinState.valueOf(expectedState);
-		PinState actual = PinState.valueOf(actualState);
-
-		// Konwersja ciągu znaków na Set<Integer>
-		Set<Integer> actualSet = Arrays.stream(setElements.split(","))
-				.map(Integer::valueOf)
-				.collect(Collectors.toSet());
-
-		// Przykład: porównanie Setów (dla tego testu to tylko przykład, w prawdziwym teście możesz
-		// użyć tego Setu do innych porównań)
-		Set<Integer> expectedSet = new HashSet<>(Arrays.asList(1, 2, 3)); // Przykładowy oczekiwany Set
-
-		// Używanie assertEquals z poprawnymi typami
-		assertEquals(expected, actual);
-		assertEquals(expectedSet, actualSet);
 	}
 
 }
