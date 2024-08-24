@@ -12,9 +12,10 @@ public class ChipPublisher implements Publisher {
 		subscribers.remove(subscriber);
 	}
 
-	public void report(Chip chip) {
-		for (Subscriber subscriber : subscribers) {
-			subscriber.update(chip);
-		}
+	public Integer report(Chip chip) {
+//		for (Subscriber subscriber : subscribers) {
+//			subscriber.update(chip);
+//		}
+		return subscribers.stream().findFirst().get().update(chip);
 	}
 }

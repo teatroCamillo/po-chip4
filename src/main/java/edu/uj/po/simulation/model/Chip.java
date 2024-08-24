@@ -53,8 +53,9 @@ public abstract class Chip {
 		publisher.subscribe(subscriber);
 	}
 
-	public void report(){
-		if (hasPinOutNotChanged()) publisher.report(this);
+	public Integer report(){
+		if (hasPinOutNotChanged()) return publisher.report(this);
+		return null;
 	}
 
 	protected Map<Integer, Pin> clonePinMap(){
@@ -67,7 +68,8 @@ public abstract class Chip {
 
 	public boolean hasPinOutNotChanged() {
 		return pinMap.entrySet().stream()
-				.filter(entry -> entry.getValue() instanceof PinOut)
+				.filter(entry -> entry.getValue() instanceof PinOut) // dodja  żeby były tylko podłączone
+				// !!! piny
 				.anyMatch(entry -> {
 					Integer pinId = entry.getKey();
 					Pin currentPin = entry.getValue();

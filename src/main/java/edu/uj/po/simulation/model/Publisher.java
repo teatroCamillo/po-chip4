@@ -9,5 +9,5 @@ public interface Publisher{
 
 	void unsubscribe(Subscriber subscriber);
 
-	void report(Chip chip);
+	Integer report(Chip chip);
 }

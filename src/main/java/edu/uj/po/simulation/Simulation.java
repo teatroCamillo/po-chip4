@@ -17,6 +17,7 @@ public class Simulation implements UserInterface, Subscriber{
 	final Set<Connection> directConnections;
 	private final Creator creator;
 	private Integer uniqueChipIdGenerator;
+	private Set<Integer> optimizeResult;
 
 	public Map<Integer, Chip> getChips(){
 		return chips;
@@ -34,6 +35,7 @@ public class Simulation implements UserInterface, Subscriber{
 		this.directConnections = new HashSet<>();
 		this.creator = new ChipCreator();
 		this.uniqueChipIdGenerator = 0;
+		this.optimizeResult = new HashSet<>();
 	}
 
 	public void getInfo(Set<Integer> chipIds) {
@@ -466,25 +468,38 @@ public class Simulation implements UserInterface, Subscriber{
 	// odpowiedzi traktowane są jako poprawne.
 	@Override
 	public Set<Integer> optimize(Set<ComponentPinState> states0, int ticks) throws UnknownStateException{
-		Set<Integer> result = new HashSet<>();
-		result.add(1);
 
 		setMomentZero(states0);
 		propagateSignal();
 
 		for(int i=1; i<=ticks; i++){
+			System.out.println("Tick: " + i);
 			chips.values().forEach(Chip::execute);
 			propagateSignal();
-			chips.values().stream()
+			Set<Integer> actualUnchangedSet = chips.values().stream()
 					.filter(chip -> !(chip instanceof HeaderIn || chip instanceof HeaderOut))
-					.forEach(Chip::report);
+					.map(Chip::report)
+					.collect(Collectors.toSet());
+
+			if(!this.optimizeResult.equals(actualUnchangedSet)) this.optimizeResult = new HashSet<>(actualUnchangedSet);
+			actualUnchangedSet.clear();
+
 		}
 
-		return result;
+		return this.optimizeResult;
 	}
 
 	@Override
-	public void update(Chip chip){
-		System.out.println("Info from: " + chip);
+	public Integer update(Chip chip){
+		Integer chipId = chips.entrySet().stream()
+				.filter(entry -> entry.getValue().equals(chip))
+				.map(Map.Entry::getKey)
+				.findFirst()
+				.orElse(null);
+
+		this.optimizeResult.add(chipId);
+
+		System.out.println("ADDED TO O.R - No change was detected for Chip: " + chipId + ", " + chip);
+		return chipId;
 	}
 }

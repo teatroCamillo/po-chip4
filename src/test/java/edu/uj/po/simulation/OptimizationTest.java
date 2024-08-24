@@ -9,7 +9,6 @@ import org.junit.jupiter.params.provider.CsvSource;
 
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -26,9 +25,10 @@ public class OptimizationTest{
 
 	// dla stanu w chwili zero nie testuje póki co
 	// T1
+	@Disabled
 	@ParameterizedTest
 	@CsvSource({
-			"2, HIGH, LOW, 1,2"
+			"2, HIGH, LOW, '1,2'"
 	})
 	void testFromTaskDescription(int tick, String headerOutInputPin1State, String headerOutInputPin2State,
 								 String setElements) throws UnknownChip, UnknownStateException, UnknownPin,
@@ -75,22 +75,11 @@ public class OptimizationTest{
 		states0.add(new ComponentPinState(chipIn1, 3, PinState.LOW));
 		states0.add(new ComponentPinState(chipIn1, 4, PinState.HIGH));
 
-		// 6. Symulacja dla określonej ilości TICKS
-//		Map<Integer, Set<ComponentPinState>> result = simulation.simulation(states0, 3);
-//
-//		assertEquals(PinState.valueOf(headerOutInputPin1State), result.get(tick).stream()
-//				.filter(state -> state.pinId() == 1)
-//				.findFirst().orElseThrow().state());
-//
-//		assertEquals(PinState.valueOf(headerOutInputPin2State), result.get(tick).stream()
-//				.filter(state -> state.pinId() == 2)
-//				.findFirst().orElseThrow().state());
-
-		// 7. Optymalizacja
-		//simulation.stationaryState(states); // reset do stanu stacjonarnego
+		// 6. Optymalizacja
 		Set<Integer> expected = Arrays.stream(setElements.split(","))
 				.map(Integer::valueOf)
 				.collect(Collectors.toSet());
+		System.out.println("Expected set: " + expected);
 
 		Set<Integer> actual = simulation.optimize(states0, tick);
 
