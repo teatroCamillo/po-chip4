@@ -9,6 +9,7 @@ import java.util.Map;
 public abstract class Chip implements Component {
 
 	protected Integer chipId;
+	protected boolean isOn;
 	protected Map<Integer, Pin> pinMap;
 	protected Map<Integer, Pin> previousPinMap;
 	protected Publisher publisher;
@@ -16,6 +17,7 @@ public abstract class Chip implements Component {
 
 	public Chip() {
 		this.pinMap = new HashMap<>();
+		this.isOn = true;
 		this.previousPinMap = new HashMap<>();
 		this.publisher = new ChipPublisher();
 		this.pinComparator = new PinOutComparator();
@@ -24,6 +26,7 @@ public abstract class Chip implements Component {
 	public Chip(Chip target) {
 		if (target != null) {
 			this.pinMap = new HashMap<>();
+			this.isOn = true;
 			this.previousPinMap = new HashMap<>();
 			for (Map.Entry<Integer, Pin> entry : target.pinMap.entrySet()) {
 				this.pinMap.put(entry.getKey(), entry.getValue().clone());
@@ -92,5 +95,8 @@ public abstract class Chip implements Component {
 
 	public int getChipId(){
 		return this.chipId;
+	}
+	public void setOn(boolean isOn){
+		this.isOn = isOn;
 	}
 }

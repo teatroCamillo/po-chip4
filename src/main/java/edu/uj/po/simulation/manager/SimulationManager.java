@@ -287,9 +287,14 @@ public class SimulationManager implements Component, SimulationAndOptimization
 		Map<Integer, Set<ComponentPinState>> normalSimulationResul = simulation(states0, ticks);
 
 		// Przechodzimy przez wszystkie komponenty, aby sprawdzić, które można usunąć
-		for (Chip component : componentManager.chips.values()) {
+		for (Chip component :
+				componentManager.chips.values().stream().filter(chip -> !(chip instanceof HeaderIn || chip instanceof HeaderOut)).collect(
+						Collectors.toSet())) {
 			// Temporarily remove the component from the system
+			System.out.println("Removed chip: ");
+			System.out.println(component);
 			componentManager.removeFromChipsMap(component);
+			
 
 			// Run the simulation without this component
 			Map<Integer, Set<ComponentPinState>> modifiedSimulation = simulation(states0, ticks);

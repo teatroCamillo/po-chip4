@@ -26,8 +26,10 @@ public class Chip7408 extends Chip {
 
 	@Override
 	public void simulate(){
-		this.previousPinMap = clonePinMap();
-		ChipLogicCalculation.chip7408Calculation(this);
+		if(isOn){
+			this.previousPinMap = clonePinMap();
+			ChipLogicCalculation.chip7408Calculation(this);
+		}
 	}
 
 	@Override
@@ -37,6 +39,6 @@ public class Chip7408 extends Chip {
 
 	@Override
 	public String toString(){
-		return this.getClass().getSimpleName() + "{\npinMap=" + this.getPinMap() + "}\n";
+		return this.getClass().getSimpleName() + "{\n id=" + chipId + "\npinMap=" + this.getPinMap() + "}\n";
 	}
 }
