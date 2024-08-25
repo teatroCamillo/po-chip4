@@ -23,12 +23,10 @@ public class OptimizationTest{
 		simulation = new Simulation();
 	}
 
-	// dla stanu w chwili zero nie testuje póki co
 	// T1
-	@Disabled
 	@ParameterizedTest
 	@CsvSource({
-			"2, HIGH, LOW, '1,2'"
+			"2, HIGH, LOW, '1'"
 	})
 	void testFromTaskDescription(int tick, String headerOutInputPin1State, String headerOutInputPin2State,
 								 String setElements) throws UnknownChip, UnknownStateException, UnknownPin,

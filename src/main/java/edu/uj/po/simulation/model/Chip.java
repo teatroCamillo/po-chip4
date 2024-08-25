@@ -1,6 +1,7 @@
 package edu.uj.po.simulation.model;
 
 import edu.uj.po.simulation.Component;
+import edu.uj.po.simulation.interfaces.PinState;
 import edu.uj.po.simulation.model.pin.PinOut;
 
 import java.util.HashMap;
@@ -97,6 +98,7 @@ public abstract class Chip implements Component {
 		return this.chipId;
 	}
 	public void setOn(boolean isOn){
+		pinMap.values().forEach(pin -> pin.setPinState(PinState.UNKNOWN));
 		this.isOn = isOn;
 	}
 }

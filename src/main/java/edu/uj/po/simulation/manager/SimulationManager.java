@@ -284,29 +284,60 @@ public class SimulationManager implements Component, SimulationAndOptimization
 	public Set<Integer> optimize(Set<ComponentPinState> states0, int ticks) throws UnknownStateException{
 
 		Set<Integer> componentsToRemove = new HashSet<>();
+
+		Set<ComponentPinState> stationaryInput = componentManager.chips.entrySet().stream()
+				.filter(entry -> entry.getValue() instanceof HeaderIn)
+				.flatMap(entry -> entry.getValue().getPinMap().entrySet().stream()
+						.map(pinEntry -> new ComponentPinState(entry.getKey(), pinEntry.getKey(), pinEntry.getValue().getPinState()))
+				) // Przekształcamy każdy Pin w ComponentPinState
+				.collect(Collectors.toSet());
+		System.out.println("Czy to mój stan stacjonarny?");
+		System.out.println(stationaryInput);
+
 		Map<Integer, Set<ComponentPinState>> normalSimulationResul = simulation(states0, ticks);
+		System.out.println("normalSimulationResul");
+		normalSimulationResul.forEach((key, value) -> {
+			System.out.println("Tick: " + key + ", set: ");
+			for(ComponentPinState c : value) System.out.println(c);
+		});
+
+		// TODO: przyda się reset układu ze wczytanym na nowo stanemStacjonarnym i dopiero wtedy wyłączenie chipa
+		// K1. RESET stanStacjonarny - dla całego układu, wyszystkie chipy włączone - tak jak on robi przed
+		// wywołaniem optimize
+		stationaryState(stationaryInput);
 
 		// Przechodzimy przez wszystkie komponenty, aby sprawdzić, które można usunąć
 		for (Chip component :
 				componentManager.chips.values().stream().filter(chip -> !(chip instanceof HeaderIn || chip instanceof HeaderOut)).collect(
 						Collectors.toSet())) {
-			// Temporarily remove the component from the system
-			System.out.println("Removed chip: ");
+			// K2. Wyłącznie Chipu - to znaczy ze Chip nie przetwarza sygnałów - natomiast propagacja sygnału
+			// działa dalej bo piny mają ustawione stany. Tak więc dodaję ze wyłączenie również ustawia piny
+			// w stan UNKNOWN
+			System.out.println("Chip is turned OFF: ");
 			System.out.println(component);
-			componentManager.removeFromChipsMap(component);
-			
+			component.setOn(false);
+
 
 			// Run the simulation without this component
 			Map<Integer, Set<ComponentPinState>> modifiedSimulation = simulation(states0, ticks);
+			System.out.println("modifiedSimulation");
+			modifiedSimulation.forEach((key, value) -> {
+				System.out.println("Tick: " + key + ", set: ");
+				for(ComponentPinState c : value) System.out.println(c);
+			});
 
 			// Compare the baseline and modified simulations
-			if (normalSimulationResul.equals(modifiedSimulation)) {
+			if (normalSimulationResul.get(ticks).equals(modifiedSimulation.get(ticks))) {
+				System.out.println("ADDED!");
 				// If the results are the same, this component can be removed
 				componentsToRemove.add(component.getChipId());
 			}
 
 			// Restore the component to the system
-			componentManager.addToChipsMap(component);
+			System.out.println("Chip is turned ON");
+			//componentManager.addToChipsMap(component);
+			component.setOn(true);
+			stationaryState(stationaryInput);
 		}
 
 		return componentsToRemove;
