@@ -23,7 +23,6 @@ public class SimulationManager implements Component, SimulationAndOptimization
 {
 
 	private final ComponentManager componentManager;
-	private Set<Integer> optimizeResult;
 
 	public SimulationManager(ComponentManager componentManager) {
 		this.componentManager = componentManager;
@@ -284,24 +283,28 @@ public class SimulationManager implements Component, SimulationAndOptimization
 	@Override
 	public Set<Integer> optimize(Set<ComponentPinState> states0, int ticks) throws UnknownStateException{
 
-		setMomentZero(states0);
-		componentManager.propagateSignal();
+		Set<Integer> componentsToRemove = new HashSet<>();
+		Map<Integer, Set<ComponentPinState>> normalSimulationResul = simulation(states0, ticks);
 
-		for(int i=1; i<=ticks; i++){
-			System.out.println("Tick: " + i);
-			componentManager.chips.values().forEach(Chip::simulate);
-			componentManager.propagateSignal();
-			Set<Integer> actualUnchangedSet = componentManager.chips.values().stream()
-					.filter(chip -> !(chip instanceof HeaderIn || chip instanceof HeaderOut))
-					.map(Chip::report)
-					.collect(Collectors.toSet());
+		// Przechodzimy przez wszystkie komponenty, aby sprawdzić, które można usunąć
+		for (Chip component : componentManager.chips.values()) {
+			// Temporarily remove the component from the system
+			componentManager.removeFromChipsMap(component);
 
-			if(!this.optimizeResult.equals(actualUnchangedSet)) this.optimizeResult = new HashSet<>(actualUnchangedSet);
-			actualUnchangedSet.clear();
+			// Run the simulation without this component
+			Map<Integer, Set<ComponentPinState>> modifiedSimulation = simulation(states0, ticks);
 
+			// Compare the baseline and modified simulations
+			if (normalSimulationResul.equals(modifiedSimulation)) {
+				// If the results are the same, this component can be removed
+				componentsToRemove.add(component.getChipId());
+			}
+
+			// Restore the component to the system
+			componentManager.addToChipsMap(component);
 		}
 
-		return this.optimizeResult;
+		return componentsToRemove;
 	}
 
 	// TODO: INNE systemy:

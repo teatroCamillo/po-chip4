@@ -184,6 +184,14 @@ public class ComponentManager implements Component, CircuitDesign {
 		return newChipId;
 	}
 
+	protected void addToChipsMap(Chip chip){
+		chips.put(chip.getChipId(), chip);
+	}
+
+	protected void removeFromChipsMap(Chip chip){
+		chips.remove(chip.getChipId());
+	}
+
 	// to powinno być zrobione według wzorca Obserwator
 	// to jest naiwan implementacja póki co
 	// do poprawy na jakiś wzorzec
