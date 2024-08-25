@@ -16,16 +16,13 @@ import java.util.Set;
 
 public class ComponentManager implements Component, CircuitDesign {
 
-	// chips i componenets referują do tego samego ? Częściowo tak bo są to m.in chipy ale mogą być tez inne obiekty
-	private final Set<Component> components;
+	// Każdy chip jest componentem
 	final Map<Integer, Chip> chips;
-
 	private final Set<Integer> availableChipCodes;
 	final Set<Connection> directConnections;
 	private final Creator creator;
 
 	public ComponentManager(){
-		this.components = new HashSet<>();
 		this.chips = new HashMap<>();
 		this.availableChipCodes = new HashSet<>();
 		availableChipCodes.add(7400);
@@ -36,14 +33,6 @@ public class ComponentManager implements Component, CircuitDesign {
 
 		this.directConnections = new HashSet<>();
 		this.creator = new ChipCreator();
-	}
-
-	public void addComponent(Component component) {
-		components.add(component);
-	}
-
-	public void removeComponent(Component component) {
-		components.remove(component);
 	}
 
 	@Override
