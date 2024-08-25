@@ -1,6 +1,7 @@
 package edu.uj.po.simulation;
 
 import edu.uj.po.simulation.interfaces.UnknownChip;
+import edu.uj.po.simulation.manager.ComponentManager;
 import edu.uj.po.simulation.model.Chip;
 import edu.uj.po.simulation.model.chip.HeaderIn;
 import edu.uj.po.simulation.model.chip.HeaderOut;
@@ -13,17 +14,17 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class CreateChipTest{
 
-	private Simulation simulation;
+	private ComponentManager componentManager;
 
 	@BeforeEach
 	void setUp() {
-		simulation = new Simulation();
+		componentManager = new ComponentManager();
 	}
 
 	@Test
 	void testSimulationInitialization() throws UnknownChip{
-		assertNotNull(simulation, "Simulation instance should be initialized.");
-		assertTrue(simulation.createChip(7400) >= 0, "Simulation should have initialized available chips.");
+		assertNotNull(componentManager, "Simulation instance should be initialized.");
+		assertTrue(componentManager.createChip(7400) >= 0, "Simulation should have initialized available chips.");
 	}
 
 	@ParameterizedTest
@@ -35,25 +36,25 @@ class CreateChipTest{
 			"7410, edu.uj.po.simulation.model.chip.Chip7410"
 	})
 	void testCreateChip(int chipCode, String expectedClassName) throws UnknownChip {
-		int chipId = simulation.createChip(chipCode);
+		int chipId = componentManager.createChip(chipCode);
 		assertTrue(chipId >= 0, "Chip ID should be greater or equal to 0.");
-		Chip chip = simulation.chips.get(chipId);
+		Chip chip = componentManager.getChips().get(chipId);
 		assertEquals(expectedClassName, chip.getClass().getName(), "Created chip should be an instance of " + expectedClassName);
 	}
 
 	@Test
 	void testCreateInputPinHeader() {
-		int headerId = simulation.createInputPinHeader(2);
+		int headerId = componentManager.createInputPinHeader(2);
 		assertTrue(headerId >= 0, "Input Pin Header ID should be greater or equal to 0.");
-		Chip chip = simulation.chips.get(headerId);
+		Chip chip = componentManager.getChips().get(headerId);
 		assertTrue(chip instanceof HeaderIn, "Created input pin header should be an instance of HeaderIn.");
 		assertEquals(2, chip.getPinMap().size(), "Input pin header should have correct number of pins.");
 	}
 
 	@Test
 	void testCreateOutputPinHeader() {
-		int headerId = simulation.createOutputPinHeader(3);
-		Chip chip = simulation.chips.get(headerId);
+		int headerId = componentManager.createOutputPinHeader(3);
+		Chip chip = componentManager.getChips().get(headerId);
 		assertTrue(chip instanceof HeaderOut, "Created output pin header should be an instance of HeaderOut.");
 		assertEquals(3, chip.getPinMap().size(), "Output pin header should have correct number of pins.");
 	}
@@ -63,7 +64,7 @@ class CreateChipTest{
 		int unsupportedChipCode = 1111;
 
 		assertThrows(UnknownChip.class, () -> {
-			simulation.createChip(unsupportedChipCode);
+			componentManager.createChip(unsupportedChipCode);
 		}, "Should throw UnknownChip if the chip code is not supported.");
 	}
 }

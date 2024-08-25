@@ -25,7 +25,7 @@ public class Chip7410 extends Chip {
 	}
 
 	@Override
-	public void execute(){
+	public void simulate(){
 		ChipLogicCalculation.chip7410Calculation(this);
 	}
 

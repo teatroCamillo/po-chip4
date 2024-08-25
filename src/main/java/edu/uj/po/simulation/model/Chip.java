@@ -1,12 +1,14 @@
 package edu.uj.po.simulation.model;
 
+import edu.uj.po.simulation.Component;
 import edu.uj.po.simulation.model.pin.PinOut;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public abstract class Chip {
+public abstract class Chip implements Component {
 
+	protected Integer chipId;
 	protected Map<Integer, Pin> pinMap;
 	protected Map<Integer, Pin> previousPinMap;
 	protected Publisher publisher;
@@ -39,7 +41,8 @@ public abstract class Chip {
 		pinMap.put(id, pin);
 	}
 
-	public void execute(){}
+	@Override
+	public void simulate(){}
 
 	public Chip clone(){
 		throw new UnsupportedOperationException("Method not implemented");
@@ -81,5 +84,13 @@ public abstract class Chip {
 	@Override
 	public String toString() {
 		return "Chip{ pinMap=" + pinMap + "}\n";
+	}
+
+	public void setChipId(Integer uniqueChipId){
+		this.chipId = uniqueChipId;
+	}
+
+	public int getChipId(){
+		return this.chipId;
 	}
 }
