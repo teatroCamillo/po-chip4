@@ -31,7 +31,6 @@ public class SimulationManager implements Component, SimulationAndOptimization
 	@Override
 	public void simulate() {
 		System.out.println("simulate from SimulationManager");
-		componentManager.simulate();
 	}
 
 	//Wykrycie stanu UNKNOWN i zgłoszenie stosownego wyjątki (UnknownStateException)
@@ -42,72 +41,43 @@ public class SimulationManager implements Component, SimulationAndOptimization
 	// której jedno z wejść nie jest do niczego podłączone.
 	@Override
 	public void stationaryState(Set<ComponentPinState> states) throws UnknownStateException {
-		//subscribeAllChips();
-		// 1. Ustawienie stanów początkowych na pinach wejściowych komponentów
-		//System.out.println("stationaryState: 1. ustawianie pinów na listwach");
 		setMomentZero(states);
-
-		// 2. Walidacja: Sprawdzenie, czy wszystkie piny wejściowe mają poprawnie ustawiony stan
-		// tu walidować piny wejściowe czy wyjsciowe czy wszystkie?
-		//System.out.println("\nstationaryState: 2. walidacja stanów pinów listw wejściowych");
-
 		validateHeaders(Util.HEADER_IN);
-
-		// 3. Propagacja sygnału do pinów wyjściowych do osiągnięcia stanu stacjonarnego
-		//System.out.println("stationaryState: 3. propagacja syganłu z HeaderIn na piny wejściowe układów");
 		componentManager.propagateSignal();
 
-		// 3.0 zapis stanu układu i deklaracja TICK'a
 		Set<ComponentPinState> previousState;
 		Set<ComponentPinState> currentState;
 		currentState = Util.saveCircuitState(componentManager.chips);
-		int tick = 0;
-		//System.out.println("stationaryState: 3. propagacja syganłu w pętli");
 		do {
 			previousState = new HashSet<>(currentState);
-			//System.out.println("TICK: " + tick);
-			//currentState.forEach(System.out::println);
 
-			// 3.1 Wykonanie kroku symulacji - uruchomienie wszystkich chipów (bramek logicznych)
 			componentManager.chips.values().forEach(Chip::simulate);
-			// 3.1.1 Przekazanie z wyjść na wejścia połącoznych componetów - cz moze to zrobic w exec?
 			componentManager.propagateSignal();
 
-			// 3.2 Zapis aktualnych stanów pinów
 			currentState.clear();
 			currentState = Util.saveCircuitState(componentManager.chips);
-			++tick;
-		} while (!previousState.equals(currentState));  // 3.3 Porównanie stanu bieżącego z poprzednim
+		} while (!previousState.equals(currentState));
 
 		boolean isHeaderOut = componentManager.chips.values()
 				.stream()
 				.anyMatch(chip -> chip.getClass().getSimpleName().equals(Util.HEADER_OUT));
-		//System.out.println("validateHeaders: isHeaderOut: " + isHeaderOut);
 		if(isHeaderOut) validateHeaders(Util.HEADER_OUT);
 	}
 
 	public void setMomentZero(Set<ComponentPinState> states){
-		// 1. Ustawienie stanów początkowych na pinach wejściowych komponentów
 		states.forEach(state -> {
 			Chip chip = componentManager.chips.get(state.componentId());
 			Pin pin = chip.getPinMap().get(state.pinId());
 			if (pin != null) {
 				pin.setPinState(state.state());
-				//System.out.println("SET: chip: " + state.componentId() + " and its pin: " + state.pinId() +
-				//						   " with status: " + pin.getPinState());
 			}
 		});
 	}
 
 	private void validateHeaders(String headerClassName) throws UnknownStateException{
-		//System.out.println("validateHeaders: 1 pull out correct header");
 		Map<Integer,Chip> headerChips = componentManager.chips.entrySet().stream()
 				.filter(entry -> entry.getValue().getClass().getSimpleName().equals(headerClassName))
 				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-		//System.out.println("Class: " + headerClassName + " headerChips:");
-		//headerChips.forEach((key, value) -> System.out.println(key + " : " + value));
-
-		//System.out.println("validateHeaders: 2 validating");
 		for (Map.Entry<Integer, Chip> entry : headerChips.entrySet()) {
 			int chipId = entry.getKey();
 			Chip chip = entry.getValue();
@@ -116,8 +86,6 @@ public class SimulationManager implements Component, SimulationAndOptimization
 				int pinId = entryPin.getKey();
 				Pin pin = entryPin.getValue();
 				if (pin.getPinState() == PinState.UNKNOWN) {
-					//					System.out.println("UnknownStateException: chipId: " + chipId + ", pinId: " + pinId + ", pinState" +
-					//											   ": " + pin.getPinState());
 					throw new UnknownStateException(new ComponentPinState(chipId, pinId, PinState.UNKNOWN));
 				}
 			}
@@ -172,20 +140,14 @@ public class SimulationManager implements Component, SimulationAndOptimization
 	@Override
 	public Map<Integer, Set<ComponentPinState>> simulation(Set<ComponentPinState> states0,
 														   int ticks) throws UnknownStateException{
-		//System.out.println("simulation: 1. ustawianie pinów na listwach w stan w chwili 0");
 		setMomentZero(states0);
 		componentManager.propagateSignal();
-
-		//System.out.println("simulation: 2. deklaracja zasobów i zapis w czasie 0");
 
 		Map<Integer, Set<ComponentPinState>> resultMap = new HashMap<>();
 		Set<ComponentPinState> currentState;
 		currentState = Util.saveCircuitHeaderOutState(componentManager.chips);
-		//System.out.println("STATE: 0");
-		//currentState.forEach(System.out::println);
 		resultMap.put(0, new HashSet<>(currentState));
 
-		//System.out.println("simulation: 3. petla symulacji");
 		for(int i=1; i<=ticks; i++){
 			componentManager.chips.values().forEach(Chip::simulate);
 			componentManager.propagateSignal();
@@ -193,10 +155,7 @@ public class SimulationManager implements Component, SimulationAndOptimization
 			currentState.clear();
 			currentState = Util.saveCircuitHeaderOutState(componentManager.chips);
 			resultMap.put(i, new HashSet<>(currentState));
-			//System.out.println("TICK: " + i);
-			//currentState.forEach(System.out::println);
 		}
-		//System.out.println("simulation: 4. return resultMap");
 		return resultMap;
 	}
 
@@ -289,8 +248,9 @@ public class SimulationManager implements Component, SimulationAndOptimization
 				.filter(entry -> entry.getValue() instanceof HeaderIn)
 				.flatMap(entry -> entry.getValue().getPinMap().entrySet().stream()
 						.map(pinEntry -> new ComponentPinState(entry.getKey(), pinEntry.getKey(), pinEntry.getValue().getPinState()))
-				) // Przekształcamy każdy Pin w ComponentPinState
+				)
 				.collect(Collectors.toSet());
+
 		System.out.println("Czy to mój stan stacjonarny?");
 		System.out.println(stationaryInput);
 

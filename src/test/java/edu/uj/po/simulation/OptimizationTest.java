@@ -83,5 +83,4 @@ public class OptimizationTest{
 
 		assertEquals(expected, actual);
 	}
-
 }
