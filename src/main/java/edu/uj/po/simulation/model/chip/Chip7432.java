@@ -25,18 +25,13 @@ public class Chip7432 extends Chip {
 	}
 
 	@Override
-	public void execute(){
+	public void simulate(){
 		ChipLogicCalculation.chip7400Calculation(this);
 	}
 
 	@Override
 	public Chip clone(){
 		return new Chip7432(this);
-	}
-
-	@Override
-	public Chip clone(int size){
-		return null;
 	}
 
 	@Override

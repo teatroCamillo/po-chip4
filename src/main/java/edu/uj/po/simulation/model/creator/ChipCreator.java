@@ -10,6 +10,7 @@ import java.util.Map;
 public class ChipCreator extends Creator{
 
 	private final Map<Integer, Chip> chipCodeMap;
+	protected Integer uniqueChipIdGenerator;
 
 	public ChipCreator(){
 		this.chipCodeMap = new HashMap<>();
@@ -20,20 +21,28 @@ public class ChipCreator extends Creator{
 		chipCodeMap.put(7404, new Chip7404());
 		chipCodeMap.put(7408, new Chip7408());
 		chipCodeMap.put(7410, new Chip7410());
+
+		this.uniqueChipIdGenerator = 0;
 	}
 
 	@Override
 	public Chip create(int code){
-		return chipCodeMap.get(code).clone();
+		Chip newChip = chipCodeMap.get(code).clone();
+		newChip.setChipId(uniqueChipIdGenerator++);
+		return newChip;
 	}
 
 	@Override
 	public Chip createHeaderIn(int size){
-		return chipCodeMap.get(0).clone(size);
+		Chip newChip = chipCodeMap.get(0).clone(size);
+		newChip.setChipId(uniqueChipIdGenerator++);
+		return newChip;
 	}
 
 	@Override
 	public Chip createHeaderOut(int size){
-		return chipCodeMap.get(1).clone(size);
+		Chip newChip = chipCodeMap.get(1).clone(size);
+		newChip.setChipId(uniqueChipIdGenerator++);
+		return newChip;
 	}
 }

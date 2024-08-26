@@ -22,11 +22,6 @@ public class HeaderIn extends Chip{
 	}
 
 	@Override
-	public Chip clone(){
-		return null;
-	}
-
-	@Override
 	public Chip clone(int size){
 		return new HeaderIn(this, size);
 	}

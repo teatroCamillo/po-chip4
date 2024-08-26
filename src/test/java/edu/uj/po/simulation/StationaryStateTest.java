@@ -34,9 +34,9 @@ public class StationaryStateTest {
 
 		simulation.stationaryState(states);
 
-		assertEquals(PinState.LOW, simulation.chips.get(chipId1).getPinMap().get(1).getPinState());
-		assertEquals(PinState.HIGH, simulation.chips.get(chipId1).getPinMap().get(2).getPinState());
-		assertEquals(PinState.HIGH, simulation.chips.get(chipId1).getPinMap().get(3).getPinState());
+		assertEquals(PinState.LOW, simulation.getChips().get(chipId1).getPinMap().get(1).getPinState());
+		assertEquals(PinState.HIGH, simulation.getChips().get(chipId1).getPinMap().get(2).getPinState());
+		assertEquals(PinState.HIGH, simulation.getChips().get(chipId1).getPinMap().get(3).getPinState());
 	}
 
 	@Test
@@ -77,8 +77,8 @@ public class StationaryStateTest {
 
 		simulation.stationaryState(states);
 
-		assertEquals(PinState.LOW, simulation.chips.get(chipId3).getPinMap().get(1).getPinState());
-		assertEquals(PinState.LOW, simulation.chips.get(chipId3).getPinMap().get(2).getPinState());
+		assertEquals(PinState.LOW, simulation.getChips().get(chipId3).getPinMap().get(1).getPinState());
+		assertEquals(PinState.LOW, simulation.getChips().get(chipId3).getPinMap().get(2).getPinState());
 	}
 
 	@Test
@@ -99,21 +99,21 @@ public class StationaryStateTest {
 
 		simulation.stationaryState(states);
 
-		assertEquals(PinState.LOW, simulation.chips.get(chipId0).getPinMap().get(1).getPinState());
-		assertEquals(PinState.LOW, simulation.chips.get(chipId0).getPinMap().get(2).getPinState());
-		assertEquals(PinState.HIGH, simulation.chips.get(chipId1).getPinMap().get(2).getPinState());
-		assertEquals(PinState.HIGH, simulation.chips.get(chipId1).getPinMap().get(4).getPinState());
-		assertEquals(PinState.HIGH, simulation.chips.get(chipId2).getPinMap().get(1).getPinState());
-		assertEquals(PinState.HIGH, simulation.chips.get(chipId2).getPinMap().get(2).getPinState());
+		assertEquals(PinState.LOW, simulation.getChips().get(chipId0).getPinMap().get(1).getPinState());
+		assertEquals(PinState.LOW, simulation.getChips().get(chipId0).getPinMap().get(2).getPinState());
+		assertEquals(PinState.HIGH, simulation.getChips().get(chipId1).getPinMap().get(2).getPinState());
+		assertEquals(PinState.HIGH, simulation.getChips().get(chipId1).getPinMap().get(4).getPinState());
+		assertEquals(PinState.HIGH, simulation.getChips().get(chipId2).getPinMap().get(1).getPinState());
+		assertEquals(PinState.HIGH, simulation.getChips().get(chipId2).getPinMap().get(2).getPinState());
 
-		assertEquals(PinState.UNKNOWN, simulation.chips.get(chipId1).getPinMap().get(5).getPinState());
-		assertEquals(PinState.UNKNOWN, simulation.chips.get(chipId1).getPinMap().get(6).getPinState());
-		assertEquals(PinState.UNKNOWN, simulation.chips.get(chipId1).getPinMap().get(8).getPinState());
-		assertEquals(PinState.UNKNOWN, simulation.chips.get(chipId1).getPinMap().get(9).getPinState());
-		assertEquals(PinState.UNKNOWN, simulation.chips.get(chipId1).getPinMap().get(10).getPinState());
-		assertEquals(PinState.UNKNOWN, simulation.chips.get(chipId1).getPinMap().get(11).getPinState());
-		assertEquals(PinState.UNKNOWN, simulation.chips.get(chipId1).getPinMap().get(12).getPinState());
-		assertEquals(PinState.UNKNOWN, simulation.chips.get(chipId1).getPinMap().get(13).getPinState());
+		assertEquals(PinState.UNKNOWN, simulation.getChips().get(chipId1).getPinMap().get(5).getPinState());
+		assertEquals(PinState.UNKNOWN, simulation.getChips().get(chipId1).getPinMap().get(6).getPinState());
+		assertEquals(PinState.UNKNOWN, simulation.getChips().get(chipId1).getPinMap().get(8).getPinState());
+		assertEquals(PinState.UNKNOWN, simulation.getChips().get(chipId1).getPinMap().get(9).getPinState());
+		assertEquals(PinState.UNKNOWN, simulation.getChips().get(chipId1).getPinMap().get(10).getPinState());
+		assertEquals(PinState.UNKNOWN, simulation.getChips().get(chipId1).getPinMap().get(11).getPinState());
+		assertEquals(PinState.UNKNOWN, simulation.getChips().get(chipId1).getPinMap().get(12).getPinState());
+		assertEquals(PinState.UNKNOWN, simulation.getChips().get(chipId1).getPinMap().get(13).getPinState());
 	}
 
 	@Test
@@ -134,7 +134,7 @@ public class StationaryStateTest {
 
 		simulation.stationaryState(states);
 
-		assertEquals(PinState.HIGH, simulation.chips.get(chipId3).getPinMap().get(1).getPinState());
+		assertEquals(PinState.HIGH, simulation.getChips().get(chipId3).getPinMap().get(1).getPinState());
 	}
 
 
@@ -146,9 +146,9 @@ public class StationaryStateTest {
 		states0.add(new ComponentPinState(chipId1, 1, PinState.HIGH));
 		states0.add(new ComponentPinState(chipId1, 2, PinState.LOW));
 
-		simulation.setMomentZero(states0);
+		simulation.simulationManager.setMomentZero(states0);
 
-		assertEquals(PinState.HIGH, simulation.chips.get(chipId1).getPinMap().get(1).getPinState());
+		assertEquals(PinState.HIGH, simulation.getChips().get(chipId1).getPinMap().get(1).getPinState());
 	}
 
 	@Test
@@ -170,7 +170,7 @@ public class StationaryStateTest {
 
 		simulation.stationaryState(states);
 
-		assertEquals(PinState.HIGH, simulation.chips.get(chipId4).getPinMap().get(1).getPinState());
+		assertEquals(PinState.HIGH, simulation.getChips().get(chipId4).getPinMap().get(1).getPinState());
 	}
 
 	@Test
@@ -191,8 +191,8 @@ public class StationaryStateTest {
 
 		simulation.stationaryState(states);
 
-		assertEquals(PinState.HIGH, simulation.chips.get(chipId3).getPinMap().get(1).getPinState());
-		assertEquals(PinState.HIGH, simulation.chips.get(chipId4).getPinMap().get(1).getPinState());
+		assertEquals(PinState.HIGH, simulation.getChips().get(chipId3).getPinMap().get(1).getPinState());
+		assertEquals(PinState.HIGH, simulation.getChips().get(chipId4).getPinMap().get(1).getPinState());
 	}
 
 }

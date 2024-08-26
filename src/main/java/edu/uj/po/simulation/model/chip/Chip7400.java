@@ -25,18 +25,16 @@ public class Chip7400 extends Chip {
 	}
 
 	@Override
-	public void execute(){
-		ChipLogicCalculation.chip7400Calculation(this);
+	public void simulate(){
+		if(isOn){
+			this.previousPinMap = clonePinMap();
+			ChipLogicCalculation.chip7400Calculation(this);
+		}
 	}
 
 	@Override
 	public Chip clone(){
 		return new Chip7400(this);
-	}
-
-	@Override
-	public Chip clone(int size){
-		return null;
 	}
 
 	@Override

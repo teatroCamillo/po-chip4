@@ -78,7 +78,7 @@ class ChipTest {
 		chip7400.getPinMap().get(12).setPinState(PinState.HIGH);
 		chip7400.getPinMap().get(13).setPinState(PinState.HIGH);
 
-		chip7400.execute();
+		chip7400.simulate();
 
 		assertEquals(PinState.HIGH, chip7400.getPinMap().get(3).getPinState(),
 					 "PinOut (3) powinien mieć stan HIGH po wywołaniu execute w Chip7400 dla LL.");
@@ -111,7 +111,7 @@ class ChipTest {
 		chip7400.getPinMap().get(12).setPinState(PinState.UNKNOWN);
 		chip7400.getPinMap().get(13).setPinState(PinState.LOW);
 
-		chip7400.execute();
+		chip7400.simulate();
 
 		assertEquals(PinState.HIGH, chip7400.getPinMap().get(3).getPinState(),
 					 "PinOut (3) powinien mieć stan HIGH po wywołaniu execute w Chip7400.");

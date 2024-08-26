@@ -25,18 +25,16 @@ public class Chip7404 extends Chip {
 	}
 
 	@Override
-	public void execute(){
-		ChipLogicCalculation.chip7404Calculation(this);
+	public void simulate(){
+		if(isOn){
+			this.previousPinMap = clonePinMap();
+			ChipLogicCalculation.chip7404Calculation(this);
+		}
 	}
 
 	@Override
 	public Chip clone(){
 		return new Chip7404(this);
-	}
-
-	@Override
-	public Chip clone(int size){
-		return null;
 	}
 
 	@Override

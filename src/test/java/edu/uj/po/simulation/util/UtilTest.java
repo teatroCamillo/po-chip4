@@ -25,11 +25,6 @@ public class UtilTest {
 	}
 
 	@Test
-	public void testChipsNotNull() {
-		assertNotNull(simulation.getChips(), "chips should not be null");
-	}
-
-	@Test
 	public void testSaveCircuitState() throws UnknownChip, UnknownPin, ShortCircuitException, UnknownComponent, UnknownStateException{
 		int chip0 = simulation.createInputPinHeader(2);
 		int chip1 = simulation.createChip(7402);
