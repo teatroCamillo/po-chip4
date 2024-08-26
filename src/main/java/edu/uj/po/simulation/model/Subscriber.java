@@ -1,5 +1,7 @@
 package edu.uj.po.simulation.model;
 
+import edu.uj.po.simulation.interfaces.PinState;
+
 public interface Subscriber {
-	Integer update(Chip chip);
+	void update(PinState state);
 }
