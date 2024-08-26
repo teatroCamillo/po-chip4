@@ -1,13 +1,11 @@
 package edu.uj.po.simulation.manager;
 
-import edu.uj.po.simulation.Component;
 import edu.uj.po.simulation.interfaces.ComponentPinState;
 import edu.uj.po.simulation.interfaces.PinState;
 import edu.uj.po.simulation.interfaces.SimulationAndOptimization;
 import edu.uj.po.simulation.interfaces.UnknownStateException;
 import edu.uj.po.simulation.model.Chip;
 import edu.uj.po.simulation.model.Pin;
-import edu.uj.po.simulation.model.Subscriber;
 import edu.uj.po.simulation.model.chip.HeaderIn;
 import edu.uj.po.simulation.model.chip.HeaderOut;
 import edu.uj.po.simulation.util.Util;

@@ -1,9 +1,11 @@
-package edu.uj.po.simulation;
+package edu.uj.po.simulation.manager;
+
+import edu.uj.po.simulation.manager.Component;
 
 import java.util.Arrays;
 import java.util.Set;
 
-public class Composite implements Component {
+public class Composite implements Component{
 	Set<Component> children;
 
 	public Composite(Component... components) {

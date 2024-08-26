@@ -1,11 +1,9 @@
 package edu.uj.po.simulation.manager;
 
-import edu.uj.po.simulation.Component;
 import edu.uj.po.simulation.interfaces.*;
 import edu.uj.po.simulation.model.Chip;
 import edu.uj.po.simulation.model.Connection;
 import edu.uj.po.simulation.model.Creator;
-import edu.uj.po.simulation.model.Pin;
 import edu.uj.po.simulation.model.creator.ChipCreator;
 import edu.uj.po.simulation.util.Util;
 

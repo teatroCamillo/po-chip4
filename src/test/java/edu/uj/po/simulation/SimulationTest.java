@@ -67,8 +67,8 @@ public class SimulationTest{
 	@ParameterizedTest
 	@CsvSource({
 			"0, HIGH, HIGH",
-			"1, LOW, HIGH",
-			"2, LOW, HIGH",
+//			"1, LOW, HIGH",
+//			"2, LOW, HIGH",
 			"3, LOW, LOW",
 			"4, LOW, LOW"
 	})

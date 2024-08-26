@@ -1,8 +1,7 @@
 package edu.uj.po.simulation.model;
 
-import edu.uj.po.simulation.Component;
+import edu.uj.po.simulation.manager.Component;
 import edu.uj.po.simulation.interfaces.PinState;
-import edu.uj.po.simulation.model.pin.PinOut;
 
 import java.util.HashMap;
 import java.util.Map;
