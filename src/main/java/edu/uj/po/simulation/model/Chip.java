@@ -13,15 +13,13 @@ public abstract class Chip implements Component {
 	protected boolean isOn;
 	protected Map<Integer, Pin> pinMap;
 	protected Map<Integer, Pin> previousPinMap;
-	protected Publisher publisher;
-	private PinComparator pinComparator;
+	//protected Publisher publisher;
 
 	public Chip() {
 		this.pinMap = new HashMap<>();
 		this.isOn = true;
 		this.previousPinMap = new HashMap<>();
-		this.publisher = new ChipPublisher();
-		this.pinComparator = new PinOutComparator();
+		//this.publisher = new ChipPublisher();
 	}
 
 	public Chip(Chip target) {
@@ -32,8 +30,7 @@ public abstract class Chip implements Component {
 			for (Map.Entry<Integer, Pin> entry : target.pinMap.entrySet()) {
 				this.pinMap.put(entry.getKey(), entry.getValue().clone());
 			}
-			this.publisher = new ChipPublisher();
-			this.pinComparator = new PinOutComparator();
+			//this.publisher = new ChipPublisher();
 		}
 	}
 
@@ -56,14 +53,14 @@ public abstract class Chip implements Component {
 		throw new UnsupportedOperationException("Method not implemented");
 	}
 
-	public void subscribe(Subscriber subscriber){
-		publisher.subscribe(subscriber);
-	}
-
-	public Integer report(){
-		if (hasPinOutNotChanged()) return publisher.report(this);
-		return null;
-	}
+//	public void subscribe(Subscriber subscriber){
+//		publisher.subscribe(subscriber);
+//	}
+//
+//	public Integer report(){
+//		if (hasPinOutNotChanged()) return publisher.report(this);
+//		return null;
+//	}
 
 	protected Map<Integer, Pin> clonePinMap(){
 		Map<Integer, Pin> newPinMap = new HashMap<>();
@@ -73,17 +70,17 @@ public abstract class Chip implements Component {
 		return newPinMap;
 	}
 
-	public boolean hasPinOutNotChanged() {
-		return pinMap.entrySet().stream()
-				.filter(entry -> entry.getValue() instanceof PinOut) // dodja  żeby były tylko podłączone
-				// !!! piny
-				.anyMatch(entry -> {
-					Integer pinId = entry.getKey();
-					Pin currentPin = entry.getValue();
-					Pin previousPin = previousPinMap.get(pinId);
-					return previousPin != null && pinComparator.compare(currentPin, previousPin);
-				});
-	}
+//	public boolean hasPinOutNotChanged() {
+//		return pinMap.entrySet().stream()
+//				.filter(entry -> entry.getValue() instanceof PinOut) // dodja  żeby były tylko podłączone
+//				// !!! piny
+//				.anyMatch(entry -> {
+//					Integer pinId = entry.getKey();
+//					Pin currentPin = entry.getValue();
+//					Pin previousPin = previousPinMap.get(pinId);
+//					return previousPin != null && pinComparator.compare(currentPin, previousPin);
+//				});
+//	}
 
 	@Override
 	public String toString() {
