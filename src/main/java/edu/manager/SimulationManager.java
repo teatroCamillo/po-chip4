@@ -66,15 +66,15 @@ public class SimulationManager implements Component, SimulationAndOptimization {
 		} while (!previousState.equals(currentState));
 
 		// 2. walidacja CHIP'ow
-		validateChipPins();
+		//validateChipPins();
 
 		// 3. walidacja HEADER_OUT
-		boolean isHeaderOut = componentManager.chips.values()
-				.stream()
-				.anyMatch(chip -> chip.getClass().getSimpleName().equals(Util.HEADER_OUT));
+//		boolean isHeaderOut = componentManager.chips.values()
+//				.stream()
+//				.anyMatch(chip -> chip.getClass().getSimpleName().equals(Util.HEADER_OUT));
 		//System.out.println("Sprawdzam stan układu przed validacja HeaderOur");
 		//currentState.forEach(System.out::println);
-		if(isHeaderOut) validateHeaders(Util.HEADER_OUT);
+		//if(isHeaderOut) validateHeaders(Util.HEADER_OUT);
 	}
 
 	public void setMomentZero(Set<ComponentPinState> states){
