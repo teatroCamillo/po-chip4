@@ -28,6 +28,16 @@ public class ComponentManager implements Component, CircuitDesign {
 		this.creator = new ChipCreator();
 	}
 
+	public boolean isPinConnected(int chipId, int pinId){
+		// Sprawdź, czy pin jest źródłem lub celem w jakimkolwiek połączeniu
+		return directConnections
+				.stream()
+				.anyMatch(connection ->
+								  (connection.sourceChipId() == chipId && connection.sourcePinId() == pinId) ||
+										  (connection.targetChipId() == chipId && connection.targetPinId() == pinId)
+		);
+	}
+
 	@Override
 	public int createChip(int code) throws UnknownChip {
 		return putToChipsMap(creator.create(code));

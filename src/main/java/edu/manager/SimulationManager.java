@@ -73,10 +73,11 @@ public class SimulationManager implements Component, SimulationAndOptimization {
 		});
 	}
 
-	private void validateHeaders(String headerClassName) throws UnknownStateException{
-		Map<Integer,Chip> headerChips = componentManager.chips.entrySet().stream()
+	private void validateHeaders(String headerClassName) throws UnknownStateException {
+		Map<Integer, Chip> headerChips = componentManager.chips.entrySet().stream()
 				.filter(entry -> entry.getValue().getClass().getSimpleName().equals(headerClassName))
 				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+
 		for (Map.Entry<Integer, Chip> entry : headerChips.entrySet()) {
 			int chipId = entry.getKey();
 			Chip chip = entry.getValue();
@@ -84,11 +85,21 @@ public class SimulationManager implements Component, SimulationAndOptimization {
 			for (Map.Entry<Integer, Pin> entryPin : chip.getPinMap().entrySet()) {
 				int pinId = entryPin.getKey();
 				Pin pin = entryPin.getValue();
+
 				if (pin.getPinState() == PinState.UNKNOWN) {
-					throw new UnknownStateException(new ComponentPinState(chipId, pinId, PinState.UNKNOWN));
+					// Sprawdź, czy pin jest podłączony do innego pinu
+					if (isPinConnected(chipId, pinId)) {
+						throw new UnknownStateException(new ComponentPinState(chipId, pinId, PinState.UNKNOWN));
+					}
 				}
 			}
 		}
+	}
+
+	private boolean isPinConnected(int chipId, int pinId) {
+		// Metoda do sprawdzenia, czy dany pin jest podłączony do innego pinu.
+		// Implementacja tej metody zależy od tego, jak w Twoim systemie śledzone są połączenia między pinami.
+		return componentManager.isPinConnected(chipId, pinId); // przykładowa implementacja
 	}
 
 	//todo: ważne też do optimize()
