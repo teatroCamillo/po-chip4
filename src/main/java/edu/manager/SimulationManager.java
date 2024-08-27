@@ -47,9 +47,16 @@ public class SimulationManager implements Component, SimulationAndOptimization {
 	// został przez użytkownika podany.
 	@Override
 	public void stationaryState(Set<ComponentPinState> states) throws UnknownStateException {
+
+		for (ComponentPinState state : states) {
+			if (state.state() == PinState.UNKNOWN) {
+				throw new UnknownStateException(state);
+			}
+		}
+
 		setMomentZero(states);
 		// 1. walidacja HEADER_IN
-		validateHeaders(Util.HEADER_IN);
+		//validateHeaders(Util.HEADER_IN);
 		componentManager.propagateSignal();
 
 		Set<ComponentPinState> previousState;
@@ -64,10 +71,7 @@ public class SimulationManager implements Component, SimulationAndOptimization {
 			currentState.clear();
 			currentState = Util.saveCircuitState(componentManager.chips);
 		} while (!previousState.equals(currentState));
-
-		// 2. walidacja CHIP'ow
-		//validateChipPins();
-
+		validateHeadersV2();
 		// 3. walidacja HEADER_OUT
 //		boolean isHeaderOut = componentManager.chips.values()
 //				.stream()
@@ -90,13 +94,15 @@ public class SimulationManager implements Component, SimulationAndOptimization {
 		});
 	}
 
-	private void validateChipPins() throws UnknownStateException{
-		Map<Integer, Chip> chips = componentManager.chips.entrySet().stream()
-				.filter(entry -> !entry.getValue().getClass().getSimpleName().equals(Util.HEADER_IN) &&
-						!entry.getValue().getClass().getSimpleName().equals(Util.HEADER_OUT))
+	// 1. wariant ze sprawdzeniem HeaderIN oraz Out pokrywa wszystkie sytuacje ale tez te które nie pownny być pokryte
+	// 2. wartiant z samym HeaderIn pokrywa większość poza 3 sytuacjami - jakie to sytuacje? Wime że są po stronie
+	// HeaderOut
+	private void validateHeadersV2() throws UnknownStateException {
+		Map<Integer, Chip> headerChips = componentManager.chips.entrySet().stream()
+				.filter(entry -> entry.getValue().getClass().getSimpleName().equals(Util.HEADER_IN))
 				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-		// ?
-		for (Map.Entry<Integer, Chip> entry : chips.entrySet()) {
+
+		for (Map.Entry<Integer, Chip> entry : headerChips.entrySet()) {
 			int chipId = entry.getKey();
 			Chip chip = entry.getValue();
 
@@ -113,6 +119,7 @@ public class SimulationManager implements Component, SimulationAndOptimization {
 			}
 		}
 	}
+
 
 	private void validateHeaders(String headerClassName) throws UnknownStateException {
 		Map<Integer, Chip> headerChips = componentManager.chips.entrySet().stream()
