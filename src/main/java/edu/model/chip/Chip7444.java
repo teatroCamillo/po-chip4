@@ -5,36 +5,35 @@ import edu.model.Chip;
 import edu.model.pin.PinIn;
 import edu.model.pin.PinOut;
 
-public class Chip7408 extends Chip{
+public class Chip7444 extends Chip{
 
-	public Chip7408(){}
-	public Chip7408(Chip target){
+	public Chip7444(){}
+	public Chip7444(Chip target){
 		super(target);
-		this.putToPinMap(1, new PinIn());
-		this.putToPinMap(2, new PinIn());
+		this.putToPinMap(1, new PinOut());
+		this.putToPinMap(2, new PinOut());
 		this.putToPinMap(3, new PinOut());
-		this.putToPinMap(4, new PinIn());
-		this.putToPinMap(5, new PinIn());
+		this.putToPinMap(4, new PinOut());
+		this.putToPinMap(5, new PinOut());
 		this.putToPinMap(6, new PinOut());
-		this.putToPinMap(8, new PinOut());
-		this.putToPinMap(9, new PinIn());
-		this.putToPinMap(10, new PinIn());
+		this.putToPinMap(7, new PinOut());
+		this.putToPinMap(9, new PinOut());
+		this.putToPinMap(10, new PinOut());
 		this.putToPinMap(11, new PinOut());
 		this.putToPinMap(12, new PinIn());
 		this.putToPinMap(13, new PinIn());
+		this.putToPinMap(14, new PinIn());
+		this.putToPinMap(15, new PinIn());
 	}
 
 	@Override
 	public void simulate(){
-		if(isOn){
-			//this.previousPinMap = clonePinMap();
-			ChipLogicCalculation.chip7408Calculation(this);
-		}
+		if(isOn) ChipLogicCalculation.chip7444Calculation(this);
 	}
 
 	@Override
 	public Chip clone(){
-		return new Chip7408(this);
+		return new Chip7444(this);
 	}
 
 	@Override

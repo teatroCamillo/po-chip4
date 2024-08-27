@@ -1,5 +1,6 @@
 package edu.model.chip;
 
+
 import edu.Simulation;
 import edu.uj.po.simulation.interfaces.PinState;
 import edu.uj.po.simulation.interfaces.UnknownChip;

@@ -10,11 +10,15 @@ import java.util.Set;
 public class PinIn implements Pin{
 
 	private PinState state;
-	private final Set<Subscriber> subscribers;
+	private Set<Subscriber> subscribers;
 
 	public PinIn(){
 		this.state = PinState.UNKNOWN;
 		this.subscribers = new HashSet<>();
+	}
+
+	public PinIn(int number, PinState state){
+		this.state = state;
 	}
 
 	@Override

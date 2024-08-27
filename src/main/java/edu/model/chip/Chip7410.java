@@ -26,7 +26,8 @@ public class Chip7410 extends Chip{
 
 	@Override
 	public void simulate(){
-		ChipLogicCalculation.chip7410Calculation(this);
+		if(isOn)
+			ChipLogicCalculation.chip7410Calculation(this);
 	}
 
 	@Override
@@ -36,6 +37,6 @@ public class Chip7410 extends Chip{
 
 	@Override
 	public String toString(){
-		return this.getClass().getSimpleName() + "{\npinMap=" + this.getPinMap() + "}\n";
+		return this.getClass().getSimpleName() + "{ id=" + this.chipId + "\npinMap=" + this.getPinMap() + "}\n";
 	}
 }

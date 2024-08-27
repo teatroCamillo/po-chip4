@@ -3,6 +3,7 @@ package edu.logic;
 import edu.model.Chip;
 import edu.model.Pin;
 //import com.digitalcircuit.model.pin.InputPin; // dla wykomentowanego kodu
+import edu.model.pin.PinIn;
 import edu.uj.po.simulation.interfaces.PinState;
 
 import java.util.Map;
@@ -257,16 +258,16 @@ public class ChipLogicCalculation {
 		}
 	}
 
-//	public static void chip74138Calculation(Chip chip) {
-//		_74138DecoderLogicFunction(chip, 7);
-//		_74138DecoderLogicFunction(chip, 9);
-//		_74138DecoderLogicFunction(chip, 10);
-//		_74138DecoderLogicFunction(chip, 11);
-//		_74138DecoderLogicFunction(chip, 12);
-//		_74138DecoderLogicFunction(chip, 13);
-//		_74138DecoderLogicFunction(chip, 14);
-//		_74138DecoderLogicFunction(chip, 15);
-//	}
+	public static void chip74138Calculation(Chip chip) {
+		_74138DecoderLogicFunction(chip, 7);
+		_74138DecoderLogicFunction(chip, 9);
+		_74138DecoderLogicFunction(chip, 10);
+		_74138DecoderLogicFunction(chip, 11);
+		_74138DecoderLogicFunction(chip, 12);
+		_74138DecoderLogicFunction(chip, 13);
+		_74138DecoderLogicFunction(chip, 14);
+		_74138DecoderLogicFunction(chip, 15);
+	}
 
 	public static void chip74152Calculation(Chip chip) {
 		Map<Integer, Pin> pins = chip.getPinMap();
@@ -622,9 +623,9 @@ public class ChipLogicCalculation {
 				break;
 		}
 	}
-/*
+
 	private static void _74138DecoderLogicFunction(Chip chip, int outputPinId) {
-		Map<Integer, Pin> pins = chip.getPins();
+		Map<Integer, Pin> pins = chip.getPinMap();
 
 		Pin A = pins.get(1);
 		Pin B = pins.get(2);
@@ -641,7 +642,7 @@ public class ChipLogicCalculation {
 		}
 
 
-		Pin G2 = new InputPin(-1, UNKNOWN);
+		Pin G2 = new PinIn(-1, UNKNOWN);
 		if (Set.of(G2A, G2B).stream().anyMatch(pin -> pin.getPinState() == HIGH)) {
 			G2.setPinState(HIGH);
 		} else if (Set.of(G2A, G2B).stream().anyMatch(pin -> pin.getPinState() == UNKNOWN)) {
@@ -726,5 +727,5 @@ public class ChipLogicCalculation {
 				break;
 		}
 	}
-*/
+
 }
