@@ -14,6 +14,11 @@ public class Util{
 	public static final String HEADER_IN = "HeaderIn";
 	public static final String HEADER_OUT = "HeaderOut";
 
+	//to TURN ON/OFF between methods propagateSignal() and observer
+	// propagate = true
+	// observer = false
+	public static final boolean SWITCH_BETWEEN_PO = true;
+
 	// zbiera stan listew wyjściowych
 	public static Set<ComponentPinState> saveCircuitHeaderOutState(Map<Integer, Chip> chips){
 		Set<ComponentPinState> currentState = new HashSet<>();

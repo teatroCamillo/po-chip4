@@ -1,5 +1,6 @@
 package edu.manager;
 
+import edu.model.Pin;
 import edu.uj.po.simulation.interfaces.*;
 import edu.model.Chip;
 import edu.model.Connection;
@@ -11,6 +12,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+
+import static edu.util.Util.SWITCH_BETWEEN_PO;
 
 public class ComponentManager implements Component, CircuitDesign {
 
@@ -171,6 +174,7 @@ public class ComponentManager implements Component, CircuitDesign {
 		Chip chip1 = chips.get(component1);
 		Chip chip2 = chips.get(component2);
 
+
 		//chip2.getPinMap().get(pin2).subscribe(chip1.getPinMap().get(pin1));
 		chip1.getPinMap().get(pin1).subscribe(chip2.getPinMap().get(pin2));
 	}
@@ -178,8 +182,10 @@ public class ComponentManager implements Component, CircuitDesign {
 	public void addNewConnection(int sourceChipId, int sourcePinId, int targetChipId, int targetPinId) {
 		this.directConnections.add(new Connection(sourceChipId, sourcePinId, targetChipId, targetPinId));
 		// zestawienie subskrypcji
-		setSubscribe(sourceChipId, sourcePinId, targetChipId, targetPinId);
-		System.out.println("ustawiam subskrybcję...");
+		if(!SWITCH_BETWEEN_PO){
+			setSubscribe(sourceChipId, sourcePinId, targetChipId, targetPinId);
+			System.out.println("ustawiam subskrybcję...");
+		}
 	}
 
 	private int putToChipsMap(Chip newChip){
@@ -199,22 +205,23 @@ public class ComponentManager implements Component, CircuitDesign {
 	// to powinno być zrobione według wzorca Obserwator
 	// to jest naiwan implementacja póki co
 	// do poprawy na jakiś wzorzec
-//	public void propagateSignal(){
-//		// 1. przechodze po wszystkich połączeniach
-//		// 2. mapuje stan pinu docelowego na źródłowy
-//
-//		directConnections.forEach(connection -> {
-//			int sourceChipId = connection.sourceChipId();
-//			int sourceId = connection.sourcePinId();
-//			int targetChipId = connection.targetChipId();
-//			int targetPinId = connection.targetPinId();
-//
-//			Pin sourcePin = chips.get(sourceChipId).getPinMap().get(sourceId);
-//			// 0. sprawdź czy outputPin biezącego componentu jest w odpowiednim stanie - != UNKNOWN
-//			if(sourcePin.getPinState() != PinState.UNKNOWN)
-//				chips.get(targetChipId).getPinMap().get(targetPinId).setPinState(sourcePin.getPinState());
-//		});
-//	}
+	public void propagateSignal(){
+		// 1. przechodze po wszystkich połączeniach
+		// 2. mapuje stan pinu docelowego na źródłowy
+		if(SWITCH_BETWEEN_PO){
+			directConnections.forEach(connection -> {
+				int sourceChipId = connection.sourceChipId();
+				int sourceId = connection.sourcePinId();
+				int targetChipId = connection.targetChipId();
+				int targetPinId = connection.targetPinId();
+
+				Pin sourcePin = chips.get(sourceChipId).getPinMap().get(sourceId);
+				// 0. sprawdź czy outputPin biezącego componentu jest w odpowiednim stanie - != UNKNOWN
+				if(sourcePin.getPinState() != PinState.UNKNOWN)
+					chips.get(targetChipId).getPinMap().get(targetPinId).setPinState(sourcePin.getPinState());
+			});
+		}
+	}
 
 	@Override
 	public void simulate() {

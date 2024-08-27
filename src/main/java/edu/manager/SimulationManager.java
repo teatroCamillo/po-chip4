@@ -16,9 +16,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class SimulationManager implements Component, SimulationAndOptimization
-//		, Subscriber
-{
+public class SimulationManager implements Component, SimulationAndOptimization {
 
 	private final ComponentManager componentManager;
 
@@ -41,7 +39,7 @@ public class SimulationManager implements Component, SimulationAndOptimization
 	public void stationaryState(Set<ComponentPinState> states) throws UnknownStateException {
 		setMomentZero(states);
 		validateHeaders(Util.HEADER_IN);
-		//componentManager.propagateSignal();
+		componentManager.propagateSignal();
 
 		Set<ComponentPinState> previousState;
 		Set<ComponentPinState> currentState;
@@ -50,7 +48,7 @@ public class SimulationManager implements Component, SimulationAndOptimization
 			previousState = new HashSet<>(currentState);
 
 			componentManager.chips.values().forEach(Chip::simulate);
-			//componentManager.propagateSignal();
+			componentManager.propagateSignal();
 
 			currentState.clear();
 			currentState = Util.saveCircuitState(componentManager.chips);
@@ -59,8 +57,8 @@ public class SimulationManager implements Component, SimulationAndOptimization
 		boolean isHeaderOut = componentManager.chips.values()
 				.stream()
 				.anyMatch(chip -> chip.getClass().getSimpleName().equals(Util.HEADER_OUT));
-		System.out.println("Sprawdzam stan układu przed validacja HeaderOur");
-		currentState.forEach(System.out::println);
+		//System.out.println("Sprawdzam stan układu przed validacja HeaderOur");
+		//currentState.forEach(System.out::println);
 		if(isHeaderOut) validateHeaders(Util.HEADER_OUT);
 	}
 
@@ -142,7 +140,7 @@ public class SimulationManager implements Component, SimulationAndOptimization
 	public Map<Integer, Set<ComponentPinState>> simulation(Set<ComponentPinState> states0,
 														   int ticks) throws UnknownStateException{
 		setMomentZero(states0);
-		//componentManager.propagateSignal();
+		componentManager.propagateSignal();
 
 		Map<Integer, Set<ComponentPinState>> resultMap = new HashMap<>();
 		Set<ComponentPinState> currentState;
@@ -151,7 +149,7 @@ public class SimulationManager implements Component, SimulationAndOptimization
 
 		for(int i=1; i<=ticks; i++){
 			componentManager.chips.values().forEach(Chip::simulate);
-			//componentManager.propagateSignal();
+			componentManager.propagateSignal();
 
 			currentState.clear();
 			currentState = Util.saveCircuitHeaderOutState(componentManager.chips);
