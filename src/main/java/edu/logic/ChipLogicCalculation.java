@@ -674,7 +674,7 @@ public class ChipLogicCalculation {
 		Pin outputPin = pins.get(outputPinId);
 
 		if (Set.of(A, B, C, G2A, G2B, G1).stream().anyMatch(pin -> pin.getPinState() == UNKNOWN)) {
-			outputPin.setPinState(UNKNOWN);
+			outputPin.setPinState(HIGH);
 			return;
 		}
 
