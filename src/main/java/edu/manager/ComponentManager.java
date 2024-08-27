@@ -16,26 +16,17 @@ public class ComponentManager implements Component, CircuitDesign {
 
 	// Każdy chip jest componentem
 	final Map<Integer, Chip> chips;
-	private final Set<Integer> availableChipCodes;
 	final Set<Connection> directConnections;
 	private final Creator creator;
 
 	public ComponentManager(){
 		this.chips = new HashMap<>();
-		this.availableChipCodes = new HashSet<>();
-		availableChipCodes.add(7400);
-		availableChipCodes.add(7402);
-		availableChipCodes.add(7404);
-		availableChipCodes.add(7408);
-		availableChipCodes.add(7410);
-
 		this.directConnections = new HashSet<>();
 		this.creator = new ChipCreator();
 	}
 
 	@Override
 	public int createChip(int code) throws UnknownChip {
-		if(!availableChipCodes.contains(code)) throw new UnknownChip();
 		return putToChipsMap(creator.create(code));
 	}
 

@@ -12,7 +12,7 @@ import edu.model.pin.PinOut;
 // mapowanie pinów czyli np. jak on poda na listwe wejściową że pin 1 łączy się z układem C1 pin 3
 // to ja mapuje połączenie pin 1 na swój pin wyjściowy w listwe czyli np. 2 i łącze C1 pin 3
 
-public class HeaderIn extends Chip{
+public class HeaderIn extends Chip {
 
 	public HeaderIn(){}
 	public HeaderIn(Chip target, int size){

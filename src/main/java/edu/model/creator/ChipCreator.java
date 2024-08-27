@@ -3,11 +3,12 @@ package edu.model.creator;
 import edu.model.Chip;
 import edu.model.Creator;
 import edu.model.chip.*;
+import edu.uj.po.simulation.interfaces.UnknownChip;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class ChipCreator extends Creator{
+public class ChipCreator extends Creator {
 
 	private final Map<Integer, Chip> chipCodeMap;
 	protected Integer uniqueChipIdGenerator;
@@ -36,7 +37,8 @@ public class ChipCreator extends Creator{
 	}
 
 	@Override
-	public Chip create(int code){
+	public Chip create(int code) throws UnknownChip{
+		if(!chipCodeMap.containsKey(code)) throw new UnknownChip();
 		Chip newChip = chipCodeMap.get(code).clone();
 		newChip.setChipId(uniqueChipIdGenerator++);
 		return newChip;

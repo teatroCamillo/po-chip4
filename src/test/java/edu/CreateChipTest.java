@@ -33,7 +33,17 @@ class CreateChipTest{
 			"7402, edu.model.chip.Chip7402",
 			"7404, edu.model.chip.Chip7404",
 			"7408, edu.model.chip.Chip7408",
-			"7410, edu.model.chip.Chip7410"
+			"7410, edu.model.chip.Chip7410",
+			"7411, edu.model.chip.Chip7411",
+			"7420, edu.model.chip.Chip7420",
+			"7431, edu.model.chip.Chip7431",
+			"7432, edu.model.chip.Chip7432",
+			"7434, edu.model.chip.Chip7434",
+			"7442, edu.model.chip.Chip7442",
+			"7444, edu.model.chip.Chip7444",
+			"7482, edu.model.chip.Chip7482",
+			"74138, edu.model.chip.Chip74138",
+			"74152, edu.model.chip.Chip74152"
 	})
 	void testCreateChip(int chipCode, String expectedClassName) throws UnknownChip {
 		int chipId = componentManager.createChip(chipCode);
@@ -68,21 +78,23 @@ class CreateChipTest{
 		}, "Should throw UnknownChip if the chip code is not supported.");
 	}
 
-	@Test
-	void testCreateChipThrowsUnknownChipFor7442() {
-		int unsupportedChipCode = 7442;
-
-		assertThrows(UnknownChip.class, () -> {
-			componentManager.createChip(unsupportedChipCode);
-		}, "Should throw UnknownChip if the chip code 7442 is not supported.");
-	}
-
-	@Test
-	void testCreateChipThrowsUnknownChipFor7434() {
-		int unsupportedChipCode = 7434;
-
-		assertThrows(UnknownChip.class, () -> {
-			componentManager.createChip(unsupportedChipCode);
-		}, "Should throw UnknownChip if the chip code 7434 is not supported.");
-	}
+//	@Test
+//	void testCreateChipThrowsUnknownChipFor7442() {
+//		int unsupportedChipCode = 7442;
+//
+//
+//
+//		assertThrows(UnknownChip.class, () -> {
+//			componentManager.createChip(unsupportedChipCode);
+//		}, "Should throw UnknownChip if the chip code 7442 is not supported.");
+//	}
+//
+//	@Test
+//	void testCreateChipThrowsUnknownChipFor7434() {
+//		int unsupportedChipCode = 7434;
+//
+//		assertThrows(UnknownChip.class, () -> {
+//			componentManager.createChip(unsupportedChipCode);
+//		}, "Should throw UnknownChip if the chip code 7434 is not supported.");
+//	}
 }
