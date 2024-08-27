@@ -33,11 +33,22 @@ public class SimulationManager implements Component, SimulationAndOptimization {
 	// ograniczone zostało wyłącznie do metody stationaryState.
 	// W trakcie pracy simulation/optimization stan taki się nie pojawi.
 	// Z dystansem:
-	// Wyjątek powinien pojawić się np. wtedy, gdy obserwowane/używane jest wyjście bramki,
+	// 1. Wyjątek powinien pojawić się np. wtedy, gdy obserwowane/używane jest wyjście bramki,
 	// której jedno z wejść nie jest do niczego podłączone.
+
+	// 2.Natomiast, pojawienie się tego stanu na elementach biorących aktywny udział w symulacji
+	// (są włączone do obwodu) traktowane jest jako błąd i prowadzi do pojawianie się stosownego wyjątku.
+	// Wyjątek powinien pojawić się np. wtedy, gdy obserwowane/używane jest wyjście bramki, której jedno z
+	// wejść nie jest do niczego podłączone.
+
+	// 3. Wyjątek UnknownStateException zarezerwowany jest dla sytuacji, gdy używana bramka:
+	//	- posiada co najmniej jedno z wejść niepodłączone do listwy wejściowej
+	//  - jest wprawdzie podłączona do listwy wejściowej, ale stan co najmniej jednego z potrzebnych pinów listwy nie
+	// został przez użytkownika podany.
 	@Override
 	public void stationaryState(Set<ComponentPinState> states) throws UnknownStateException {
 		setMomentZero(states);
+		// 1. walidacja HEADER_IN
 		validateHeaders(Util.HEADER_IN);
 		componentManager.propagateSignal();
 
@@ -54,6 +65,10 @@ public class SimulationManager implements Component, SimulationAndOptimization {
 			currentState = Util.saveCircuitState(componentManager.chips);
 		} while (!previousState.equals(currentState));
 
+		// 2. walidacja CHIP'ow
+		validateChipPins();
+
+		// 3. walidacja HEADER_OUT
 		boolean isHeaderOut = componentManager.chips.values()
 				.stream()
 				.anyMatch(chip -> chip.getClass().getSimpleName().equals(Util.HEADER_OUT));
@@ -65,12 +80,38 @@ public class SimulationManager implements Component, SimulationAndOptimization {
 	public void setMomentZero(Set<ComponentPinState> states){
 		states.forEach(state -> {
 			Chip chip = componentManager.chips.get(state.componentId());
+			// Kuba: if chip/pin == null: throw
+
 			Pin pin = chip.getPinMap().get(state.pinId());
 			if (pin != null) {
 				System.out.println("setMomentZero wykonnuję setPinState()");
 				pin.setPinState(state.state());
 			}
 		});
+	}
+
+	private void validateChipPins() throws UnknownStateException{
+		Map<Integer, Chip> chips = componentManager.chips.entrySet().stream()
+				.filter(entry -> !entry.getValue().getClass().getSimpleName().equals(Util.HEADER_IN) &&
+						!entry.getValue().getClass().getSimpleName().equals(Util.HEADER_OUT))
+				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+		// ?
+		for (Map.Entry<Integer, Chip> entry : chips.entrySet()) {
+			int chipId = entry.getKey();
+			Chip chip = entry.getValue();
+
+			for (Map.Entry<Integer, Pin> entryPin : chip.getPinMap().entrySet()) {
+				int pinId = entryPin.getKey();
+				Pin pin = entryPin.getValue();
+
+				if (pin.getPinState() == PinState.UNKNOWN) {
+					// Sprawdź, czy pin jest podłączony do innego pinu
+					if (isPinConnected(chipId, pinId)) {
+						throw new UnknownStateException(new ComponentPinState(chipId, pinId, PinState.UNKNOWN));
+					}
+				}
+			}
+		}
 	}
 
 	private void validateHeaders(String headerClassName) throws UnknownStateException {
