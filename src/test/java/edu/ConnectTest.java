@@ -325,4 +325,36 @@ public class ConnectTest{
 		assertThrows(ShortCircuitException.class, () -> componentManager.connect(chipId2, 4, chipId1, 1),
 					 "");
 	}
+
+	//SCiE 5
+	@Test
+	void testThrowsShortCircuitExceptionWhenInputIsConnectedToOutputAndWhenThatInputHasSignalFromOtherOutputMoreComplexV3() throws UnknownChip, UnknownComponent, UnknownPin, ShortCircuitException{
+		int chipId0 = componentManager.createInputPinHeader(1);
+		int chipId1 = componentManager.createChip(7404);
+		int chipId2 = componentManager.createChip(7404);
+		int chipId3 = componentManager.createChip(7404);
+		int chipId4 = componentManager.createChip(7404);
+		int chipId5 = componentManager.createChip(7404);
+
+		componentManager.connect(chipId0, 1, chipId1, 1);
+
+		componentManager.connect(chipId1, 1, chipId2, 3);
+
+		componentManager.connect(chipId2, 3, chipId3, 5);
+		componentManager.connect(chipId2, 3, chipId4, 9);
+
+		componentManager.connect(chipId4, 9, chipId5, 11);
+
+		assertThrows(ShortCircuitException.class, () -> componentManager.connect(chipId3, 6, chipId5, 11),
+					 "");
+		assertThrows(ShortCircuitException.class, () -> componentManager.connect(chipId5, 11, chipId3, 6),
+					 "");
+
+		assertThrows(ShortCircuitException.class, () -> componentManager.connect(chipId1, 2, chipId5, 11),
+					 "");
+		assertThrows(ShortCircuitException.class, () -> componentManager.connect(chipId5, 11, chipId1, 2),
+					 "");
+	}
+
+
 }
