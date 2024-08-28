@@ -184,7 +184,6 @@ public class ComponentManager implements Component, CircuitDesign {
 		Chip chip1 = chips.get(component1);
 		Chip chip2 = chips.get(component2);
 
-
 		//chip2.getPinMap().get(pin2).subscribe(chip1.getPinMap().get(pin1));
 		chip1.getPinMap().get(pin1).subscribe(chip2.getPinMap().get(pin2));
 	}
