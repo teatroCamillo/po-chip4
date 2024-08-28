@@ -7,6 +7,7 @@ import edu.model.pin.PinOut;
 
 public class Chip7442 extends Chip {
 
+	// tutaj moze być od zera
 	public Chip7442(){}
 	public Chip7442(Chip target){
 		super(target);

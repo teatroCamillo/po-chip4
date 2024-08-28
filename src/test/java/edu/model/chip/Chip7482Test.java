@@ -8,7 +8,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
-//TODO: coś z logika jest nie tak testy Oramusa nie przechodza
 class Chip7482Test {
 
 	private Simulation simulation;

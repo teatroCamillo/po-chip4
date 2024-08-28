@@ -11,16 +11,16 @@ public class Chip7434 extends Chip {
 	public Chip7434(Chip target){
 		super(target);
 		this.putToPinMap(1, new PinIn());
-		this.putToPinMap(2, new PinIn());
-		this.putToPinMap(3, new PinOut());
-		this.putToPinMap(4, new PinIn());
+		this.putToPinMap(2, new PinOut());
+		this.putToPinMap(3, new PinIn());
+		this.putToPinMap(4, new PinOut());
 		this.putToPinMap(5, new PinIn());
 		this.putToPinMap(6, new PinOut());
 		this.putToPinMap(8, new PinOut());
 		this.putToPinMap(9, new PinIn());
-		this.putToPinMap(10, new PinIn());
-		this.putToPinMap(11, new PinOut());
-		this.putToPinMap(12, new PinIn());
+		this.putToPinMap(10, new PinOut());
+		this.putToPinMap(11, new PinIn());
+		this.putToPinMap(12, new PinOut());
 		this.putToPinMap(13, new PinIn());
 	}
 

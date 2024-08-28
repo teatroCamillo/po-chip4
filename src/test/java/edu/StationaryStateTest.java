@@ -40,18 +40,20 @@ public class StationaryStateTest {
 		Assertions.assertEquals(PinState.HIGH, simulation.getChips().get(chipId1).getPinMap().get(3).getPinState());
 	}
 
+	//TODO: do rozważenia
 	// Pin jest w stanie UNKONWN ale nie jest podłączony - nie rzuca wyjatku UnknownStateException
+	//@Disabled
 	@Test
 	void testStationaryStateNOTThrowsUnknownStateExceptionWhenPinHasUNKNOWNButIsNotConnected() throws UnknownChip,
 			UnknownPin, ShortCircuitException, UnknownComponent {
+		int chipId0 = simulation.createInputPinHeader(2);
 		int chipId1 = simulation.createChip(7400);
-		int chipId2 = simulation.createInputPinHeader(2);
 
 		Set<ComponentPinState> states = new HashSet<>();
-		states.add(new ComponentPinState(chipId2, 1, PinState.HIGH));
-		states.add(new ComponentPinState(chipId2, 2, PinState.UNKNOWN));
+		states.add(new ComponentPinState(chipId0, 1, PinState.HIGH));
+		states.add(new ComponentPinState(chipId0, 2, PinState.UNKNOWN));
 
-		simulation.connect(chipId2, 1, chipId1, 1);
+		simulation.connect(chipId0, 1, chipId1, 1);
 		// simulation.connect(chipId2, 2, chipId1, 2);
 
 		assertDoesNotThrow(() -> simulation.stationaryState(states),
