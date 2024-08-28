@@ -96,6 +96,85 @@ public class ComponentManager implements Component, CircuitDesign {
 	//A(id:2259)> Kabelki nie mają kierunku, czyli to program musi ustalić co z czym jest łączone.
 	// Przy czym można sobie wyobrazić połączenie dwóch wejść ze sobą. Niekoniecznie jeden pin musi być
 	// wejściem a drugi wyjściem.
+//	@Override
+//	public void connect(int component1,
+//						int pin1,
+//						int component2,
+//						int pin2) throws UnknownComponent, UnknownPin, ShortCircuitException {
+//
+//		// Sprawdź, czy komponenty istnieją
+//		if (!chips.containsKey(component1)) {
+//			throw new UnknownComponent(component1);
+//		}
+//		if (!chips.containsKey(component2)) {
+//			throw new UnknownComponent(component2);
+//		}
+//
+//		// Sprawdź, czy piny istnieją w odpowiednich komponentach
+//		Chip chip1 = chips.get(component1);
+//		Chip chip2 = chips.get(component2);
+//
+//		if (!chip1.getPinMap().containsKey(pin1)) {
+//			throw new UnknownPin(component1, pin1);
+//		}
+//		if (!chip2.getPinMap().containsKey(pin2)) {
+//			throw new UnknownPin(component2, pin2);
+//		}
+//
+//		// TODO: przypadki zwarc
+//		// 1. Dwa piny nie mogą być połączone ze sobą więcej niż raz - czyli dwa lub więcej takich samych rekordów
+//		// 2. Sprawdzenie, czy połączenie nie powoduje zwarcia (wiele wyjścia do jednego wejścia)
+//		// 3. Sprawdzenie, czy nie ma połączenia wyjścia układu z wejściami użytkownika (HeaderIn)
+//		// 4. Sprawdz czy nie ma połączenia wyjście do wyjścia.
+//		// -
+//		// Note:
+//		// Czy lepszym sposobme byłoby dodanie stanu na każdy Pin np. CONNECTED żeby to określić, niż sprawdzać w
+//		// pętli. Co więcje teraz directConnections są unidirectional wiec tylko jedna strona ma info o połączeniu.
+//		// To generuje problem że gdy PinOut z C1 jest aktualnie połączony z PinIn z C2, to dane zapisane są u C1. Wiec
+//		// pojawia się błąd gdy PinOut z C3 będzie próbować połączyć się z tym samym PinIn z C2.
+//		// - Gdzie przechowywać dane o połączeniach żeby łatwo było tworzyć nowe, usówać, przeszukiwać i wykrywać błędy?
+//		// Naiwnie dodana na chwilę obecną do obecnej klasy: directConnections, addNewConnection i propagateSignal
+//		// to rozwiązuje problem:
+//		// 		- Set - unikatowe rekordy - czyli nie trzeba sprawdzać warunku nr.1
+//		//		- wszystkie połączenia w jednym miejscu - łatwy dostęp, przeszukiwanie, dodawanie etc
+//		//		- nie ma porblemu bi-/uni- directional na Chip'ach
+//		// -
+//		// Inny problem:
+//		// Czy recordy Connection(1,1,2,2) i Connection(2,2,1,1) to to samo połączenie?
+//		// Czy powinienem ustlaić że gdy dodaję pierwszy rekord do setu to dodaję też drugi żeby było jasne?
+//
+//		// TODO: OK - przetestowane
+//		// 2. Sprawdzenie, czy połączenie nie powoduje zwarcia (wiele wyjścia do jednego wejścia)
+//		if (directConnections
+//				.stream()
+//				.anyMatch(connection -> connection.targetChipId() == component2
+//						&& connection.targetPinId() == pin2
+//						&& (connection.sourceChipId() != component1 || connection.sourcePinId() != pin1)
+//				)) {
+//			//System.out.println("Cannot connect this pin: " + pin2 + " in component "
+//			//						   + component2 + ". It is already connected.");
+//			throw new ShortCircuitException();
+//		}
+//
+//		// TODO: OK - przetestowane
+//		// 3. Sprawdzenie, czy nie ma połączenia wyjścia układu z wejściami użytkownika (HeaderIn)
+//		if (chip2.getClass().getSimpleName().equals(Util.HEADER_IN) &&
+//				chip1.getPinMap().get(pin1).getClass().getSimpleName().equals(Util.PIN_OUT)) {
+//			//System.out.println("Cannot connect an output pin to a HeaderIn input pin: " + pin2 + " in component " +
+//			// component2);
+//			throw new ShortCircuitException();
+//		}
+//
+//		// TODO: OK - przetestowane
+//		// 4. Sprawdz czy nie ma połączenia wyjście do wyjścia.
+//		if (chip1.getPinMap().get(pin1).getClass().getSimpleName().equals(Util.PIN_OUT) &&
+//				chip2.getPinMap().get(pin2).getClass().getSimpleName().equals(Util.PIN_OUT)) {
+//			//System.out.println("Cannot connect two output pins!");
+//			throw new ShortCircuitException();
+//		}
+//
+//		addNewConnection(component1, pin1, component2, pin2);
+//	}
 	@Override
 	public void connect(int component1,
 						int pin1,
@@ -121,60 +200,67 @@ public class ComponentManager implements Component, CircuitDesign {
 			throw new UnknownPin(component2, pin2);
 		}
 
-		// TODO: przypadki zwarc
-		// 1. Dwa piny nie mogą być połączone ze sobą więcej niż raz - czyli dwa lub więcej takich samych rekordów
-		// 2. Sprawdzenie, czy połączenie nie powoduje zwarcia (wiele wyjścia do jednego wejścia)
-		// 3. Sprawdzenie, czy nie ma połączenia wyjścia układu z wejściami użytkownika (HeaderIn)
-		// 4. Sprawdz czy nie ma połączenia wyjście do wyjścia.
-		// -
-		// Note:
-		// Czy lepszym sposobme byłoby dodanie stanu na każdy Pin np. CONNECTED żeby to określić, niż sprawdzać w
-		// pętli. Co więcje teraz directConnections są unidirectional wiec tylko jedna strona ma info o połączeniu.
-		// To generuje problem że gdy PinOut z C1 jest aktualnie połączony z PinIn z C2, to dane zapisane są u C1. Wiec
-		// pojawia się błąd gdy PinOut z C3 będzie próbować połączyć się z tym samym PinIn z C2.
-		// - Gdzie przechowywać dane o połączeniach żeby łatwo było tworzyć nowe, usówać, przeszukiwać i wykrywać błędy?
-		// Naiwnie dodana na chwilę obecną do obecnej klasy: directConnections, addNewConnection i propagateSignal
-		// to rozwiązuje problem:
-		// 		- Set - unikatowe rekordy - czyli nie trzeba sprawdzać warunku nr.1
-		//		- wszystkie połączenia w jednym miejscu - łatwy dostęp, przeszukiwanie, dodawanie etc
-		//		- nie ma porblemu bi-/uni- directional na Chip'ach
-		// -
-		// Inny problem:
-		// Czy recordy Connection(1,1,2,2) i Connection(2,2,1,1) to to samo połączenie?
-		// Czy powinienem ustlaić że gdy dodaję pierwszy rekord do setu to dodaję też drugi żeby było jasne?
+		// 1. Sprawdz, czy oba piny to wyjścia (bezpośrednie połączenie dwóch wyjść)
+		boolean isPin1Output = isOutputPin(component1, pin1);
+		boolean isPin2Output = isOutputPin(component2, pin2);
 
-		// TODO: OK - przetestowane
-		// 2. Sprawdzenie, czy połączenie nie powoduje zwarcia (wiele wyjścia do jednego wejścia)
-		if (directConnections
-				.stream()
-				.anyMatch(connection -> connection.targetChipId() == component2
-						&& connection.targetPinId() == pin2
-						&& (connection.sourceChipId() != component1 || connection.sourcePinId() != pin1)
-				)) {
-			//System.out.println("Cannot connect this pin: " + pin2 + " in component "
-			//						   + component2 + ". It is already connected.");
+		if (isPin1Output && isPin2Output) {
 			throw new ShortCircuitException();
 		}
 
-		// TODO: OK - przetestowane
-		// 3. Sprawdzenie, czy nie ma połączenia wyjścia układu z wejściami użytkownika (HeaderIn)
-		if (chip2.getClass().getSimpleName().equals(Util.HEADER_IN) &&
-				chip1.getPinMap().get(pin1).getClass().getSimpleName().equals(Util.PIN_OUT)) {
-			//System.out.println("Cannot connect an output pin to a HeaderIn input pin: " + pin2 + " in component " +
-			// component2);
-			throw new ShortCircuitException();
-		}
+		// 2. Sprawdzenie, czy połączenie nie powoduje pośredniego zwarcia wyjść
+//		if (isPin1Output && isConnectedToOutput(component2, pin2)) {
+//			throw new ShortCircuitException();
+//		}
+//
+//		if (isPin2Output && isConnectedToOutput(component1, pin1)) {
+//			throw new ShortCircuitException();
+//		}
 
-		// TODO: OK - przetestowane
-		// 4. Sprawdz czy nie ma połączenia wyjście do wyjścia.
-		if (chip1.getPinMap().get(pin1).getClass().getSimpleName().equals(Util.PIN_OUT) &&
-				chip2.getPinMap().get(pin2).getClass().getSimpleName().equals(Util.PIN_OUT)) {
-			//System.out.println("Cannot connect two output pins!");
-			throw new ShortCircuitException();
-		}
-
+		// Jeśli wszystkie powyższe warunki są spełnione, dodaj połączenie
 		addNewConnection(component1, pin1, component2, pin2);
 	}
+
+	private boolean isOutputPin(int component, int pin) {
+		// Sprawdź, czy dany pin jest wyjściem
+		Chip chip = chips.get(component);
+		return chip.getPinMap().get(pin).getClass().getSimpleName().equals(Util.PIN_OUT);
+	}
+
+	private boolean isConnectedToOutput(int component, int pin) {
+		// Sprawdź, czy dany pin (wejściowy) jest połączony pośrednio z jakimś wyjściem
+		Set<Integer> visitedComponents = new HashSet<>();
+		Set<Integer> visitedPins = new HashSet<>();
+		return isConnectedToOutputRecursive(component, pin, visitedComponents, visitedPins);
+	}
+
+	private boolean isConnectedToOutputRecursive(int component, int pin, Set<Integer> visitedComponents, Set<Integer> visitedPins) {
+		// Sprawdź, czy już odwiedzono ten pin
+		if (visitedComponents.contains(component) && visitedPins.contains(pin)) {
+			return false;
+		}
+
+		visitedComponents.add(component);
+		visitedPins.add(pin);
+
+		// Przeszukaj połączenia w poszukiwaniu pośredniego połączenia z wyjściem
+		for (Connection connection : directConnections) {
+			if (connection.sourceChipId() == component && connection.sourcePinId() == pin) {
+				// Sprawdź, czy targetPin jest wyjściem
+				if (isOutputPin(connection.targetChipId(), connection.targetPinId())) {
+					return true;
+				}
+				// Rekurencyjnie sprawdź, czy docelowy pin jest pośrednio połączony z wyjściem
+				if (isConnectedToOutputRecursive(connection.targetChipId(), connection.targetPinId(), visitedComponents, visitedPins)) {
+					return true;
+				}
+			}
+		}
+
+		return false;
+	}
+
+
 
 	// z poziomu managera ustawiam subskrypcję miedzy pinami
 	private void setSubscribe(int component1,
