@@ -93,6 +93,7 @@ public abstract class Chip implements Component {
 	public int getChipId(){
 		return this.chipId;
 	}
+
 	public void setOn(boolean isOn){
 		pinMap.values().forEach(pin -> pin.setPinState(PinState.UNKNOWN));
 		this.isOn = isOn;

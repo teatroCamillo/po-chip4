@@ -16,9 +16,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class SimulationManager implements Component, SimulationAndOptimization
-//		, Subscriber
-{
+public class SimulationManager implements Component, SimulationAndOptimization {
 
 	private final ComponentManager componentManager;
 
@@ -35,13 +33,31 @@ public class SimulationManager implements Component, SimulationAndOptimization
 	// ograniczone zostało wyłącznie do metody stationaryState.
 	// W trakcie pracy simulation/optimization stan taki się nie pojawi.
 	// Z dystansem:
-	// Wyjątek powinien pojawić się np. wtedy, gdy obserwowane/używane jest wyjście bramki,
+	// 1. Wyjątek powinien pojawić się np. wtedy, gdy obserwowane/używane jest wyjście bramki,
 	// której jedno z wejść nie jest do niczego podłączone.
+
+	// 2.Natomiast, pojawienie się tego stanu na elementach biorących aktywny udział w symulacji
+	// (są włączone do obwodu) traktowane jest jako błąd i prowadzi do pojawianie się stosownego wyjątku.
+	// Wyjątek powinien pojawić się np. wtedy, gdy obserwowane/używane jest wyjście bramki, której jedno z
+	// wejść nie jest do niczego podłączone.
+
+	// 3. Wyjątek UnknownStateException zarezerwowany jest dla sytuacji, gdy używana bramka:
+	//	- posiada co najmniej jedno z wejść niepodłączone do listwy wejściowej
+	//  - jest wprawdzie podłączona do listwy wejściowej, ale stan co najmniej jednego z potrzebnych pinów listwy nie
+	// został przez użytkownika podany.
 	@Override
 	public void stationaryState(Set<ComponentPinState> states) throws UnknownStateException {
+
+		for (ComponentPinState state : states) {
+			if (state.state() == PinState.UNKNOWN) {
+				throw new UnknownStateException(state);
+			}
+		}
+
 		setMomentZero(states);
-		validateHeaders(Util.HEADER_IN);
-		//componentManager.propagateSignal();
+		// 1. walidacja HEADER_IN
+		//validateHeaders(Util.HEADER_IN);
+		componentManager.propagateSignal();
 
 		Set<ComponentPinState> previousState;
 		Set<ComponentPinState> currentState;
@@ -50,23 +66,26 @@ public class SimulationManager implements Component, SimulationAndOptimization
 			previousState = new HashSet<>(currentState);
 
 			componentManager.chips.values().forEach(Chip::simulate);
-			//componentManager.propagateSignal();
+			componentManager.propagateSignal();
 
 			currentState.clear();
 			currentState = Util.saveCircuitState(componentManager.chips);
 		} while (!previousState.equals(currentState));
-
-		boolean isHeaderOut = componentManager.chips.values()
-				.stream()
-				.anyMatch(chip -> chip.getClass().getSimpleName().equals(Util.HEADER_OUT));
-		System.out.println("Sprawdzam stan układu przed validacja HeaderOur");
-		currentState.forEach(System.out::println);
-		if(isHeaderOut) validateHeaders(Util.HEADER_OUT);
+		validateHeadersV2();
+		// 3. walidacja HEADER_OUT
+//		boolean isHeaderOut = componentManager.chips.values()
+//				.stream()
+//				.anyMatch(chip -> chip.getClass().getSimpleName().equals(Util.HEADER_OUT));
+		//System.out.println("Sprawdzam stan układu przed validacja HeaderOur");
+		//currentState.forEach(System.out::println);
+		//if(isHeaderOut) validateHeaders(Util.HEADER_OUT);
 	}
 
 	public void setMomentZero(Set<ComponentPinState> states){
 		states.forEach(state -> {
 			Chip chip = componentManager.chips.get(state.componentId());
+			// Kuba: if chip/pin == null: throw
+
 			Pin pin = chip.getPinMap().get(state.pinId());
 			if (pin != null) {
 				System.out.println("setMomentZero wykonnuję setPinState()");
@@ -75,10 +94,14 @@ public class SimulationManager implements Component, SimulationAndOptimization
 		});
 	}
 
-	private void validateHeaders(String headerClassName) throws UnknownStateException{
-		Map<Integer,Chip> headerChips = componentManager.chips.entrySet().stream()
-				.filter(entry -> entry.getValue().getClass().getSimpleName().equals(headerClassName))
+	// 1. wariant ze sprawdzeniem HeaderIN oraz Out pokrywa wszystkie sytuacje ale tez te które nie pownny być pokryte
+	// 2. wartiant z samym HeaderIn pokrywa większość poza 3 sytuacjami - jakie to sytuacje? Wime że są po stronie
+	// HeaderOut
+	private void validateHeadersV2() throws UnknownStateException {
+		Map<Integer, Chip> headerChips = componentManager.chips.entrySet().stream()
+				.filter(entry -> entry.getValue().getClass().getSimpleName().equals(Util.HEADER_IN))
 				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+
 		for (Map.Entry<Integer, Chip> entry : headerChips.entrySet()) {
 			int chipId = entry.getKey();
 			Chip chip = entry.getValue();
@@ -86,11 +109,45 @@ public class SimulationManager implements Component, SimulationAndOptimization
 			for (Map.Entry<Integer, Pin> entryPin : chip.getPinMap().entrySet()) {
 				int pinId = entryPin.getKey();
 				Pin pin = entryPin.getValue();
+
 				if (pin.getPinState() == PinState.UNKNOWN) {
-					throw new UnknownStateException(new ComponentPinState(chipId, pinId, PinState.UNKNOWN));
+					// Sprawdź, czy pin jest podłączony do innego pinu
+					if (isPinConnected(chipId, pinId)) {
+						throw new UnknownStateException(new ComponentPinState(chipId, pinId, PinState.UNKNOWN));
+					}
 				}
 			}
 		}
+	}
+
+
+	private void validateHeaders(String headerClassName) throws UnknownStateException {
+		Map<Integer, Chip> headerChips = componentManager.chips.entrySet().stream()
+				.filter(entry -> entry.getValue().getClass().getSimpleName().equals(headerClassName))
+				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+
+		for (Map.Entry<Integer, Chip> entry : headerChips.entrySet()) {
+			int chipId = entry.getKey();
+			Chip chip = entry.getValue();
+
+			for (Map.Entry<Integer, Pin> entryPin : chip.getPinMap().entrySet()) {
+				int pinId = entryPin.getKey();
+				Pin pin = entryPin.getValue();
+
+				if (pin.getPinState() == PinState.UNKNOWN) {
+					// Sprawdź, czy pin jest podłączony do innego pinu
+					if (isPinConnected(chipId, pinId)) {
+						throw new UnknownStateException(new ComponentPinState(chipId, pinId, PinState.UNKNOWN));
+					}
+				}
+			}
+		}
+	}
+
+	private boolean isPinConnected(int chipId, int pinId) {
+		// Metoda do sprawdzenia, czy dany pin jest podłączony do innego pinu.
+		// Implementacja tej metody zależy od tego, jak w Twoim systemie śledzone są połączenia między pinami.
+		return componentManager.isPinConnected(chipId, pinId); // przykładowa implementacja
 	}
 
 	//todo: ważne też do optimize()
@@ -142,7 +199,7 @@ public class SimulationManager implements Component, SimulationAndOptimization
 	public Map<Integer, Set<ComponentPinState>> simulation(Set<ComponentPinState> states0,
 														   int ticks) throws UnknownStateException{
 		setMomentZero(states0);
-		//componentManager.propagateSignal();
+		componentManager.propagateSignal();
 
 		Map<Integer, Set<ComponentPinState>> resultMap = new HashMap<>();
 		Set<ComponentPinState> currentState;
@@ -151,7 +208,7 @@ public class SimulationManager implements Component, SimulationAndOptimization
 
 		for(int i=1; i<=ticks; i++){
 			componentManager.chips.values().forEach(Chip::simulate);
-			//componentManager.propagateSignal();
+			componentManager.propagateSignal();
 
 			currentState.clear();
 			currentState = Util.saveCircuitHeaderOutState(componentManager.chips);

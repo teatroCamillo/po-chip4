@@ -5,7 +5,7 @@ import edu.model.Chip;
 import edu.model.pin.PinIn;
 import edu.model.pin.PinOut;
 
-public class Chip7434 extends Chip{
+public class Chip7434 extends Chip {
 
 	public Chip7434(){}
 	public Chip7434(Chip target){

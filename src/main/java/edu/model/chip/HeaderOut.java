@@ -3,7 +3,7 @@ package edu.model.chip;
 import edu.model.Chip;
 import edu.model.pin.PinIn;
 
-public class HeaderOut extends Chip{
+public class HeaderOut extends Chip {
 
 	public HeaderOut(){}
 	public HeaderOut(Chip target, int size){

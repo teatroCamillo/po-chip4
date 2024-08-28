@@ -125,138 +125,175 @@ public class ChipLogicCalculation {
 		Pin S2 = pins.get(12);
 		Pin C2 = pins.get(10);
 
-		if (Set.of(A1, A2, B1, B2, C0).stream().anyMatch(pin -> pin.getPinState() == UNKNOWN)) {
-			S1.setPinState(UNKNOWN);
-			S2.setPinState(UNKNOWN);
-			C2.setPinState(UNKNOWN);
+		if (Set.of(A1, A2, B1, B2, C0).stream().anyMatch(pin -> pin.getPinState() == PinState.UNKNOWN)) {
+			S1.setPinState(PinState.UNKNOWN);
+			S2.setPinState(PinState.UNKNOWN);
+			C2.setPinState(PinState.UNKNOWN);
 			return;
 		}
 
-		if (Set.of(A1, B1, A2, B2, C0).stream().allMatch(pin -> pin.getPinState() == LOW)) {
-			S1.setPinState(LOW);
-			S2.setPinState(LOW);
-			C2.setPinState(LOW);
-		} else if (Set.of(B1, A2, B2, C0).stream().allMatch(pin -> pin.getPinState() == LOW)
-				&& Set.of(A1).stream().allMatch(pin -> pin.getPinState() == HIGH)) {
-			S1.setPinState(HIGH);
-			S2.setPinState(LOW);
-			C2.setPinState(LOW);
-		} else if (Set.of(A1, A2, B2, C0).stream().allMatch(pin -> pin.getPinState() == LOW)
-				&& Set.of(B1).stream().allMatch(pin -> pin.getPinState() == HIGH)) {
-			S1.setPinState(HIGH);
-			S2.setPinState(LOW);
-			C2.setPinState(LOW);
-		} else if (Set.of(A2, B2, C0).stream().allMatch(pin -> pin.getPinState() == LOW)
-				&& Set.of(A1, B1).stream().allMatch(pin -> pin.getPinState() == HIGH)) {
-			S1.setPinState(LOW);
-			S2.setPinState(HIGH);
-			C2.setPinState(LOW);
-		} else if (Set.of(A1, B1, B2, C0).stream().allMatch(pin -> pin.getPinState() == LOW)
-				&& Set.of(A2).stream().allMatch(pin -> pin.getPinState() == HIGH)) {
-			S1.setPinState(LOW);
-			S2.setPinState(HIGH);
-			C2.setPinState(LOW);
-		} else if (Set.of(B1, B2, C0).stream().allMatch(pin -> pin.getPinState() == LOW)
-				&& Set.of(A1, A2).stream().allMatch(pin -> pin.getPinState() == HIGH)) {
-			S1.setPinState(HIGH);
-			S2.setPinState(HIGH);
-			C2.setPinState(LOW);
-		} else if (Set.of(A1, B2, C0).stream().allMatch(pin -> pin.getPinState() == LOW)
-				&& Set.of(B1, A2).stream().allMatch(pin -> pin.getPinState() == HIGH)) {
-			S1.setPinState(HIGH);
-			S2.setPinState(HIGH);
-			C2.setPinState(LOW);
-		} else if (Set.of(B2, C0).stream().allMatch(pin -> pin.getPinState() == LOW)
-				&& Set.of(A1, B1, A2).stream().allMatch(pin -> pin.getPinState() == HIGH)) {
-			S1.setPinState(LOW);
-			S2.setPinState(LOW);
-			C2.setPinState(HIGH);
-		} else if (Set.of(A1, B1, C0).stream().allMatch(pin -> pin.getPinState() == LOW)
-				&& Set.of(A2, B2).stream().allMatch(pin -> pin.getPinState() == HIGH)) {
-			S1.setPinState(LOW);
-			S2.setPinState(HIGH);
-			C2.setPinState(LOW);
-		} else if (Set.of(B1, C0).stream().allMatch(pin -> pin.getPinState() == LOW)
-				&& Set.of(A1, A2, B2).stream().allMatch(pin -> pin.getPinState() == HIGH)) {
-			S1.setPinState(HIGH);
-			S2.setPinState(LOW);
-			C2.setPinState(HIGH);
-		} else if (Set.of(A1, C0).stream().allMatch(pin -> pin.getPinState() == LOW)
-				&& Set.of(B1, A2, B2).stream().allMatch(pin -> pin.getPinState() == HIGH)) {
-			S1.setPinState(HIGH);
-			S2.setPinState(LOW);
-			C2.setPinState(HIGH);
-		} else if (Set.of(C0).stream().allMatch(pin -> pin.getPinState() == LOW)
-				&& Set.of(A1, B1, A2, B2).stream().allMatch(pin -> pin.getPinState() == HIGH)) {
-			S1.setPinState(LOW);
-			S2.setPinState(HIGH);
-			C2.setPinState(HIGH);
+		// Zamiana stanów na wartości logiczne 0 i 1
+		int a1 = (A1.getPinState() == PinState.HIGH) ? 1 : 0;
+		int a2 = (A2.getPinState() == PinState.HIGH) ? 1 : 0;
+		int b1 = (B1.getPinState() == PinState.HIGH) ? 1 : 0;
+		int b2 = (B2.getPinState() == PinState.HIGH) ? 1 : 0;
+		int c0 = (C0.getPinState() == PinState.HIGH) ? 1 : 0;
 
-		} else if (Set.of(A1, B1, A2, B2).stream().allMatch(pin -> pin.getPinState() == LOW)
-				&& Set.of(C0).stream().allMatch(pin -> pin.getPinState() == HIGH)) {
-			S1.setPinState(HIGH);
-			S2.setPinState(LOW);
-			C2.setPinState(LOW);
-		} else if (Set.of(B1, A2, B2).stream().allMatch(pin -> pin.getPinState() == LOW)
-				&& Set.of(A1, C0).stream().allMatch(pin -> pin.getPinState() == HIGH)) {
-			S1.setPinState(LOW);
-			S2.setPinState(HIGH);
-			C2.setPinState(LOW);
-		} else if (Set.of(A1, A2, B2).stream().allMatch(pin -> pin.getPinState() == LOW)
-				&& Set.of(B1, C0).stream().allMatch(pin -> pin.getPinState() == HIGH)) {
-			S1.setPinState(LOW);
-			S2.setPinState(HIGH);
-			C2.setPinState(LOW);
-		} else if (Set.of(A2, B2).stream().allMatch(pin -> pin.getPinState() == LOW)
-				&& Set.of(A1, B1, C0).stream().allMatch(pin -> pin.getPinState() == HIGH)) {
-			S1.setPinState(HIGH);
-			S2.setPinState(HIGH);
-			C2.setPinState(LOW);
-		} else if (Set.of(A1, B1, B2).stream().allMatch(pin -> pin.getPinState() == LOW)
-				&& Set.of(A2, C0).stream().allMatch(pin -> pin.getPinState() == HIGH)) {
-			S1.setPinState(HIGH);
-			S2.setPinState(HIGH);
-			C2.setPinState(LOW);
-		} else if (Set.of(B1, B2).stream().allMatch(pin -> pin.getPinState() == LOW)
-				&& Set.of(A1, A2, C0).stream().allMatch(pin -> pin.getPinState() == HIGH)) {
-			S1.setPinState(LOW);
-			S2.setPinState(LOW);
-			C2.setPinState(HIGH);
-		} else if (Set.of(A1, B2).stream().allMatch(pin -> pin.getPinState() == LOW)
-				&& Set.of(B1, A2, C0).stream().allMatch(pin -> pin.getPinState() == HIGH)) {
-			S1.setPinState(LOW);
-			S2.setPinState(LOW);
-			C2.setPinState(HIGH);
-		} else if (Set.of(B2).stream().allMatch(pin -> pin.getPinState() == LOW)
-				&& Set.of(A1, B1, A2, C0).stream().allMatch(pin -> pin.getPinState() == HIGH)) {
-			S1.setPinState(HIGH);
-			S2.setPinState(LOW);
-			C2.setPinState(HIGH);
-		} else if (Set.of(A1, B1).stream().allMatch(pin -> pin.getPinState() == LOW)
-				&& Set.of(A2, B2, C0).stream().allMatch(pin -> pin.getPinState() == HIGH)) {
-			S1.setPinState(HIGH);
-			S2.setPinState(LOW);
-			C2.setPinState(HIGH);
-		} else if (Set.of(B1).stream().allMatch(pin -> pin.getPinState() == LOW)
-				&& Set.of(A1, A2, B2, C0).stream().allMatch(pin -> pin.getPinState() == HIGH)) {
-			S1.setPinState(LOW);
-			S2.setPinState(HIGH);
-			C2.setPinState(HIGH);
-		} else if (Set.of(A1).stream().allMatch(pin -> pin.getPinState() == LOW)
-				&& Set.of(B1, A2, B2, C0).stream().allMatch(pin -> pin.getPinState() == HIGH)) {
-			S1.setPinState(LOW);
-			S2.setPinState(HIGH);
-			C2.setPinState(HIGH);
-		} else if (Set.of(A1, B1, A2, B2, C0).stream().allMatch(pin -> pin.getPinState() == HIGH)) {
-			S1.setPinState(HIGH);
-			S2.setPinState(HIGH);
-			C2.setPinState(HIGH);
-		} else {
-			S1.setPinState(UNKNOWN);
-			S2.setPinState(UNKNOWN);
-			C2.setPinState(UNKNOWN);
-		}
+		// Obliczenie sumy i przeniesienia
+		int sum1 = a1 + b1 + c0;
+		int sum2 = a2 + b2 + (sum1 >> 1); // przeniesienie z sum1 dodane do sumy sum2
+		int carryOut = (sum2 >> 1); // ostateczne przeniesienie
+
+		// Ustawienie wyjść
+		S1.setPinState((sum1 & 1) == 1 ? PinState.HIGH : PinState.LOW);
+		S2.setPinState((sum2 & 1) == 1 ? PinState.HIGH : PinState.LOW);
+		C2.setPinState(carryOut == 1 ? PinState.HIGH : PinState.LOW);
 	}
+//	public static void chip7482Calculation(Chip chip) {
+//		Map<Integer, Pin> pins = chip.getPinMap();
+//
+//		Pin A1 = pins.get(2);
+//		Pin A2 = pins.get(14);
+//		Pin B1 = pins.get(3);
+//		Pin B2 = pins.get(13);
+//		Pin C0 = pins.get(5);
+//
+//		Pin S1 = pins.get(1);
+//		Pin S2 = pins.get(12);
+//		Pin C2 = pins.get(10);
+//
+//		if (Set.of(A1, A2, B1, B2, C0).stream().anyMatch(pin -> pin.getPinState() == UNKNOWN)) {
+//			S1.setPinState(UNKNOWN);
+//			S2.setPinState(UNKNOWN);
+//			C2.setPinState(UNKNOWN);
+//			return;
+//		}
+//
+//		if (Set.of(A1, B1, A2, B2, C0).stream().allMatch(pin -> pin.getPinState() == LOW)) {
+//			S1.setPinState(LOW);
+//			S2.setPinState(LOW);
+//			C2.setPinState(LOW);
+//		} else if (Set.of(B1, A2, B2, C0).stream().allMatch(pin -> pin.getPinState() == LOW)
+//				&& Set.of(A1).stream().allMatch(pin -> pin.getPinState() == HIGH)) {
+//			S1.setPinState(HIGH);
+//			S2.setPinState(LOW);
+//			C2.setPinState(LOW);
+//		} else if (Set.of(A1, A2, B2, C0).stream().allMatch(pin -> pin.getPinState() == LOW)
+//				&& Set.of(B1).stream().allMatch(pin -> pin.getPinState() == HIGH)) {
+//			S1.setPinState(HIGH);
+//			S2.setPinState(LOW);
+//			C2.setPinState(LOW);
+//		} else if (Set.of(A2, B2, C0).stream().allMatch(pin -> pin.getPinState() == LOW)
+//				&& Set.of(A1, B1).stream().allMatch(pin -> pin.getPinState() == HIGH)) {
+//			S1.setPinState(LOW);
+//			S2.setPinState(HIGH);
+//			C2.setPinState(LOW);
+//		} else if (Set.of(A1, B1, B2, C0).stream().allMatch(pin -> pin.getPinState() == LOW)
+//				&& Set.of(A2).stream().allMatch(pin -> pin.getPinState() == HIGH)) {
+//			S1.setPinState(LOW);
+//			S2.setPinState(HIGH);
+//			C2.setPinState(LOW);
+//		} else if (Set.of(B1, B2, C0).stream().allMatch(pin -> pin.getPinState() == LOW)
+//				&& Set.of(A1, A2).stream().allMatch(pin -> pin.getPinState() == HIGH)) {
+//			S1.setPinState(HIGH);
+//			S2.setPinState(HIGH);
+//			C2.setPinState(LOW);
+//		} else if (Set.of(A1, B2, C0).stream().allMatch(pin -> pin.getPinState() == LOW)
+//				&& Set.of(B1, A2).stream().allMatch(pin -> pin.getPinState() == HIGH)) {
+//			S1.setPinState(HIGH);
+//			S2.setPinState(HIGH);
+//			C2.setPinState(LOW);
+//		} else if (Set.of(B2, C0).stream().allMatch(pin -> pin.getPinState() == LOW)
+//				&& Set.of(A1, B1, A2).stream().allMatch(pin -> pin.getPinState() == HIGH)) {
+//			S1.setPinState(LOW);
+//			S2.setPinState(LOW);
+//			C2.setPinState(HIGH);
+//		} else if (Set.of(A1, B1, C0).stream().allMatch(pin -> pin.getPinState() == LOW)
+//				&& Set.of(A2, B2).stream().allMatch(pin -> pin.getPinState() == HIGH)) {
+//			S1.setPinState(LOW);
+//			S2.setPinState(HIGH);
+//			C2.setPinState(LOW);
+//		} else if (Set.of(B1, C0).stream().allMatch(pin -> pin.getPinState() == LOW)
+//				&& Set.of(A1, A2, B2).stream().allMatch(pin -> pin.getPinState() == HIGH)) {
+//			S1.setPinState(HIGH);
+//			S2.setPinState(LOW);
+//			C2.setPinState(HIGH);
+//		} else if (Set.of(A1, C0).stream().allMatch(pin -> pin.getPinState() == LOW)
+//				&& Set.of(B1, A2, B2).stream().allMatch(pin -> pin.getPinState() == HIGH)) {
+//			S1.setPinState(HIGH);
+//			S2.setPinState(LOW);
+//			C2.setPinState(HIGH);
+//		} else if (Set.of(C0).stream().allMatch(pin -> pin.getPinState() == LOW)
+//				&& Set.of(A1, B1, A2, B2).stream().allMatch(pin -> pin.getPinState() == HIGH)) {
+//			S1.setPinState(LOW);
+//			S2.setPinState(HIGH);
+//			C2.setPinState(HIGH);
+//
+//		} else if (Set.of(A1, B1, A2, B2).stream().allMatch(pin -> pin.getPinState() == LOW)
+//				&& Set.of(C0).stream().allMatch(pin -> pin.getPinState() == HIGH)) {
+//			S1.setPinState(HIGH);
+//			S2.setPinState(LOW);
+//			C2.setPinState(LOW);
+//		} else if (Set.of(B1, A2, B2).stream().allMatch(pin -> pin.getPinState() == LOW)
+//				&& Set.of(A1, C0).stream().allMatch(pin -> pin.getPinState() == HIGH)) {
+//			S1.setPinState(LOW);
+//			S2.setPinState(HIGH);
+//			C2.setPinState(LOW);
+//		} else if (Set.of(A1, A2, B2).stream().allMatch(pin -> pin.getPinState() == LOW)
+//				&& Set.of(B1, C0).stream().allMatch(pin -> pin.getPinState() == HIGH)) {
+//			S1.setPinState(LOW);
+//			S2.setPinState(HIGH);
+//			C2.setPinState(LOW);
+//		} else if (Set.of(A2, B2).stream().allMatch(pin -> pin.getPinState() == LOW)
+//				&& Set.of(A1, B1, C0).stream().allMatch(pin -> pin.getPinState() == HIGH)) {
+//			S1.setPinState(HIGH);
+//			S2.setPinState(HIGH);
+//			C2.setPinState(LOW);
+//		} else if (Set.of(A1, B1, B2).stream().allMatch(pin -> pin.getPinState() == LOW)
+//				&& Set.of(A2, C0).stream().allMatch(pin -> pin.getPinState() == HIGH)) {
+//			S1.setPinState(HIGH);
+//			S2.setPinState(HIGH);
+//			C2.setPinState(LOW);
+//		} else if (Set.of(B1, B2).stream().allMatch(pin -> pin.getPinState() == LOW)
+//				&& Set.of(A1, A2, C0).stream().allMatch(pin -> pin.getPinState() == HIGH)) {
+//			S1.setPinState(LOW);
+//			S2.setPinState(LOW);
+//			C2.setPinState(HIGH);
+//		} else if (Set.of(A1, B2).stream().allMatch(pin -> pin.getPinState() == LOW)
+//				&& Set.of(B1, A2, C0).stream().allMatch(pin -> pin.getPinState() == HIGH)) {
+//			S1.setPinState(LOW);
+//			S2.setPinState(LOW);
+//			C2.setPinState(HIGH);
+//		} else if (Set.of(B2).stream().allMatch(pin -> pin.getPinState() == LOW)
+//				&& Set.of(A1, B1, A2, C0).stream().allMatch(pin -> pin.getPinState() == HIGH)) {
+//			S1.setPinState(HIGH);
+//			S2.setPinState(LOW);
+//			C2.setPinState(HIGH);
+//		} else if (Set.of(A1, B1).stream().allMatch(pin -> pin.getPinState() == LOW)
+//				&& Set.of(A2, B2, C0).stream().allMatch(pin -> pin.getPinState() == HIGH)) {
+//			S1.setPinState(HIGH);
+//			S2.setPinState(LOW);
+//			C2.setPinState(HIGH);
+//		} else if (Set.of(B1).stream().allMatch(pin -> pin.getPinState() == LOW)
+//				&& Set.of(A1, A2, B2, C0).stream().allMatch(pin -> pin.getPinState() == HIGH)) {
+//			S1.setPinState(LOW);
+//			S2.setPinState(HIGH);
+//			C2.setPinState(HIGH);
+//		} else if (Set.of(A1).stream().allMatch(pin -> pin.getPinState() == LOW)
+//				&& Set.of(B1, A2, B2, C0).stream().allMatch(pin -> pin.getPinState() == HIGH)) {
+//			S1.setPinState(LOW);
+//			S2.setPinState(HIGH);
+//			C2.setPinState(HIGH);
+//		} else if (Set.of(A1, B1, A2, B2, C0).stream().allMatch(pin -> pin.getPinState() == HIGH)) {
+//			S1.setPinState(HIGH);
+//			S2.setPinState(HIGH);
+//			C2.setPinState(HIGH);
+//		} else {
+//			S1.setPinState(UNKNOWN);
+//			S2.setPinState(UNKNOWN);
+//			C2.setPinState(UNKNOWN);
+//		}
+//	}
 
 	public static void chip74138Calculation(Chip chip) {
 		_74138DecoderLogicFunction(chip, 7);
@@ -637,95 +674,155 @@ public class ChipLogicCalculation {
 		Pin outputPin = pins.get(outputPinId);
 
 		if (Set.of(A, B, C, G2A, G2B, G1).stream().anyMatch(pin -> pin.getPinState() == UNKNOWN)) {
-			outputPin.setPinState(UNKNOWN);
-			return;
-		}
-
-
-		Pin G2 = new PinIn(-1, UNKNOWN);
-		if (Set.of(G2A, G2B).stream().anyMatch(pin -> pin.getPinState() == HIGH)) {
-			G2.setPinState(HIGH);
-		} else if (Set.of(G2A, G2B).stream().anyMatch(pin -> pin.getPinState() == UNKNOWN)) {
-			G2.setPinState(UNKNOWN);
-		} else {
-			G2.setPinState(LOW);
-		}
-
-		if (G1.getPinState() == LOW || G2.getPinState() == HIGH) {
 			outputPin.setPinState(HIGH);
 			return;
 		}
 
+		// Sprawdź, czy G2 jest aktywne
+		boolean G2 = G2A.getPinState() == HIGH || G2B.getPinState() == HIGH;
+
+		// Jeśli G1 jest niski lub G2 jest wysoki, wyjścia są nieaktywne (wysokie)
+		if (G1.getPinState() == LOW || G2) {
+			outputPin.setPinState(HIGH);
+			return;
+		}
+
+		// Logika dekodera
+		boolean A_High = A.getPinState() == HIGH;
+		boolean B_High = B.getPinState() == HIGH;
+		boolean C_High = C.getPinState() == HIGH;
+
 		switch (outputPinId) {
-			// Y0
 			case 15:
-				if (Set.of(A, B, C).stream().allMatch(p -> p.getPinState() == LOW)) {
-					outputPin.setPinState(LOW);
-				} else {
-					outputPin.setPinState(HIGH);
-				}
+				outputPin.setPinState((!A_High && !B_High && !C_High) ? LOW : HIGH);
 				break;
-			// Y1
 			case 14:
-				if (Set.of(B, C).stream().allMatch(p -> p.getPinState() == LOW) &&
-						A.getPinState() == HIGH) {
-					outputPin.setPinState(LOW);
-				} else {
-					outputPin.setPinState(HIGH);
-				}
+				outputPin.setPinState((A_High && !B_High && !C_High) ? LOW : HIGH);
 				break;
-			// Y2
 			case 13:
-				if (Set.of(A, C).stream().allMatch(p -> p.getPinState() == LOW) &&
-						B.getPinState() == HIGH) {
-					outputPin.setPinState(LOW);
-				} else {
-					outputPin.setPinState(HIGH);
-				}
+				outputPin.setPinState((!A_High && B_High && !C_High) ? LOW : HIGH);
 				break;
-			// Y3
 			case 12:
-				if (C.getPinState() == LOW &&
-						Set.of(A, B).stream().allMatch(p -> p.getPinState() == HIGH)) {
-					outputPin.setPinState(LOW);
-				} else {
-					outputPin.setPinState(HIGH);
-				}
+				outputPin.setPinState((A_High && B_High && !C_High) ? LOW : HIGH);
 				break;
-			// Y4
 			case 11:
-				if (Set.of(A, B).stream().allMatch(p -> p.getPinState() == LOW) && C.getPinState() == HIGH) {
-					outputPin.setPinState(LOW);
-				} else {
-					outputPin.setPinState(HIGH);
-				}
+				outputPin.setPinState((!A_High && !B_High && C_High) ? LOW : HIGH);
 				break;
-			// Y5
 			case 10:
-				if (B.getPinState() == LOW &&
-						Set.of(A, C).stream().allMatch(p -> p.getPinState() == HIGH)) {
-					outputPin.setPinState(LOW);
-				} else {
-					outputPin.setPinState(HIGH);
-				}
+				outputPin.setPinState((A_High && !B_High && C_High) ? LOW : HIGH);
 				break;
-			// Y6
 			case 9:
-				if (A.getPinState() == LOW && Set.of(B, C).stream().allMatch(p -> p.getPinState() == HIGH)) {
-					outputPin.setPinState(LOW);
-				} else {
-					outputPin.setPinState(HIGH);
-				}
+				outputPin.setPinState((!A_High && B_High && C_High) ? LOW : HIGH);
 				break;
-			// Y7
 			case 7:
-				if (Set.of(A, B, C).stream().allMatch(p -> p.getPinState() == HIGH)) {
-					outputPin.setPinState(LOW);
-				} else {
-					outputPin.setPinState(HIGH);
-				}
+				outputPin.setPinState((A_High && B_High && C_High) ? LOW : HIGH);
 				break;
 		}
 	}
+
+
+//		private static void _74138DecoderLogicFunction(Chip chip, int outputPinId) {
+//		Map<Integer, Pin> pins = chip.getPinMap();
+//
+//		Pin A = pins.get(1);
+//		Pin B = pins.get(2);
+//		Pin C = pins.get(3);
+//		Pin G2A = pins.get(4);
+//		Pin G2B = pins.get(5);
+//		Pin G1 = pins.get(6);
+//
+//		Pin outputPin = pins.get(outputPinId);
+//
+//		if (Set.of(A, B, C, G2A, G2B, G1).stream().anyMatch(pin -> pin.getPinState() == UNKNOWN)) {
+//			outputPin.setPinState(UNKNOWN);
+//			return;
+//		}
+//
+//
+//		Pin G2 = new PinIn(-1, UNKNOWN);
+//		if (Set.of(G2A, G2B).stream().anyMatch(pin -> pin.getPinState() == HIGH)) {
+//			G2.setPinState(HIGH);
+//		} else if (Set.of(G2A, G2B).stream().anyMatch(pin -> pin.getPinState() == UNKNOWN)) {
+//			G2.setPinState(UNKNOWN);
+//		} else {
+//			G2.setPinState(LOW);
+//		}
+//
+//		if (G1.getPinState() == LOW || G2.getPinState() == HIGH) {
+//			outputPin.setPinState(HIGH);
+//			return;
+//		}
+//
+//		switch (outputPinId) {
+//			// Y0
+//			case 15:
+//				if (Set.of(A, B, C).stream().allMatch(p -> p.getPinState() == LOW)) {
+//					outputPin.setPinState(LOW);
+//				} else {
+//					outputPin.setPinState(HIGH);
+//				}
+//				break;
+//			// Y1
+//			case 14:
+//				if (Set.of(B, C).stream().allMatch(p -> p.getPinState() == LOW) &&
+//						A.getPinState() == HIGH) {
+//					outputPin.setPinState(LOW);
+//				} else {
+//					outputPin.setPinState(HIGH);
+//				}
+//				break;
+//			// Y2
+//			case 13:
+//				if (Set.of(A, C).stream().allMatch(p -> p.getPinState() == LOW) &&
+//						B.getPinState() == HIGH) {
+//					outputPin.setPinState(LOW);
+//				} else {
+//					outputPin.setPinState(HIGH);
+//				}
+//				break;
+//			// Y3
+//			case 12:
+//				if (C.getPinState() == LOW &&
+//						Set.of(A, B).stream().allMatch(p -> p.getPinState() == HIGH)) {
+//					outputPin.setPinState(LOW);
+//				} else {
+//					outputPin.setPinState(HIGH);
+//				}
+//				break;
+//			// Y4
+//			case 11:
+//				if (Set.of(A, B).stream().allMatch(p -> p.getPinState() == LOW) && C.getPinState() == HIGH) {
+//					outputPin.setPinState(LOW);
+//				} else {
+//					outputPin.setPinState(HIGH);
+//				}
+//				break;
+//			// Y5
+//			case 10:
+//				if (B.getPinState() == LOW &&
+//						Set.of(A, C).stream().allMatch(p -> p.getPinState() == HIGH)) {
+//					outputPin.setPinState(LOW);
+//				} else {
+//					outputPin.setPinState(HIGH);
+//				}
+//				break;
+//			// Y6
+//			case 9:
+//				if (A.getPinState() == LOW && Set.of(B, C).stream().allMatch(p -> p.getPinState() == HIGH)) {
+//					outputPin.setPinState(LOW);
+//				} else {
+//					outputPin.setPinState(HIGH);
+//				}
+//				break;
+//			// Y7
+//			case 7:
+//				if (Set.of(A, B, C).stream().allMatch(p -> p.getPinState() == HIGH)) {
+//					outputPin.setPinState(LOW);
+//				} else {
+//					outputPin.setPinState(HIGH);
+//				}
+//				break;
+//		}
+//	}
 
 }

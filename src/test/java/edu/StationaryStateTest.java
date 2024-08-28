@@ -40,8 +40,29 @@ public class StationaryStateTest {
 		Assertions.assertEquals(PinState.HIGH, simulation.getChips().get(chipId1).getPinMap().get(3).getPinState());
 	}
 
+	// Pin jest w stanie UNKONWN ale nie jest podłączony - nie rzuca wyjatku UnknownStateException
 	@Test
-	void testStationaryStateThrowsUnknownStateException() throws UnknownChip, UnknownPin, ShortCircuitException, UnknownComponent{
+	void testStationaryStateNOTThrowsUnknownStateExceptionWhenPinHasUNKNOWNButIsNotConnected() throws UnknownChip,
+			UnknownPin, ShortCircuitException, UnknownComponent {
+		int chipId1 = simulation.createChip(7400);
+		int chipId2 = simulation.createInputPinHeader(2);
+
+		Set<ComponentPinState> states = new HashSet<>();
+		states.add(new ComponentPinState(chipId2, 1, PinState.HIGH));
+		states.add(new ComponentPinState(chipId2, 2, PinState.UNKNOWN));
+
+		simulation.connect(chipId2, 1, chipId1, 1);
+		// simulation.connect(chipId2, 2, chipId1, 2);
+
+		assertDoesNotThrow(() -> simulation.stationaryState(states),
+						   "Should not throw UnknownStateException for unknown pin state.");
+	}
+
+	@Test
+	void testStationaryStateThrowsUnknownStateExceptionWhenPinStateIsUKNOWNAndIsConnectedToo() throws UnknownChip,
+			UnknownPin,
+			ShortCircuitException,
+			UnknownComponent{
 		int chipId1 = simulation.createChip(7400);
 		int chipId2 = simulation.createInputPinHeader(2);
 
@@ -53,7 +74,7 @@ public class StationaryStateTest {
 		simulation.connect(chipId2, 2, chipId1, 2);
 
 		assertThrows(UnknownStateException.class, () -> simulation.stationaryState(states),
-					 "Should throw UnknownStateException for unknown pin state.");
+					 "Should throw UnknownStateException for unknown pin state which is connected also.");
 	}
 
 	@Test
@@ -195,5 +216,4 @@ public class StationaryStateTest {
 		Assertions.assertEquals(PinState.HIGH, simulation.getChips().get(chipId3).getPinMap().get(1).getPinState());
 		Assertions.assertEquals(PinState.HIGH, simulation.getChips().get(chipId4).getPinMap().get(1).getPinState());
 	}
-
 }
