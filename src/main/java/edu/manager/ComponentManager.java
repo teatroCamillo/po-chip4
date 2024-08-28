@@ -100,13 +100,13 @@ public class ComponentManager implements Component, CircuitDesign {
 //	public void connect(int component1,
 //						int pin1,
 //						int component2,
-//						int pin2) throws UnknownComponent, UnknownPin, ShortCircuitException {
+//						int pin2) throws UnknownComponent, UnknownPin, ShortCircuitException{
 //
 //		// Sprawdź, czy komponenty istnieją
-//		if (!chips.containsKey(component1)) {
+//		if(!chips.containsKey(component1)){
 //			throw new UnknownComponent(component1);
 //		}
-//		if (!chips.containsKey(component2)) {
+//		if(!chips.containsKey(component2)){
 //			throw new UnknownComponent(component2);
 //		}
 //
@@ -114,10 +114,10 @@ public class ComponentManager implements Component, CircuitDesign {
 //		Chip chip1 = chips.get(component1);
 //		Chip chip2 = chips.get(component2);
 //
-//		if (!chip1.getPinMap().containsKey(pin1)) {
+//		if(!chip1.getPinMap().containsKey(pin1)){
 //			throw new UnknownPin(component1, pin1);
 //		}
-//		if (!chip2.getPinMap().containsKey(pin2)) {
+//		if(!chip2.getPinMap().containsKey(pin2)){
 //			throw new UnknownPin(component2, pin2);
 //		}
 //
@@ -145,12 +145,8 @@ public class ComponentManager implements Component, CircuitDesign {
 //
 //		// TODO: OK - przetestowane
 //		// 2. Sprawdzenie, czy połączenie nie powoduje zwarcia (wiele wyjścia do jednego wejścia)
-//		if (directConnections
-//				.stream()
-//				.anyMatch(connection -> connection.targetChipId() == component2
-//						&& connection.targetPinId() == pin2
-//						&& (connection.sourceChipId() != component1 || connection.sourcePinId() != pin1)
-//				)) {
+//		if(directConnections.stream()
+//				.anyMatch(connection -> connection.targetChipId() == component2 && connection.targetPinId() == pin2 && (connection.sourceChipId() != component1 || connection.sourcePinId() != pin1))){
 //			//System.out.println("Cannot connect this pin: " + pin2 + " in component "
 //			//						   + component2 + ". It is already connected.");
 //			throw new ShortCircuitException();
@@ -158,8 +154,11 @@ public class ComponentManager implements Component, CircuitDesign {
 //
 //		// TODO: OK - przetestowane
 //		// 3. Sprawdzenie, czy nie ma połączenia wyjścia układu z wejściami użytkownika (HeaderIn)
-//		if (chip2.getClass().getSimpleName().equals(Util.HEADER_IN) &&
-//				chip1.getPinMap().get(pin1).getClass().getSimpleName().equals(Util.PIN_OUT)) {
+//		if(chip2.getClass().getSimpleName().equals(Util.HEADER_IN) && chip1.getPinMap()
+//				.get(pin1)
+//				.getClass()
+//				.getSimpleName()
+//				.equals(Util.PIN_OUT)){
 //			//System.out.println("Cannot connect an output pin to a HeaderIn input pin: " + pin2 + " in component " +
 //			// component2);
 //			throw new ShortCircuitException();
@@ -167,11 +166,11 @@ public class ComponentManager implements Component, CircuitDesign {
 //
 //		// TODO: OK - przetestowane
 //		// 4. Sprawdz czy nie ma połączenia wyjście do wyjścia.
-//		if (chip1.getPinMap().get(pin1).getClass().getSimpleName().equals(Util.PIN_OUT) &&
-//				chip2.getPinMap().get(pin2).getClass().getSimpleName().equals(Util.PIN_OUT)) {
+//		if(isOutputPin(component1, pin1) && isOutputPin(component2, pin2)){
 //			//System.out.println("Cannot connect two output pins!");
 //			throw new ShortCircuitException();
 //		}
+//
 //
 //		addNewConnection(component1, pin1, component2, pin2);
 //	}
@@ -200,20 +199,38 @@ public class ComponentManager implements Component, CircuitDesign {
 			throw new UnknownPin(component2, pin2);
 		}
 
+		// Sprawdź, czy takie połączenie już istnieje
+		if (directConnections.stream().anyMatch(connection ->
+														(connection.sourceChipId() == component1 && connection.sourcePinId() == pin1 &&
+																connection.targetChipId() == component2 && connection.targetPinId() == pin2) ||
+																(connection.sourceChipId() == component2 && connection.sourcePinId() == pin2 &&
+																		connection.targetChipId() == component1 && connection.targetPinId() == pin1))) {
+			return;  // Jeśli połączenie istnieje, nie dodawaj ponownie
+		}
+
 		// 1. Sprawdz, czy oba piny to wyjścia (bezpośrednie połączenie dwóch wyjść)
 		boolean isPin1Output = isOutputPin(component1, pin1);
 		boolean isPin2Output = isOutputPin(component2, pin2);
 
+		//"Cannot connect two output pins directly."
 		if (isPin1Output && isPin2Output) {
 			throw new ShortCircuitException();
 		}
 
 		// 2. Sprawdzenie, czy połączenie nie powoduje pośredniego zwarcia wyjść
+		//"Indirect short circuit detected (component2 -> component1)."
 		if (isPin1Output && isConnectedToOutput(component2, pin2)) {
 			throw new ShortCircuitException();
 		}
-
+		//"Indirect short circuit detected (component1 -> component2)."
 		if (isPin2Output && isConnectedToOutput(component1, pin1)) {
+			throw new ShortCircuitException();
+		}
+
+		// 3. Sprawdzanie, czy nie tworzymy pętli zwarcia
+		//"Short circuit detected: input connected to another input, which is connected to an output.
+		if (isInputPinConnectedToAnotherInputAndOutput(component1, pin1) ||
+				isInputPinConnectedToAnotherInputAndOutput(component2, pin2)) {
 			throw new ShortCircuitException();
 		}
 
@@ -221,10 +238,31 @@ public class ComponentManager implements Component, CircuitDesign {
 		addNewConnection(component1, pin1, component2, pin2);
 	}
 
+	private boolean isInputPinConnectedToAnotherInputAndOutput(int component, int pin) {
+		// Sprawdza, czy pin wejściowy jest połączony z innym pinem wejściowym,
+		// który jest połączony z wyjściem.
+		for (Connection connection : directConnections) {
+			if (connection.sourceChipId() == component && connection.sourcePinId() == pin) {
+				if (isInputPin(connection.targetChipId(), connection.targetPinId())) {
+					if (isConnectedToOutput(connection.targetChipId(), connection.targetPinId())) {
+						return true;
+					}
+				}
+			}
+		}
+		return false;
+	}
+
 	private boolean isOutputPin(int component, int pin) {
 		// Sprawdź, czy dany pin jest wyjściem
 		Chip chip = chips.get(component);
 		return chip.getPinMap().get(pin).getClass().getSimpleName().equals(Util.PIN_OUT);
+	}
+
+	private boolean isInputPin(int component, int pin) {
+		// Sprawdź, czy dany pin jest wejściem
+		Chip chip = chips.get(component);
+		return chip.getPinMap().get(pin).getClass().getSimpleName().equals(Util.PIN_IN);
 	}
 
 	private boolean isConnectedToOutput(int component, int pin) {
@@ -261,7 +299,6 @@ public class ComponentManager implements Component, CircuitDesign {
 	}
 
 
-
 	// z poziomu managera ustawiam subskrypcję miedzy pinami
 	private void setSubscribe(int component1,
 							  int pin1,
@@ -275,7 +312,9 @@ public class ComponentManager implements Component, CircuitDesign {
 	}
 
 	public void addNewConnection(int sourceChipId, int sourcePinId, int targetChipId, int targetPinId) {
+		// zdublowanie w obie strony aby było jednoznaczne że jest połączenie między dwoma pinami
 		this.directConnections.add(new Connection(sourceChipId, sourcePinId, targetChipId, targetPinId));
+		this.directConnections.add(new Connection(targetChipId, targetPinId, sourceChipId, sourcePinId));
 		// zestawienie subskrypcji
 		if(!SWITCH_BETWEEN_PO){
 			setSubscribe(sourceChipId, sourcePinId, targetChipId, targetPinId);

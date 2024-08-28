@@ -1,7 +1,7 @@
 package edu.model.chip;
 
 
-import Simulation;
+import edu.Simulation;
 import edu.uj.po.simulation.interfaces.PinState;
 import edu.uj.po.simulation.interfaces.UnknownChip;
 import edu.model.Chip;

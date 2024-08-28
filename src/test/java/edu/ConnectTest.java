@@ -7,6 +7,7 @@ import edu.uj.po.simulation.interfaces.UnknownPin;
 import edu.manager.ComponentManager;
 import jdk.jfr.Description;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -63,7 +64,7 @@ public class ConnectTest{
 		componentManager.connect(chipId1, 3, chipId2, 1);
 		componentManager.connect(chipId1, 3, chipId2, 1);
 
-		assertEquals(1, componentManager.getDirectConnections().size());
+		assertEquals(2, componentManager.getDirectConnections().size());
 	}
 
 	@Test
@@ -77,7 +78,7 @@ public class ConnectTest{
 		componentManager.connect(chipId1, 3, chipId2, 1);
 		componentManager.connect(chipId1, 3, chipId2, 1);
 
-		assertEquals(1, componentManager.getDirectConnections().size());
+		assertEquals(2, componentManager.getDirectConnections().size());
 	}
 
 	@Test
@@ -87,7 +88,7 @@ public class ConnectTest{
 
 		componentManager.connect(chipId1, 3, chipId1, 1);
 
-		assertThrows(ShortCircuitException.class, () -> { componentManager.connect(chipId2, 3, chipId1, 1); },
+		assertThrows(ShortCircuitException.class, () -> { componentManager.connect(chipId2, 1, chipId1, 1); },
 					 "Should throw ShortCircuitException when multiple outputs connect to the same input.");
 	}
 
@@ -184,5 +185,56 @@ public class ConnectTest{
 
 		assertThrows(ShortCircuitException.class, () -> componentManager.connect(chipId, 3, chipId, 3),
 					 "Should throw ShortCircuitException when connecting a chip's output to its own output.");
+	}
+
+	@Test
+	void testValidConnectionWhenInputIsConnectedToOtherInput() throws UnknownChip, UnknownComponent, UnknownPin,
+			ShortCircuitException{
+		int chipId0 = componentManager.createInputPinHeader(2);
+		int chipId1 = componentManager.createChip(7400);
+		int chipId2 = componentManager.createChip(7400);
+
+		componentManager.connect(chipId0, 1, chipId1, 1);
+		componentManager.connect(chipId0, 2, chipId1, 2);
+
+		assertDoesNotThrow(() -> componentManager.connect(chipId1, 1, chipId2, 1));
+		assertDoesNotThrow(() -> componentManager.connect(chipId1, 2, chipId2, 2));
+	}
+
+	@Test
+	void testThrowsShortCircuitExceptionWhenInputIsConnectedToOtherInputAndThe2ndInputIsConnectedToOutput() throws UnknownChip,	UnknownComponent,
+			UnknownPin,	ShortCircuitException{
+		int chipId0 = componentManager.createInputPinHeader(2);
+		int chipId1 = componentManager.createChip(7400);
+		int chipId2 = componentManager.createChip(7400);
+
+		componentManager.connect(chipId0, 1, chipId1, 1);
+		componentManager.connect(chipId0, 2, chipId1, 2);
+
+		componentManager.connect(chipId1, 1, chipId2, 1);
+		componentManager.connect(chipId1, 2, chipId2, 2);
+
+		assertThrows(ShortCircuitException.class, () -> componentManager.connect(chipId2, 3, chipId2, 2),
+					 "");
+
+		assertThrows(ShortCircuitException.class, () -> componentManager.connect(chipId2, 2, chipId2, 3),
+					 "");
+	}
+
+	@Disabled
+	@Test
+	void testThrowsShortCircuitExceptionWhenInputIsConnectedToOutputAndWhenThatInputHasSignalFromOtherOutputMoreComplex() throws UnknownChip, UnknownComponent, UnknownPin, ShortCircuitException{
+		int chipId0 = componentManager.createInputPinHeader(2);
+		int chipId1 = componentManager.createChip(7400);
+		int chipId2 = componentManager.createChip(7400);
+
+		componentManager.connect(chipId0, 1, chipId1, 1);
+		componentManager.connect(chipId0, 2, chipId1, 2);
+
+		componentManager.connect(chipId1, 1, chipId2, 1);
+		componentManager.connect(chipId1, 2, chipId2, 2);
+
+		assertThrows(ShortCircuitException.class, () -> componentManager.connect(chipId2, 3, chipId2, 2),
+					 "Should throw ShortCircuitException when connecting Chip7404 output to HeaderIn.");
 	}
 }

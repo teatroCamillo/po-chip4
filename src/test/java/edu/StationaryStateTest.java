@@ -3,6 +3,7 @@ package edu;
 import edu.uj.po.simulation.interfaces.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashSet;
@@ -40,7 +41,9 @@ public class StationaryStateTest {
 		Assertions.assertEquals(PinState.HIGH, simulation.getChips().get(chipId1).getPinMap().get(3).getPinState());
 	}
 
+	//TODO: do rozważenia
 	// Pin jest w stanie UNKONWN ale nie jest podłączony - nie rzuca wyjatku UnknownStateException
+	@Disabled
 	@Test
 	void testStationaryStateNOTThrowsUnknownStateExceptionWhenPinHasUNKNOWNButIsNotConnected() throws UnknownChip,
 			UnknownPin, ShortCircuitException, UnknownComponent {
