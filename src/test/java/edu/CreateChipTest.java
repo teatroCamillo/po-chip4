@@ -23,8 +23,8 @@ class CreateChipTest{
 
 	@Test
 	void testSimulationInitialization() throws UnknownChip{
-		assertNotNull(componentManager, "edu.Simulation instance should be initialized.");
-		assertTrue(componentManager.createChip(7400) >= 0, "edu.Simulation should have initialized available chips.");
+		assertNotNull(componentManager, "Simulation instance should be initialized.");
+		assertTrue(componentManager.createChip(7400) >= 0, "Simulation should have initialized available chips.");
 	}
 
 	@ParameterizedTest

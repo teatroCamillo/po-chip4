@@ -209,13 +209,13 @@ public class ComponentManager implements Component, CircuitDesign {
 		}
 
 		// 2. Sprawdzenie, czy połączenie nie powoduje pośredniego zwarcia wyjść
-//		if (isPin1Output && isConnectedToOutput(component2, pin2)) {
-//			throw new ShortCircuitException();
-//		}
-//
-//		if (isPin2Output && isConnectedToOutput(component1, pin1)) {
-//			throw new ShortCircuitException();
-//		}
+		if (isPin1Output && isConnectedToOutput(component2, pin2)) {
+			throw new ShortCircuitException();
+		}
+
+		if (isPin2Output && isConnectedToOutput(component1, pin1)) {
+			throw new ShortCircuitException();
+		}
 
 		// Jeśli wszystkie powyższe warunki są spełnione, dodaj połączenie
 		addNewConnection(component1, pin1, component2, pin2);
