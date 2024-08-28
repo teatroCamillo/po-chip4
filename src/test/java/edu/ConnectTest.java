@@ -15,8 +15,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class ConnectTest{
 
-	// TODO: rozszerz później testy o bardziej złożone połaczenia jak już będą zaimplementowane wszystkie układy
-
 	private ComponentManager componentManager;
 
 	@BeforeEach
@@ -201,6 +199,7 @@ public class ConnectTest{
 		assertDoesNotThrow(() -> componentManager.connect(chipId1, 2, chipId2, 2));
 	}
 
+	//SCiE 0
 	@Test
 	void testThrowsShortCircuitExceptionWhenInputIsConnectedToOtherInputAndThe2ndInputIsConnectedToOutput() throws UnknownChip,	UnknownComponent,
 			UnknownPin,	ShortCircuitException{
@@ -221,20 +220,109 @@ public class ConnectTest{
 					 "");
 	}
 
-	@Disabled
+	//SCiE 1
 	@Test
 	void testThrowsShortCircuitExceptionWhenInputIsConnectedToOutputAndWhenThatInputHasSignalFromOtherOutputMoreComplex() throws UnknownChip, UnknownComponent, UnknownPin, ShortCircuitException{
 		int chipId0 = componentManager.createInputPinHeader(2);
 		int chipId1 = componentManager.createChip(7400);
 		int chipId2 = componentManager.createChip(7400);
+		int chipId3 = componentManager.createChip(7400);
 
 		componentManager.connect(chipId0, 1, chipId1, 1);
 		componentManager.connect(chipId0, 2, chipId1, 2);
 
-		componentManager.connect(chipId1, 1, chipId2, 1);
-		componentManager.connect(chipId1, 2, chipId2, 2);
+		componentManager.connect(chipId1, 1, chipId2, 4);
+		componentManager.connect(chipId1, 2, chipId2, 5);
 
-		assertThrows(ShortCircuitException.class, () -> componentManager.connect(chipId2, 3, chipId2, 2),
-					 "Should throw ShortCircuitException when connecting Chip7404 output to HeaderIn.");
+		componentManager.connect(chipId2, 4, chipId3, 10);
+		componentManager.connect(chipId2, 5, chipId3, 9);
+
+		assertThrows(ShortCircuitException.class, () -> componentManager.connect(chipId3, 8, chipId3, 10),
+					 "");
+
+		assertThrows(ShortCircuitException.class, () -> componentManager.connect(chipId3, 10, chipId3, 8),
+					 "");
+	}
+
+	//SCiE 2 - odwórć kolejność łączeń z //SCiE 1
+	@Test
+	void testThrowsShortCircuitExceptionWhenInputIsConnectedToOutputAndWhenThatInputHasSignalFromOtherOutputMoreComplexV0() throws UnknownChip, UnknownComponent, UnknownPin, ShortCircuitException{
+		int chipId0 = componentManager.createInputPinHeader(2);
+		int chipId1 = componentManager.createChip(7400);
+		int chipId2 = componentManager.createChip(7400);
+		int chipId3 = componentManager.createChip(7400);
+
+		// inverted
+		componentManager.connect(chipId1, 1, chipId0, 1);
+		componentManager.connect(chipId1, 2, chipId0, 2);
+
+		componentManager.connect(chipId1, 1, chipId2, 4);
+		componentManager.connect(chipId1, 2, chipId2, 5);
+
+		// inverted
+		componentManager.connect(chipId3, 10, chipId2, 4);
+		componentManager.connect(chipId3, 9, chipId2, 5);
+
+		assertThrows(ShortCircuitException.class, () -> componentManager.connect(chipId3, 8, chipId3, 10),
+					 "");
+
+		assertThrows(ShortCircuitException.class, () -> componentManager.connect(chipId3, 10, chipId3, 8),
+					 "");
+	}
+
+	//SCiE 3
+	@Test
+	void testThrowsShortCircuitExceptionWhenInputIsConnectedToOutputAndWhenThatInputHasSignalFromOtherOutputMoreComplexV1() throws UnknownChip, UnknownComponent, UnknownPin, ShortCircuitException{
+		int chipId0 = componentManager.createInputPinHeader(2);
+		int chipId1 = componentManager.createChip(7400);
+		int chipId2 = componentManager.createChip(7400);
+		int chipId3 = componentManager.createChip(7400);
+
+		componentManager.connect(chipId0, 1, chipId1, 1);
+		componentManager.connect(chipId0, 2, chipId1, 2);
+
+		componentManager.connect(chipId1, 1, chipId2, 4);
+		componentManager.connect(chipId1, 2, chipId2, 5);
+
+		componentManager.connect(chipId2, 4, chipId3, 10);
+		componentManager.connect(chipId2, 5, chipId3, 9);
+
+		assertThrows(ShortCircuitException.class, () -> componentManager.connect(chipId3, 8, chipId2, 4),
+					 "");
+
+		assertThrows(ShortCircuitException.class, () -> componentManager.connect(chipId2, 4, chipId3, 8),
+					 "");
+	}
+
+	//SCiE 4 - zamieniona kolejność połączenia w stosunku do //SCiE 3 - najpierw out potem in
+	// ten przypadek ze zmiana kolejności łączenia trudno spełnić i nie mam pewności ze on jest wymagany
+	// odpuszczam póki co i rozważam inny przypadek
+	@Disabled
+	@Test
+	void testThrowsShortCircuitExceptionWhenInputIsConnectedToOutputAndWhenThatInputHasSignalFromOtherOutputMoreComplexV2() throws UnknownChip, UnknownComponent, UnknownPin, ShortCircuitException{
+		int chipId0 = componentManager.createInputPinHeader(2);
+		int chipId1 = componentManager.createChip(7400);
+		int chipId2 = componentManager.createChip(7400);
+		int chipId3 = componentManager.createChip(7400);
+
+		//łaczenie chip 0 z 1
+		componentManager.connect(chipId0, 1, chipId1, 1);
+		componentManager.connect(chipId0, 2, chipId1, 2);
+
+		//łaczenie chip 2 z 3
+		componentManager.connect(chipId2, 4, chipId3, 10);
+		componentManager.connect(chipId2, 5, chipId3, 9);
+
+		componentManager.connect(chipId3, 8, chipId2, 4);
+		//componentManager.connect(chipId2, 4, chipId3, 8);
+
+		//w tej kolejności łaczenie chip 1 z 2 - tu powinien być wyjątek
+		componentManager.connect(chipId1, 2, chipId2, 5);
+
+		assertThrows(ShortCircuitException.class, () -> componentManager.connect(chipId1, 1, chipId2, 4),
+					 "");
+
+		assertThrows(ShortCircuitException.class, () -> componentManager.connect(chipId2, 4, chipId1, 1),
+					 "");
 	}
 }

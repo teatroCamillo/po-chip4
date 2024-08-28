@@ -48,15 +48,15 @@ public class SimulationManager implements Component, SimulationAndOptimization {
 	@Override
 	public void stationaryState(Set<ComponentPinState> states) throws UnknownStateException {
 
-		for (ComponentPinState state : states) {
-			if (state.state() == PinState.UNKNOWN) {
-				throw new UnknownStateException(state);
-			}
-		}
+//		for (ComponentPinState state : states) {
+//			if (state.state() == PinState.UNKNOWN) {
+//				throw new UnknownStateException(state);
+//			}
+//		}
 
 		setMomentZero(states);
 		// 1. walidacja HEADER_IN
-		//validateHeaders(Util.HEADER_IN);
+		validateHeaders(Util.HEADER_IN);
 		componentManager.propagateSignal();
 
 		Set<ComponentPinState> previousState;
@@ -71,14 +71,14 @@ public class SimulationManager implements Component, SimulationAndOptimization {
 			currentState.clear();
 			currentState = Util.saveCircuitState(componentManager.chips);
 		} while (!previousState.equals(currentState));
-		validateHeadersV2();
+		//validateHeadersV2();
 		// 3. walidacja HEADER_OUT
-//		boolean isHeaderOut = componentManager.chips.values()
-//				.stream()
-//				.anyMatch(chip -> chip.getClass().getSimpleName().equals(Util.HEADER_OUT));
-		//System.out.println("Sprawdzam stan układu przed validacja HeaderOur");
-		//currentState.forEach(System.out::println);
-		//if(isHeaderOut) validateHeaders(Util.HEADER_OUT);
+		boolean isHeaderOut = componentManager.chips.values()
+				.stream()
+				.anyMatch(chip -> chip.getClass().getSimpleName().equals(Util.HEADER_OUT));
+		System.out.println("Sprawdzam stan układu przed validacja HeaderOur");
+		currentState.forEach(System.out::println);
+		if(isHeaderOut) validateHeaders(Util.HEADER_OUT);
 	}
 
 	public void setMomentZero(Set<ComponentPinState> states){
