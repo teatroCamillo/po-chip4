@@ -48,11 +48,11 @@ public class SimulationManager implements Component, SimulationAndOptimization {
 	@Override
 	public void stationaryState(Set<ComponentPinState> states) throws UnknownStateException {
 
-//		for (ComponentPinState state : states) {
-//			if (state.state() == PinState.UNKNOWN) {
-//				throw new UnknownStateException(state);
-//			}
-//		}
+		for (ComponentPinState state : states) {
+			if (state.state() == PinState.UNKNOWN) {
+				throw new UnknownStateException(state);
+			}
+		}
 
 		setMomentZero(states);
 		// 1. walidacja HEADER_IN

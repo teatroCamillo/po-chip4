@@ -1,6 +1,7 @@
 package edu.manager;
 
 import edu.model.Pin;
+import edu.model.chip.HeaderOut;
 import edu.uj.po.simulation.interfaces.*;
 import edu.model.Chip;
 import edu.model.Connection;
@@ -81,19 +82,34 @@ public class ComponentManager implements Component, CircuitDesign {
 	public void propagateSignal(){
 		// 1. przechodze po wszystkich połączeniach
 		// 2. mapuje stan pinu docelowego na źródłowy
+		System.out.println("\nPropagate --- START");
 		if(SWITCH_BETWEEN_PO){
-			directConnections.forEach(connection -> {
+			// HeaderOut nie  przesyła  sygnału nigdzie
+			directConnections
+					.stream().filter(connection -> !(chips.get(connection.sourceChipId()) instanceof HeaderOut))
+			.forEach(connection -> {
+
+				System.out.println(connection);
+
 				int sourceChipId = connection.sourceChipId();
-				int sourceId = connection.sourcePinId();
+				int sourcePinId = connection.sourcePinId();
 				int targetChipId = connection.targetChipId();
 				int targetPinId = connection.targetPinId();
 
-				Pin sourcePin = chips.get(sourceChipId).getPinMap().get(sourceId);
+				Pin sourcePin = chips.get(sourceChipId).getPinMap().get(sourcePinId);
 				// 0. sprawdź czy outputPin biezącego componentu jest w odpowiednim stanie - != UNKNOWN
-				if(sourcePin.getPinState() != PinState.UNKNOWN)
+				if(sourcePin.getPinState() != PinState.UNKNOWN){
+					if(sourceChipId == 1 || sourceChipId == 4){
+						System.out.println(
+								"Propaguję... : Z source Chip: " + sourceChipId + ", pin: " + sourcePinId + ", stan:" + sourcePin.getPinState());
+						System.out.println("Na       			    Chip: " + targetChipId + ", pin: " + targetPinId);
+					}
 					chips.get(targetChipId).getPinMap().get(targetPinId).setPinState(sourcePin.getPinState());
+
+				}
 			});
 		}
+		System.out.println("\nPropagate --- END \n");
 	}
 
 	@Override
