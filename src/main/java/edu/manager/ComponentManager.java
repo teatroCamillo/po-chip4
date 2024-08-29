@@ -99,7 +99,7 @@ public class ComponentManager implements Component, CircuitDesign {
 				Pin sourcePin = chips.get(sourceChipId).getPinMap().get(sourcePinId);
 				// 0. sprawdź czy outputPin biezącego componentu jest w odpowiednim stanie - != UNKNOWN
 				if(sourcePin.getPinState() != PinState.UNKNOWN){
-					if(sourceChipId == 1 || sourceChipId == 4){
+					if(sourceChipId == 2 || sourceChipId == 6){
 						System.out.println(
 								"Propaguję... : Z source Chip: " + sourceChipId + ", pin: " + sourcePinId + ", stan:" + sourcePin.getPinState());
 						System.out.println("Na       			    Chip: " + targetChipId + ", pin: " + targetPinId);

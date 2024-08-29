@@ -63,6 +63,7 @@ public class SimulationManager implements Component, SimulationAndOptimization {
 		Set<ComponentPinState> currentState;
 		currentState = Util.saveCircuitState(componentManager.chips);
 		do {
+			System.out.println("\n");
 			previousState = new HashSet<>(currentState);
 
 			componentManager.chips.values().forEach(Chip::simulate);
@@ -76,7 +77,7 @@ public class SimulationManager implements Component, SimulationAndOptimization {
 		boolean isHeaderOut = componentManager.chips.values()
 				.stream()
 				.anyMatch(chip -> chip.getClass().getSimpleName().equals(Util.HEADER_OUT));
-		System.out.println("Sprawdzam stan układu przed validacja HeaderOur");
+		//System.out.println("Sprawdzam stan układu przed validacja HeaderOur");
 		currentState.forEach(System.out::println);
 		if(isHeaderOut) validateHeaders(Util.HEADER_OUT);
 	}
@@ -84,11 +85,11 @@ public class SimulationManager implements Component, SimulationAndOptimization {
 	public void setMomentZero(Set<ComponentPinState> states){
 		states.forEach(state -> {
 			Chip chip = componentManager.chips.get(state.componentId());
-			// Kuba: if chip/pin == null: throw
+			//todo:  Kuba: if chip/pin == null: throw
 
 			Pin pin = chip.getPinMap().get(state.pinId());
 			if (pin != null) {
-				System.out.println("setMomentZero wykonnuję setPinState()");
+				//System.out.println("setMomentZero wykonnuję setPinState()");
 				pin.setPinState(state.state());
 			}
 		});
@@ -203,7 +204,8 @@ public class SimulationManager implements Component, SimulationAndOptimization {
 
 		Map<Integer, Set<ComponentPinState>> resultMap = new HashMap<>();
 		Set<ComponentPinState> currentState;
-		currentState = Util.saveCircuitHeaderOutState(componentManager.chips);
+		//currentState = Util.saveCircuitHeaderOutState(componentManager.chips);
+		currentState = Util.saveCircuitState(componentManager.chips);
 		resultMap.put(0, new HashSet<>(currentState));
 
 		for(int i=1; i<=ticks; i++){
@@ -211,7 +213,8 @@ public class SimulationManager implements Component, SimulationAndOptimization {
 			componentManager.propagateSignal();
 
 			currentState.clear();
-			currentState = Util.saveCircuitHeaderOutState(componentManager.chips);
+			//currentState = Util.saveCircuitHeaderOutState(componentManager.chips);
+			currentState = Util.saveCircuitState(componentManager.chips);
 			resultMap.put(i, new HashSet<>(currentState));
 		}
 		return resultMap;

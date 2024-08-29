@@ -19,9 +19,9 @@ public class PinOut implements Pin{
 
 	@Override
 	public void setPinState(PinState pinState){
-		System.out.println("wykonuję setPinState... PinOut");
+		//System.out.println("wykonuję setPinState... PinOut");
 		this.state = pinState;
-		notifySubscribers();
+		//notifySubscribers();
 	}
 
 	@Override
@@ -45,7 +45,7 @@ public class PinOut implements Pin{
 
 	@Override
 	public void subscribe(Subscriber subscriber){
-		System.out.println("Subscrybuję: " + subscriber);
+		//System.out.println("Subscrybuję: " + subscriber);
 		subscribers.add(subscriber);
 	}
 
@@ -56,7 +56,7 @@ public class PinOut implements Pin{
 
 	@Override
 	public void notifySubscribers(){
-		System.out.println("notifySubscribers PinOut");
+		//System.out.println("notifySubscribers PinOut");
 		//subscribers.forEach(subscriber -> subscriber.update(this.state));
 		for (Subscriber subscriber : subscribers) {
 			subscriber.update(this.state);
@@ -65,10 +65,10 @@ public class PinOut implements Pin{
 
 	@Override
 	public void update(PinState state){
-		System.out.println("update PRZED IFem");
+		//System.out.println("update PRZED IFem");
 		// Sprawdzenie, czy stan faktycznie się zmienił
 		if (!this.state.equals(state)) {
-			System.out.println("Update...");
+			//System.out.println("Update...");
 			setPinState(state);
 		}
 	}

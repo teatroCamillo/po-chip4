@@ -5,8 +5,11 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -289,5 +292,56 @@ public class StationaryStateTest {
 
 		Assertions.assertEquals(PinState.HIGH, simulation.getChips().get(chipOut1).getPinMap().get(1).getPinState());
 		Assertions.assertEquals(PinState.HIGH, simulation.getChips().get(chipOut1).getPinMap().get(2).getPinState());
+	}
+
+	//T3
+	@Test
+	void testSimulationMaxComplexCircuit()
+			throws UnknownChip, UnknownStateException, UnknownPin, ShortCircuitException, UnknownComponent {
+		int chipIn0 = simulation.createInputPinHeader(1);
+		int chipIn1 = simulation.createInputPinHeader(2);
+		int chipIn2 = simulation.createInputPinHeader(3);
+		int chip7400 = simulation.createChip(7400);
+		int chip7402 = simulation.createChip(7402);
+		int chip7404 = simulation.createChip(7404);
+		int chip7408 = simulation.createChip(7408);
+		int chip7410 = simulation.createChip(7410);
+		int chipOut0 = simulation.createOutputPinHeader(1);
+		int chipOut1 = simulation.createOutputPinHeader(2);
+
+		simulation.connect(chipIn0, 1, chip7410, 9);
+
+		simulation.connect(chipIn1, 1, chip7410, 10);
+		simulation.connect(chipIn1, 2, chip7410, 11);
+
+		simulation.connect(chipIn2, 1, chip7408, 5);
+		simulation.connect(chipIn2, 2, chip7402, 2);
+		simulation.connect(chipIn2, 3, chip7402, 3);
+
+		simulation.connect(chip7410, 8, chip7408, 4);
+
+		simulation.connect(chip7408, 6, chip7404, 13);
+		simulation.connect(chip7408, 6, chipOut1, 2);
+
+		simulation.connect(chip7404, 12, chip7400, 4);
+
+		simulation.connect(chip7402, 1, chip7400, 5);
+
+		simulation.connect(chip7400, 6, chipOut0, 1);
+		simulation.connect(chip7400, 6, chipOut1, 1);
+
+		Set<ComponentPinState> states = new HashSet<>();
+		states.add(new ComponentPinState(chipIn0, 1, PinState.HIGH));
+		states.add(new ComponentPinState(chipIn1, 1, PinState.HIGH));
+		states.add(new ComponentPinState(chipIn1, 2, PinState.LOW));
+		states.add(new ComponentPinState(chipIn2, 1, PinState.LOW));
+		states.add(new ComponentPinState(chipIn2, 2, PinState.LOW));
+		states.add(new ComponentPinState(chipIn2, 3, PinState.HIGH));
+
+		simulation.stationaryState(states);
+
+		Assertions.assertEquals(PinState.HIGH, simulation.getChips().get(chipOut0).getPinMap().get(1).getPinState());
+		Assertions.assertEquals(PinState.HIGH, simulation.getChips().get(chipOut1).getPinMap().get(1).getPinState());
+		Assertions.assertEquals(PinState.LOW, simulation.getChips().get(chipOut1).getPinMap().get(2).getPinState());
 	}
 }

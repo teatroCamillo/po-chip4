@@ -23,9 +23,9 @@ public class PinIn implements Pin{
 
 	@Override
 	public void setPinState(PinState pinState){
-		System.out.println("wykonuję setPinState... PinIn");
+		//System.out.println("wykonuję setPinState... PinIn");
 		this.state = pinState;
-		notifySubscribers();
+		//notifySubscribers();
 	}
 
 	@Override

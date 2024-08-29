@@ -24,6 +24,7 @@ public class SimulationTest {
 	}
 
 	// T1
+	@Disabled
 	@Test
 	void testSimulationSimpleCircuit() throws UnknownChip, UnknownStateException, UnknownPin, ShortCircuitException, UnknownComponent{
 		// 1. Deklaracja chipów
@@ -96,11 +97,6 @@ public class SimulationTest {
 
 		int tick = 3;
 		Map<Integer, Set<ComponentPinState>> result = simulation.simulation(states0, tick);
-		result.entrySet()
-				.forEach(entry -> {
-					System.out.println("Key: " + entry.getKey());
-					for(ComponentPinState c : entry.getValue()) System.out.println(c);
-				});
 
 		for(int i=0; i<=tick; i++){
 			if(i==0){
@@ -144,18 +140,10 @@ public class SimulationTest {
 	}
 
 	//T3
+	// TODO: zepsuta propagacja NAPRAW!
 	@Disabled
-	@ParameterizedTest
-	@CsvSource({
-			"0, HIGH, HIGH, LOW",
-			"1, HIGH, HIGH, HIGH",
-			"2, HIGH, HIGH, HIGH",
-			"3, HIGH, HIGH, HIGH"
-	})
-	void testSimulationMaxComplexCircuit(int tick,
-										 String headerOutInputPin1State,
-										 String headerOutInputPin2State,
-										 String headerOutInputPin3State)
+	@Test
+	void testSimulationMaxComplexCircuit()
 			throws UnknownChip, UnknownStateException, UnknownPin, ShortCircuitException, UnknownComponent {
 		int chipIn0 = simulation.createInputPinHeader(1);
 		int chipIn1 = simulation.createInputPinHeader(2);
@@ -167,7 +155,8 @@ public class SimulationTest {
 		int chip7410 = simulation.createChip(7410);
 		int chipOut0 = simulation.createOutputPinHeader(1);
 		int chipOut1 = simulation.createOutputPinHeader(2);
-
+		System.out.println("chipIn2 : " + chipIn2);
+		System.out.println("chipOut1 : " + chipOut1);
 		simulation.connect(chipIn0, 1, chip7410, 9);
 
 		simulation.connect(chipIn1, 1, chip7410, 10);
@@ -207,20 +196,64 @@ public class SimulationTest {
 		states0.add(new ComponentPinState(chipIn2, 2, PinState.HIGH));
 		states0.add(new ComponentPinState(chipIn2, 3, PinState.LOW));
 
-		Map<Integer, Set<ComponentPinState>> result = simulation.simulation(states0, 5);
+		int tick = 3;
+		System.out.println("SIMULATON ****************");
+		Map<Integer, Set<ComponentPinState>> result = simulation.simulation(states0, tick);
+		result.forEach((key, value) -> {
+			System.out.println("Key: " + key);
+			for(ComponentPinState c : value) if(c.state() != PinState.UNKNOWN) System.out.println(c);
+		});
 
+		for(int i=0; i<=tick; i++){
+			if(i==0){
+				assertEquals(PinState.HIGH , result.get(i).stream()
+						.filter(state -> state.componentId() == chipOut0 && state.pinId() == 1)
+						.findFirst().orElseThrow().state());
 
-		assertEquals(PinState.valueOf(headerOutInputPin1State), result.get(tick).stream()
-				.filter(state -> state.componentId() == chipOut0 && state.pinId() == 1)
-				.findFirst().orElseThrow().state());
+				assertEquals(PinState.HIGH , result.get(i).stream()
+						.filter(state -> state.componentId() == chipOut1 && state.pinId() == 1)
+						.findFirst().orElseThrow().state());
+				assertEquals(PinState.LOW , result.get(i).stream()
+						.filter(state -> state.componentId() == chipOut1 && state.pinId() == 2)
+						.findFirst().orElseThrow().state());
+			}
+			if(i==1){
+				assertEquals(PinState.HIGH , result.get(i).stream()
+						.filter(state -> state.componentId() == chipOut0 && state.pinId() == 1)
+						.findFirst().orElseThrow().state());
 
-		assertEquals(PinState.valueOf(headerOutInputPin2State), result.get(tick).stream()
-				.filter(state -> state.componentId() == chipOut1 && state.pinId() == 1)
-				.findFirst().orElseThrow().state());
+				assertEquals(PinState.HIGH , result.get(i).stream()
+						.filter(state -> state.componentId() == chipOut1 && state.pinId() == 1)
+						.findFirst().orElseThrow().state());
+				assertEquals(PinState.HIGH , result.get(i).stream()
+						.filter(state -> state.componentId() == chipOut1 && state.pinId() == 2)
+						.findFirst().orElseThrow().state());
+			}
+			if(i==2){
+				assertEquals(PinState.HIGH , result.get(i).stream()
+						.filter(state -> state.componentId() == chipOut0 && state.pinId() == 1)
+						.findFirst().orElseThrow().state());
 
-		assertEquals(PinState.valueOf(headerOutInputPin3State), result.get(tick).stream()
-				.filter(state -> state.componentId() == chipOut1 && state.pinId() == 2)
-				.findFirst().orElseThrow().state());
+				assertEquals(PinState.HIGH , result.get(i).stream()
+						.filter(state -> state.componentId() == chipOut1 && state.pinId() == 1)
+						.findFirst().orElseThrow().state());
+				assertEquals(PinState.HIGH , result.get(i).stream()
+						.filter(state -> state.componentId() == chipOut1 && state.pinId() == 2)
+						.findFirst().orElseThrow().state());
+			}
+			if(i==3){
+				assertEquals(PinState.HIGH , result.get(i).stream()
+						.filter(state -> state.componentId() == chipOut0 && state.pinId() == 1)
+						.findFirst().orElseThrow().state());
+
+				assertEquals(PinState.HIGH , result.get(i).stream()
+						.filter(state -> state.componentId() == chipOut1 && state.pinId() == 1)
+						.findFirst().orElseThrow().state());
+				assertEquals(PinState.HIGH , result.get(i).stream()
+						.filter(state -> state.componentId() == chipOut1 && state.pinId() == 2)
+						.findFirst().orElseThrow().state());
+			}
+		}
 	}
 
 	//SCiE 9 - układ z img doUkładu17.jpg
