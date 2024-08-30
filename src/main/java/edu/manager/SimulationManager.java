@@ -51,9 +51,7 @@ public class SimulationManager implements Component, SimulationAndOptimization {
 		setHeadersInPins(states);
 
 		validateHeadersIn();
-		componentManager.chips.values().forEach(chip -> {
-			chip.getPinMap().values().forEach(AbstractPin::notifySubscribers);
-		});
+		propagateSignal();
 
 		Set<ComponentPinState> previousState;
 		Set<ComponentPinState> currentState;
@@ -64,9 +62,7 @@ public class SimulationManager implements Component, SimulationAndOptimization {
 			previousState = new HashSet<>(currentState);
 
 			componentManager.chips.values().forEach(Chip::simulate);
-			componentManager.chips.values().forEach(chip -> {
-				chip.getPinMap().values().forEach(AbstractPin::notifySubscribers);
-			});
+			propagateSignal();
 
 			currentState.clear();
 			currentState = Util.saveCircuitState(componentManager.chips);
@@ -149,13 +145,17 @@ public class SimulationManager implements Component, SimulationAndOptimization {
 		return componentManager.isPinConnected(pin);
 	}
 
+	private void propagateSignal(){
+		componentManager.chips.values().forEach(chip -> {
+			chip.getPinMap().values().forEach(AbstractPin::notifySubscribers);
+		});
+	}
+
 	@Override
 	public Map<Integer, Set<ComponentPinState>> simulation(Set<ComponentPinState> states0,
 														   int ticks) throws UnknownStateException{
 		setHeadersInPins(states0);
-		componentManager.chips.values().forEach(chip -> {
-			chip.getPinMap().values().forEach(AbstractPin::notifySubscribers);
-		});
+		propagateSignal();
 
 		Map<Integer, Set<ComponentPinState>> resultMap = new HashMap<>();
 		Set<ComponentPinState> currentState;
@@ -165,10 +165,7 @@ public class SimulationManager implements Component, SimulationAndOptimization {
 
 		for(int i=1; i<=ticks; i++){
 			componentManager.chips.values().forEach(Chip::simulate);
-			//componentManager.propagateSignal();
-			componentManager.chips.values().forEach(chip -> {
-				chip.getPinMap().values().forEach(AbstractPin::notifySubscribers);
-			});
+			propagateSignal();
 
 			currentState.clear();
 			currentState = Util.saveCircuitHeaderOutState(componentManager.chips);
