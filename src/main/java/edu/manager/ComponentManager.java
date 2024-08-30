@@ -20,7 +20,6 @@ import static edu.util.Util.SWITCH_BETWEEN_PO;
 
 public class ComponentManager implements Component, CircuitDesign {
 
-	// Każdy chip jest componentem
 	final Map<Integer, Chip> chips;
 	final Set<Connection> directConnections;
 	private final Creator creator;
@@ -80,50 +79,6 @@ public class ComponentManager implements Component, CircuitDesign {
 		return newChipId;
 	}
 
-	protected void addToChipsMap(Chip chip){
-		chips.put(chip.getChipId(), chip);
-	}
-
-	protected void removeFromChipsMap(Chip chip){
-		chips.remove(chip.getChipId());
-	}
-
-	// to powinno być zrobione według wzorca Obserwator
-	// to jest naiwan implementacja póki co
-	// do poprawy na jakiś wzorzec
-	public void propagateSignal(){
-		// 1. przechodze po wszystkich połączeniach
-		// 2. mapuje stan pinu docelowego na źródłowy
-		//System.out.println("\nPropagate --- START");
-		if(SWITCH_BETWEEN_PO){
-			// HeaderOut nie  przesyła  sygnału nigdzie
-			directConnections
-					.stream().filter(connection -> !(chips.get(connection.sourceChipId()) instanceof HeaderOut))
-			.forEach(connection -> {
-
-				System.out.println(connection);
-
-				int sourceChipId = connection.sourceChipId();
-				int sourcePinId = connection.sourcePinId();
-				int targetChipId = connection.targetChipId();
-				int targetPinId = connection.targetPinId();
-
-				Pin sourcePin = chips.get(sourceChipId).getPinMap().get(sourcePinId);
-				// 0. sprawdź czy outputPin biezącego componentu jest w odpowiednim stanie - != UNKNOWN
-				if(sourcePin.getPinState() != PinState.UNKNOWN){
-					if(sourceChipId == 2 || sourceChipId == 6){
-						System.out.println(
-								"Propaguję... : Z source Chip: " + sourceChipId + ", pin: " + sourcePinId + ", stan:" + sourcePin.getPinState());
-						System.out.println("Na       			    Chip: " + targetChipId + ", pin: " + targetPinId);
-					}
-					chips.get(targetChipId).getPinMap().get(targetPinId).setPinState(sourcePin.getPinState());
-
-				}
-			});
-		}
-		//System.out.println("\nPropagate --- END \n");
-	}
-
 	@Override
 	public void simulate() {
 		System.out.println("Simulate() from ComponentManager");
@@ -141,23 +96,11 @@ public class ComponentManager implements Component, CircuitDesign {
 		return putToChipsMap(creator.create(code));
 	}
 
-	// TODO: WAŻNE!
-	// Q5: Rozumiem, że metoda createInputPinHeader() tworzy listwe kołkową na którą użytkownik podaje sygnały
-	//	i ona jest "punktem startowym propagacji" dla całej symulacji. A wywołanie createOutputPinHeader()
-	//	tworzy listwę kołkowa, na której będą obecne sygnały już po przejściu przez cała symulacje? Czyli
-	//	simulation() zwraca wynik tylko tych listw kołkowych, stworzonych za pomocą createOutputPinHeader()?
-	//	Pytam ponieważ w pytaniach pojęcia wejście/wyjście jest trochę inaczej zdefiniowane, z innej perspektywy
-	//	i krótko mówiąc się pogubiłem.
-	//A5. Generalnie TAK. Uruchamiając obliczenia używam wyłącznie listw wejściowych.
-	// W wyniku oczekuję wyłącznie informacji z listw wyjściowych.
-
-	// milczące założenie że size=0 się nie trafi - bo interfejs tego nie określ
 	@Override
 	public int createInputPinHeader(int size){
 		return putToChipsMap(creator.createHeaderIn(size));
 	}
 
-	// Określone przez prowadzącego założenie że size=0 się nie trafi - bo interfejs tego nie określ
 	@Override
 	public int createOutputPinHeader(int size){
 		return putToChipsMap(creator.createHeaderOut(size));
@@ -313,16 +256,14 @@ public class ComponentManager implements Component, CircuitDesign {
 		}
 
 		// Sprawdzenie, czy nie tworzy się pośrednie zwarcie
-		if (createsIndirectShortCircuit(component1, pin1, component2, pin2)) {
+		if (isCreatingIndirectShortCircuit(component1, pin1, component2, pin2)) {
 			throw new ShortCircuitException();
 		}
 
-		// Dodaj połączenie w obu kierunkach
 		addNewConnection(component1, pin1, component2, pin2);
-		//addNewConnection(component2, pin2, component1, pin1);
 	}
 
-	private boolean createsIndirectShortCircuit(int component1, int pin1, int component2, int pin2) {
+	private boolean isCreatingIndirectShortCircuit(int component1, int pin1, int component2, int pin2) {
 		return (isOutputPin(component1, pin1) && canReachOutputThroughAnotherInput(component2, pin2)) ||
 				(isOutputPin(component2, pin2) && canReachOutputThroughAnotherInput(component1, pin1));
 	}
@@ -366,6 +307,4 @@ public class ComponentManager implements Component, CircuitDesign {
 		Chip chip = chips.get(component);
 		return chip.getPinMap().get(pin).getClass().getSimpleName().equals(Util.PIN_IN);
 	}
-
-
 }
