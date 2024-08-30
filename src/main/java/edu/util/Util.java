@@ -17,7 +17,7 @@ public class Util{
 	//to TURN ON/OFF between methods propagateSignal() and observer
 	// propagate = true
 	// observer = false
-	public static final boolean SWITCH_BETWEEN_PO = true;
+	public static final boolean SWITCH_BETWEEN_PO = false;
 
 	// zbiera stan listew wyjściowych
 	public static Set<ComponentPinState> saveCircuitHeaderOutState(Map<Integer, Chip> chips){

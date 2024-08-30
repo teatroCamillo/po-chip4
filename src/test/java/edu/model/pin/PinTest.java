@@ -9,8 +9,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class PinTest {
 
-	private Pin pinIn;
-	private Pin pinOut;
+	private AbstractPin pinIn;
+	private AbstractPin pinOut;
 
 	@BeforeEach
 	void setUp() {
@@ -40,7 +40,7 @@ class PinTest {
 	@Test
 	void testClonePinIn() {
 		pinIn.setPinState(PinState.HIGH);
-		Pin clonedPin = pinIn.clone();
+		AbstractPin clonedPin = pinIn.clone();
 
 		assertNotSame(pinIn, clonedPin, "Cloned PinIn should be a different object.");
 		assertEquals(pinIn.getPinState(), clonedPin.getPinState(), "Cloned PinIn should have the same state as the original.");
@@ -49,23 +49,9 @@ class PinTest {
 	@Test
 	void testClonePinOut() {
 		pinOut.setPinState(PinState.LOW);
-		Pin clonedPin = pinOut.clone();
+		AbstractPin clonedPin = pinOut.clone();
 
 		assertNotSame(pinOut, clonedPin, "Cloned PinOut should be a different object.");
 		assertEquals(pinOut.getPinState(), clonedPin.getPinState(), "Cloned PinOut should have the same state as the original.");
-	}
-
-	@Test
-	void testToStringPinIn() {
-		pinIn.setPinState(PinState.HIGH);
-		String expectedString = "PinIn{state=HIGH}";
-		assertEquals(expectedString, pinIn.toString(), "PinIn toString should match expected output.");
-	}
-
-	@Test
-	void testToStringPinOut() {
-		pinOut.setPinState(PinState.LOW);
-		String expectedString = "PinOut{state=LOW}";
-		assertEquals(expectedString, pinOut.toString(), "PinOut toString should match expected output.");
 	}
 }

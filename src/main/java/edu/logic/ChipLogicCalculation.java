@@ -3,6 +3,7 @@ package edu.logic;
 import edu.model.Chip;
 import edu.model.Pin;
 //import com.digitalcircuit.model.pin.InputPin; // dla wykomentowanego kodu
+import edu.model.pin.AbstractPin;
 import edu.model.pin.PinIn;
 import edu.uj.po.simulation.interfaces.PinState;
 
@@ -113,7 +114,7 @@ public class ChipLogicCalculation {
 	}
 
 	public static void chip7482Calculation(Chip chip) {
-		Map<Integer, Pin> pins = chip.getPinMap();
+		Map<Integer, AbstractPin> pins = chip.getPinMap();
 
 		Pin A1 = pins.get(2);
 		Pin A2 = pins.get(14);
@@ -307,7 +308,7 @@ public class ChipLogicCalculation {
 	}
 
 	public static void chip74152Calculation(Chip chip) {
-		Map<Integer, Pin> pins = chip.getPinMap();
+		Map<Integer, AbstractPin> pins = chip.getPinMap();
 
 		Pin D0 = pins.get(5);
 		Pin D1 = pins.get(4);
@@ -361,7 +362,7 @@ public class ChipLogicCalculation {
 
 
 	private static void nandGateLogicFunction(Chip chip, Set<Integer> inputPinIds, int outputPinId) {
-		Map<Integer, Pin> pins = chip.getPinMap();
+		Map<Integer, AbstractPin> pins = chip.getPinMap();
 
 		Set<Pin> inputPins = inputPinIds.stream()
 				.map(id -> pins.get(id))
@@ -379,7 +380,7 @@ public class ChipLogicCalculation {
 	}
 
 	private static void norGateLogicFunction(Chip chip, Set<Integer> inputPinIds, int outputPinId) {
-		Map<Integer, Pin> pins = chip.getPinMap();
+		Map<Integer, AbstractPin> pins = chip.getPinMap();
 
 		Set<Pin> inputPins = inputPinIds.stream()
 				.map(id -> pins.get(id))
@@ -397,7 +398,7 @@ public class ChipLogicCalculation {
 	}
 
 	private static void andGateLogicFunction(Chip chip, Set<Integer> inputPinIds, int outputPinId) {
-		Map<Integer, Pin> pins = chip.getPinMap();
+		Map<Integer, AbstractPin> pins = chip.getPinMap();
 
 		Set<Pin> inputPins = inputPinIds.stream()
 				.map(id -> pins.get(id))
@@ -415,7 +416,7 @@ public class ChipLogicCalculation {
 	}
 
 	private static void orGateLogicFunction(Chip chip, Set<Integer> inputPinIds, int outputPinId) {
-		Map<Integer, Pin> pins = chip.getPinMap();
+		Map<Integer, AbstractPin> pins = chip.getPinMap();
 
 		Set<Pin> inputPins = inputPinIds.stream()
 				.map(id -> pins.get(id))
@@ -433,7 +434,7 @@ public class ChipLogicCalculation {
 	}
 
 	private static void notGateLogicFunction(Chip chip, int inputPinId, int outputPinId) {
-		Map<Integer, Pin> pins = chip.getPinMap();
+		Map<Integer, AbstractPin> pins = chip.getPinMap();
 
 		Pin inputPin = pins.get(inputPinId);
 		Pin outputPin = pins.get(outputPinId);
@@ -448,7 +449,7 @@ public class ChipLogicCalculation {
 	}
 
 	private static void identityGateLogicFunction(Chip chip, int inputPinId, int outputPinId) {
-		Map<Integer, Pin> pins = chip.getPinMap();
+		Map<Integer, AbstractPin> pins = chip.getPinMap();
 
 		Pin inputPin = pins.get(inputPinId);
 		Pin outputPin = pins.get(outputPinId);
@@ -457,7 +458,7 @@ public class ChipLogicCalculation {
 	}
 
 	private static void bcdDecoderLogicFunction(Chip chip, int outputPinId) {
-		Map<Integer, Pin> pins = chip.getPinMap();
+		Map<Integer, AbstractPin> pins = chip.getPinMap();
 
 		Pin A = pins.get(15);
 		Pin B = pins.get(14);
@@ -559,7 +560,7 @@ public class ChipLogicCalculation {
 	}
 
 	private static void grayDecoderLogicFunction(Chip chip, int outputPinId) {
-		Map<Integer, Pin> pins = chip.getPinMap();
+		Map<Integer, AbstractPin> pins = chip.getPinMap();
 
 		Pin A = pins.get(15);
 		Pin B = pins.get(14);
@@ -662,7 +663,7 @@ public class ChipLogicCalculation {
 	}
 
 	private static void _74138DecoderLogicFunction(Chip chip, int outputPinId) {
-		Map<Integer, Pin> pins = chip.getPinMap();
+		Map<Integer, AbstractPin> pins = chip.getPinMap();
 
 		Pin A = pins.get(1);
 		Pin B = pins.get(2);

@@ -1,6 +1,7 @@
 package edu.model;
 
 import edu.manager.Component;
+import edu.model.pin.AbstractPin;
 import edu.uj.po.simulation.interfaces.PinState;
 
 import java.util.HashMap;
@@ -10,34 +11,32 @@ public abstract class Chip implements Component {
 
 	protected Integer chipId;
 	protected boolean isOn;
-	protected Map<Integer, Pin> pinMap;
+	protected Map<Integer, AbstractPin> pinMap;
 	protected Map<Integer, Pin> previousPinMap;
-	//protected Publisher publisher;
 
 	public Chip() {
 		this.pinMap = new HashMap<>();
 		this.isOn = true;
 		this.previousPinMap = new HashMap<>();
-		//this.publisher = new ChipPublisher();
 	}
 
-	public Chip(Chip target) {
+	public Chip(Chip target){
 		if (target != null) {
 			this.pinMap = new HashMap<>();
 			this.isOn = true;
 			this.previousPinMap = new HashMap<>();
-			for (Map.Entry<Integer, Pin> entry : target.pinMap.entrySet()) {
+			for (Map.Entry<Integer, AbstractPin> entry : target.pinMap.entrySet()) {
 				this.pinMap.put(entry.getKey(), entry.getValue().clone());
 			}
-			//this.publisher = new ChipPublisher();
 		}
 	}
 
-	public Map<Integer, Pin> getPinMap() {
+	public Map<Integer, AbstractPin> getPinMap() {
 		return pinMap;
 	}
 
-	public void putToPinMap(Integer id, Pin pin) {
+	public void putToPinMap(Integer id, AbstractPin pin) {
+		pin.setId(id);
 		pinMap.put(id, pin);
 	}
 
@@ -63,7 +62,7 @@ public abstract class Chip implements Component {
 
 	protected Map<Integer, Pin> clonePinMap(){
 		Map<Integer, Pin> newPinMap = new HashMap<>();
-		for (Map.Entry<Integer, Pin> entry : this.pinMap.entrySet()) {
+		for (Map.Entry<Integer, AbstractPin> entry : this.pinMap.entrySet()) {
 			newPinMap.put(entry.getKey(), entry.getValue().clone());
 		}
 		return newPinMap;

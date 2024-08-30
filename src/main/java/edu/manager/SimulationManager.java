@@ -1,5 +1,6 @@
 package edu.manager;
 
+import edu.model.pin.AbstractPin;
 import edu.uj.po.simulation.interfaces.ComponentPinState;
 import edu.uj.po.simulation.interfaces.PinState;
 import edu.uj.po.simulation.interfaces.SimulationAndOptimization;
@@ -107,9 +108,9 @@ public class SimulationManager implements Component, SimulationAndOptimization {
 			int chipId = entry.getKey();
 			Chip chip = entry.getValue();
 
-			for (Map.Entry<Integer, Pin> entryPin : chip.getPinMap().entrySet()) {
+			for (Map.Entry<Integer, AbstractPin> entryPin : chip.getPinMap().entrySet()) {
 				int pinId = entryPin.getKey();
-				Pin pin = entryPin.getValue();
+				AbstractPin pin = entryPin.getValue();
 
 				if (pin.getPinState() == PinState.UNKNOWN) {
 					// Sprawdź, czy pin jest podłączony do innego pinu
@@ -131,9 +132,9 @@ public class SimulationManager implements Component, SimulationAndOptimization {
 			int chipId = entry.getKey();
 			Chip chip = entry.getValue();
 
-			for (Map.Entry<Integer, Pin> entryPin : chip.getPinMap().entrySet()) {
+			for (Map.Entry<Integer, AbstractPin> entryPin : chip.getPinMap().entrySet()) {
 				int pinId = entryPin.getKey();
-				Pin pin = entryPin.getValue();
+				AbstractPin pin = entryPin.getValue();
 
 				if (pin.getPinState() == PinState.UNKNOWN) {
 					// Sprawdź, czy pin jest podłączony do innego pinu
