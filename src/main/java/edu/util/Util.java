@@ -13,6 +13,7 @@ public class Util{
 	public static final String PIN_OUT = "PinOut";
 	public static final String HEADER_IN = "HeaderIn";
 	public static final String HEADER_OUT = "HeaderOut";
+	public static boolean isCurrentFlowAllow = true;
 
 	//to TURN ON/OFF between methods propagateSignal() and observer
 	// propagate = true

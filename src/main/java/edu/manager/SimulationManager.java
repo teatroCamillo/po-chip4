@@ -50,28 +50,44 @@ public class SimulationManager implements Component, SimulationAndOptimization {
 	public void stationaryState(Set<ComponentPinState> states) throws UnknownStateException {
 
 		for (ComponentPinState state : states) {
+			Chip chip = componentManager.chips.get(state.componentId());
+			if(chip == null) throw new UnknownStateException(state);
+
+			AbstractPin pin = chip.getPinMap().get(state.pinId());
+			if(pin == null) throw new UnknownStateException(state);
+
 			if (state.state() == PinState.UNKNOWN) {
 				throw new UnknownStateException(state);
 			}
 		}
 
 		setMomentZero(states);
+		componentManager.chips.values().forEach(chip -> {
+			chip.getPinMap().values().forEach(AbstractPin::notifySubscribers);
+		});
 		// 1. walidacja HEADER_IN
 		validateHeaders(Util.HEADER_IN);
-		componentManager.propagateSignal();
+		//componentManager.propagateSignal();
 
 		Set<ComponentPinState> previousState;
 		Set<ComponentPinState> currentState;
 		currentState = Util.saveCircuitState(componentManager.chips);
+		//currentState = Util.saveCircuitHeaderOutState(componentManager.chips);
 		do {
 			System.out.println("\n");
 			previousState = new HashSet<>(currentState);
 
 			componentManager.chips.values().forEach(Chip::simulate);
-			componentManager.propagateSignal();
+			//propagacja
+			componentManager.chips.values().forEach(chip -> {
+				chip.getPinMap().values().forEach(AbstractPin::notifySubscribers);
+			});
+			//componentManager.propagateSignal();
 
 			currentState.clear();
 			currentState = Util.saveCircuitState(componentManager.chips);
+			//currentState = Util.saveCircuitHeaderOutState(componentManager.chips);
+
 		} while (!previousState.equals(currentState));
 		//validateHeadersV2();
 		// 3. walidacja HEADER_OUT
@@ -201,21 +217,27 @@ public class SimulationManager implements Component, SimulationAndOptimization {
 	public Map<Integer, Set<ComponentPinState>> simulation(Set<ComponentPinState> states0,
 														   int ticks) throws UnknownStateException{
 		setMomentZero(states0);
-		componentManager.propagateSignal();
+		//componentManager.propagateSignal();
+		componentManager.chips.values().forEach(chip -> {
+			chip.getPinMap().values().forEach(AbstractPin::notifySubscribers);
+		});
 
 		Map<Integer, Set<ComponentPinState>> resultMap = new HashMap<>();
 		Set<ComponentPinState> currentState;
-		//currentState = Util.saveCircuitHeaderOutState(componentManager.chips);
-		currentState = Util.saveCircuitState(componentManager.chips);
+		currentState = Util.saveCircuitHeaderOutState(componentManager.chips);
+		//currentState = Util.saveCircuitState(componentManager.chips);
 		resultMap.put(0, new HashSet<>(currentState));
 
 		for(int i=1; i<=ticks; i++){
 			componentManager.chips.values().forEach(Chip::simulate);
-			componentManager.propagateSignal();
+			//componentManager.propagateSignal();
+			componentManager.chips.values().forEach(chip -> {
+				chip.getPinMap().values().forEach(AbstractPin::notifySubscribers);
+			});
 
 			currentState.clear();
-			//currentState = Util.saveCircuitHeaderOutState(componentManager.chips);
-			currentState = Util.saveCircuitState(componentManager.chips);
+			currentState = Util.saveCircuitHeaderOutState(componentManager.chips);
+			//currentState = Util.saveCircuitState(componentManager.chips);
 			resultMap.put(i, new HashSet<>(currentState));
 		}
 		return resultMap;

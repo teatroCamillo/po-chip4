@@ -23,7 +23,6 @@ public class OptimizationTest{
 	}
 
 	// T1
-	@Disabled
 	@ParameterizedTest
 	@CsvSource({
 			"2, HIGH, LOW, '1'"

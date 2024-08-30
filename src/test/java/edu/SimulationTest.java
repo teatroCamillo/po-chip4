@@ -22,7 +22,6 @@ public class SimulationTest {
 	}
 
 	// T1
-	@Disabled
 	@Test
 	void testSimulationSimpleCircuit() throws UnknownChip, UnknownStateException, UnknownPin, ShortCircuitException, UnknownComponent{
 		// 1. Deklaracja chipów
@@ -59,7 +58,7 @@ public class SimulationTest {
 	}
 
 	// T2
-	@Disabled // until propagation fix
+	//@Disabled // until propagation fix
 	@Test
 	void testSimulationComplexCircuit() throws UnknownChip,
 			UnknownStateException,	UnknownPin,
@@ -139,8 +138,8 @@ public class SimulationTest {
 	}
 
 	//T3
-	// TODO: zepsuta propagacja NAPRAW!
-	@Disabled
+	// TODO: zepsuta propagacja NAPRAW! - zmieniłem zapisywanie w util pamiętaj o tym
+	//@Disabled
 	@Test
 	void testSimulationMaxComplexCircuit()
 			throws UnknownChip, UnknownStateException, UnknownPin, ShortCircuitException, UnknownComponent {

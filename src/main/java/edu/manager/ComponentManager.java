@@ -47,6 +47,7 @@ public class ComponentManager implements Component, CircuitDesign {
 		Chip chip1 = chips.get(component1);
 		Chip chip2 = chips.get(component2);
 
+		// kierunek propagacji
 		//chip2.getPinMap().get(pin2).subscribe(chip1.getPinMap().get(pin1));
 		chip1.getPinMap().get(pin1).subscribe(chip2.getPinMap().get(pin2));
 	}
@@ -57,8 +58,8 @@ public class ComponentManager implements Component, CircuitDesign {
 		this.directConnections.add(new Connection(targetChipId, targetPinId, sourceChipId, sourcePinId));
 		// zestawienie subskrypcji
 		if(!SWITCH_BETWEEN_PO){
-			setSubscribe(sourceChipId, sourcePinId, targetChipId, targetPinId);
 			System.out.println("ustawiam subskrybcję...");
+			setSubscribe(sourceChipId, sourcePinId, targetChipId, targetPinId);
 		}
 	}
 
@@ -82,7 +83,7 @@ public class ComponentManager implements Component, CircuitDesign {
 	public void propagateSignal(){
 		// 1. przechodze po wszystkich połączeniach
 		// 2. mapuje stan pinu docelowego na źródłowy
-		System.out.println("\nPropagate --- START");
+		//System.out.println("\nPropagate --- START");
 		if(SWITCH_BETWEEN_PO){
 			// HeaderOut nie  przesyła  sygnału nigdzie
 			directConnections
@@ -109,7 +110,7 @@ public class ComponentManager implements Component, CircuitDesign {
 				}
 			});
 		}
-		System.out.println("\nPropagate --- END \n");
+		//System.out.println("\nPropagate --- END \n");
 	}
 
 	@Override

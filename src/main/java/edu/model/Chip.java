@@ -12,9 +12,10 @@ public abstract class Chip implements Component {
 	protected Integer chipId;
 	protected boolean isOn;
 	protected Map<Integer, AbstractPin> pinMap;
-	protected Map<Integer, Pin> previousPinMap;
+	protected Map<Integer, AbstractPin> previousPinMap;
 
 	public Chip() {
+		this.chipId = -1;
 		this.pinMap = new HashMap<>();
 		this.isOn = true;
 		this.previousPinMap = new HashMap<>();
@@ -22,12 +23,10 @@ public abstract class Chip implements Component {
 
 	public Chip(Chip target){
 		if (target != null) {
+			this.chipId = -1;
 			this.pinMap = new HashMap<>();
 			this.isOn = true;
 			this.previousPinMap = new HashMap<>();
-			for (Map.Entry<Integer, AbstractPin> entry : target.pinMap.entrySet()) {
-				this.pinMap.put(entry.getKey(), entry.getValue().clone());
-			}
 		}
 	}
 
@@ -60,8 +59,8 @@ public abstract class Chip implements Component {
 //		return null;
 //	}
 
-	protected Map<Integer, Pin> clonePinMap(){
-		Map<Integer, Pin> newPinMap = new HashMap<>();
+	protected Map<Integer, AbstractPin> clonePinMap(){
+		Map<Integer, AbstractPin> newPinMap = new HashMap<>();
 		for (Map.Entry<Integer, AbstractPin> entry : this.pinMap.entrySet()) {
 			newPinMap.put(entry.getKey(), entry.getValue().clone());
 		}
@@ -87,6 +86,7 @@ public abstract class Chip implements Component {
 
 	public void setChipId(Integer uniqueChipId){
 		this.chipId = uniqueChipId;
+		pinMap.values().forEach(pin -> pin.setChipId(chipId));
 	}
 
 	public int getChipId(){

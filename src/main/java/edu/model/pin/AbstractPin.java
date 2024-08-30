@@ -11,6 +11,7 @@ import java.util.Set;
 public class AbstractPin implements Pin, Publisher, Subscriber {
 
 	protected int id;
+	protected int chipId;
 	protected PinState state;
 	protected Set<Subscriber> subscribers;
 
@@ -21,9 +22,10 @@ public class AbstractPin implements Pin, Publisher, Subscriber {
 
 	@Override
 	public void setPinState(PinState pinState){
-		System.out.println("[id: " + this.id + " " + this.getClass().getSimpleName() + "] : new pinState was set actual: " + pinState + ", previous: " + this.state);
+		System.out.println("[" + chipId + "][id: " + this.id + " " + this.getClass().getSimpleName() + "] : new pinState was set, " +
+								   "actual: " + pinState + ", previous: " + this.state);
 		this.state = pinState;
-		notifySubscribers();
+		//notifySubscribers();
 	}
 
 	@Override
@@ -36,7 +38,7 @@ public class AbstractPin implements Pin, Publisher, Subscriber {
 	public AbstractPin clone() {
 		try {
 			AbstractPin cloned = (AbstractPin) super.clone();
-			cloned.setId(-1);
+			cloned.setId(-1); // proforma żeby był inny numer niż w orginale
 			cloned.subscribers = new HashSet<>();
 			return cloned;
 		} catch (CloneNotSupportedException e) {
@@ -47,7 +49,10 @@ public class AbstractPin implements Pin, Publisher, Subscriber {
 	@Override
 	public void subscribe(Subscriber subscriber){
 		if(!this.equals(subscriber)){
-			System.out.println("[id: " + this.id + " " + this.getClass().getSimpleName() + "] : subscrybuję: " + subscriber);
+			System.out.println("[" + chipId + "][id: " + this.id + " " + this.getClass().getSimpleName() + "]" +
+									   " : dodaję " +
+									   "nowego " +
+									   "subskrybenta: " + subscriber);
 			subscribers.add(subscriber);
 
 			System.out.println("\nLista subskrybetów: ");
@@ -62,7 +67,7 @@ public class AbstractPin implements Pin, Publisher, Subscriber {
 
 	@Override
 	public void notifySubscribers(){
-		System.out.println("[id: " + this.id + " " + this.getClass().getSimpleName() + "] : notifySubscribers");
+		System.out.println("[" + chipId + "][id: " + this.id + " " + this.getClass().getSimpleName() + "] : notifySubscribers");
 		//subscribers.forEach(subscriber -> subscriber.update(this.state));
 		for (Subscriber subscriber : subscribers) {
 			subscriber.update(this.state);
@@ -73,7 +78,7 @@ public class AbstractPin implements Pin, Publisher, Subscriber {
 	public void update(PinState state){
 		// Sprawdzenie, czy stan faktycznie się zmienił
 		if (!this.state.equals(state)) {
-			System.out.println("[id: " + this.id + " " + this.getClass().getSimpleName() + "] : I'm updating...");
+			System.out.println("[" + chipId + "][id: " + this.id + " " + this.getClass().getSimpleName() + "] : I'm updating...");
 			setPinState(state);
 		}
 	}
@@ -84,6 +89,14 @@ public class AbstractPin implements Pin, Publisher, Subscriber {
 
 	public void setId(int id){
 		this.id = id;
+	}
+
+	public int getChipId(){
+		return chipId;
+	}
+
+	public void setChipId(int chipId){
+		this.chipId = chipId;
 	}
 
 	@Override
