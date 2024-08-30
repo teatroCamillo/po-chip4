@@ -1,6 +1,6 @@
 package edu.util;
 
-import edu.Simulation;
+import Simulation;
 import edu.uj.po.simulation.interfaces.*;
 import edu.model.Chip;
 import edu.model.chip.HeaderOut;

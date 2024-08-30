@@ -1,6 +1,7 @@
 package edu.manager;
 
 import edu.model.pin.AbstractPin;
+import edu.model.pin.PinIn;
 import edu.model.pin.PinOut;
 import edu.uj.po.simulation.interfaces.ComponentPinState;
 import edu.uj.po.simulation.interfaces.PinState;
@@ -58,7 +59,7 @@ public class SimulationManager implements Component, SimulationAndOptimization {
 		currentState = Util.saveCircuitState(componentManager.chips);
 		//currentState = Util.saveCircuitHeaderOutState(componentManager.chips);
 		do {
-			System.out.println("\n");
+			//System.out.println("\n");
 			previousState = new HashSet<>(currentState);
 
 			componentManager.chips.values().forEach(Chip::simulate);
@@ -74,24 +75,39 @@ public class SimulationManager implements Component, SimulationAndOptimization {
 				.stream()
 				.anyMatch(chip -> chip.getClass().getSimpleName().equals(Util.HEADER_OUT));
 		//System.out.println("Sprawdzam stan układu przed validacja HeaderOur");
-		currentState.forEach(System.out::println);
+		//currentState.forEach(System.out::println);
 		if(isHeaderOut) validateHeadersOut();
 	}
 
-	public void setHeadersInPins(Set<ComponentPinState> states) throws UnknownStateException {
+	public void setHeadersInPins(Set<ComponentPinState> states) {
 		// if chip/pin == null: throw
 		for (ComponentPinState state : states) {
 			Chip chip = componentManager.chips.get(state.componentId());
-			if(chip == null) throw new UnknownStateException(state);
+			//if(chip == null) throw new UnknownStateException(state);
 
 			AbstractPin pin = chip.getPinMap().get(state.pinId());
-			if(pin == null) throw new UnknownStateException(state);
+			//if(pin == null) throw new UnknownStateException(state);
 
 			pin.setPinState(state.state());
 		}
 	}
 
-	// 1. wariant ze sprawdzeniem HeaderIN oraz Out pokrywa wszystkie sytuacje ale tez te które nie pownny być pokryte
+	// K Kiedy rzucać UnknownStateException?
+	// 1. gdy PinOutpu for Header(In or Out) pinState UNKNOWN
+	// ale chip musi istnić! w przeciwnym razie jest null i leci Runtime
+	// 2. Dla InputHeaders: pinState == UNKNOWN i
+	// hasAnyConnection() i musi być PinOut
+	// ale chip musi istnić! w przeciwnym razie jest null i leci Runtime
+
+	// me Kiedy rzucać UnknownStateException?
+	// dla HederIn i Out gdy istnieją i:
+//	if (pin.getPinState() == PinState.UNKNOWN && isOutputPinConnected(pin)) {
+//		throw new UnknownStateException(new ComponentPinState(chipId, pinId, pin.getPinState()));
+
+
+
+	// 1. wariant ze sprawdzeniem HeaderIN oraz Out pokrywa wszystkie sytuacje ale tez
+	// te które nie pownny być pokryte
 	// 2. wartiant z samym HeaderIn pokrywa większość poza 3 sytuacjami - jakie to sytuacje? Wime że są po stronie
 	// HeaderOut
 	private void validateHeadersIn() throws UnknownStateException {
@@ -102,17 +118,23 @@ public class SimulationManager implements Component, SimulationAndOptimization {
 		for (Map.Entry<Integer, Chip> entry : headerChips.entrySet()) {
 			int chipId = entry.getKey();
 			Chip chip = entry.getValue();
-			if (chip == null) {
-				throw new RuntimeException();
-			}
 
 			for (Map.Entry<Integer, AbstractPin> entryPin : chip.getPinMap().entrySet()) {
 				int pinId = entryPin.getKey();
 				AbstractPin pin = entryPin.getValue();
 
-				if (pin.getPinState() == PinState.UNKNOWN && isOutputPinConnected(pin)) {
+				//pin.getPinState() == PinState.UNKNOWN && isPinOutConnected(pin) - całkiem ok
+				// !isPinOutConnected(pin) - better !
+				//isPinInConnected(pin) - nie tutaj bo rzuca Runtimy
+				if (!isPinOutConnected(pin)) {
 					throw new UnknownStateException(new ComponentPinState(chipId, pinId, pin.getPinState()));
 				}
+
+				// sam ten warunek jest za dużo generuje extra USEx ale pokrywa te które pojawiają się przy
+				// połączeniu z  && isPinOutConnected(pin)
+//				if (pin.getPinState() == PinState.UNKNOWN) {
+//					throw new UnknownStateException(new ComponentPinState(chipId, pinId, pin.getPinState()));
+//				}
 			}
 		}
 	}
@@ -125,23 +147,29 @@ public class SimulationManager implements Component, SimulationAndOptimization {
 		for (Map.Entry<Integer, Chip> entry : headerChips.entrySet()) {
 			int chipId = entry.getKey();
 			Chip chip = entry.getValue();
-			if (chip == null) {
-				throw new RuntimeException();
-			}
 
 			for (Map.Entry<Integer, AbstractPin> entryPin : chip.getPinMap().entrySet()) {
 				int pinId = entryPin.getKey();
 				AbstractPin pin = entryPin.getValue();
 
-				if (pin.getPinState() == PinState.UNKNOWN) {
+				//pin.getPinState() == PinState.UNKNOWN || isPinInConnected(pin) - wykluczone, ściana USEx
+				//pin.getPinState() == PinState.UNKNOWN && isPinInConnected(pin) pojawiają się extra UnSEx
+				// pin.getPinState() == PinState.UNKNOWN też pojawiają się extra UnSEx
+				//!isPinInConnected(pin) - najlepszy wariant
+				if (!isPinInConnected(pin)) {
 					throw new UnknownStateException(new ComponentPinState(chipId, pinId, pin.getPinState()));
 				}
 			}
 		}
 	}
 
-	private boolean isOutputPinConnected(AbstractPin pin) {
-		if(!(pin instanceof PinOut)) throw new RuntimeException();
+	private boolean isPinInConnected(AbstractPin pin) {
+		if(pin instanceof PinOut) throw new RuntimeException();
+		return componentManager.isPinConnected(pin);
+	}
+
+	private boolean isPinOutConnected(AbstractPin pin) {
+		if(pin instanceof PinIn) throw new RuntimeException();
 		return componentManager.isPinConnected(pin);
 	}
 

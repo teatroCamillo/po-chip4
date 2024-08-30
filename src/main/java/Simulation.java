@@ -1,5 +1,3 @@
-package edu;
-
 import edu.model.Chip;
 import edu.uj.po.simulation.interfaces.*;
 import edu.manager.ComponentManager;
