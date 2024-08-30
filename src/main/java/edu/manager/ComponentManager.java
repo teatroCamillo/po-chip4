@@ -2,6 +2,8 @@ package edu.manager;
 
 import edu.model.Pin;
 import edu.model.chip.HeaderOut;
+import edu.model.pin.AbstractPin;
+import edu.model.pin.PinOut;
 import edu.uj.po.simulation.interfaces.*;
 import edu.model.Chip;
 import edu.model.Connection;
@@ -29,13 +31,12 @@ public class ComponentManager implements Component, CircuitDesign {
 		this.creator = new ChipCreator();
 	}
 
-	public boolean isPinConnected(int chipId, int pinId){
-		// Sprawdź, czy pin jest źródłem lub celem w jakimkolwiek połączeniu
+	public boolean isPinConnected(AbstractPin pin){
 		return directConnections
 				.stream()
 				.anyMatch(connection ->
-								  (connection.sourceChipId() == chipId && connection.sourcePinId() == pinId) ||
-										  (connection.targetChipId() == chipId && connection.targetPinId() == pinId)
+								  (connection.sourceChipId() == pin.getChipId() && connection.sourcePinId() == pin.getId()) ||
+										  (connection.targetChipId() == pin.getChipId() && connection.targetPinId() == pin.getId())
 		);
 	}
 
@@ -46,10 +47,20 @@ public class ComponentManager implements Component, CircuitDesign {
 							  int pin2){
 		Chip chip1 = chips.get(component1);
 		Chip chip2 = chips.get(component2);
+		AbstractPin p1 = chip1.getPinMap().get(pin1);
+		AbstractPin p2 = chip2.getPinMap().get(pin2);
 
-		// kierunek propagacji
-		//chip2.getPinMap().get(pin2).subscribe(chip1.getPinMap().get(pin1));
-		chip1.getPinMap().get(pin1).subscribe(chip2.getPinMap().get(pin2));
+		// kierunek propagacji - subskrybentami sa tylko PinIn a PinOut są Publisherami
+		if(p1 instanceof PinOut) chip1.getPinMap().get(pin1).subscribe(chip2.getPinMap().get(pin2));
+		else if(p2 instanceof PinOut) chip2.getPinMap().get(pin2).subscribe(chip1.getPinMap().get(pin1));
+		else {
+			// tu powinien być subskrybentem ten co już pisiada połączenie
+			System.out.println("******************************* Both are PinIn class " +
+									   "********************************");
+			if(isPinConnected(p1))
+				chip1.getPinMap().get(pin1).subscribe(chip2.getPinMap().get(pin2));
+			else chip2.getPinMap().get(pin2).subscribe(chip1.getPinMap().get(pin1));
+		}
 	}
 
 	public void addNewConnection(int sourceChipId, int sourcePinId, int targetChipId, int targetPinId) {

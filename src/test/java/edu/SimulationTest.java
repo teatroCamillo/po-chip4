@@ -138,8 +138,6 @@ public class SimulationTest {
 	}
 
 	//T3
-	// TODO: zepsuta propagacja NAPRAW! - zmieniłem zapisywanie w util pamiętaj o tym
-	//@Disabled
 	@Test
 	void testSimulationMaxComplexCircuit()
 			throws UnknownChip, UnknownStateException, UnknownPin, ShortCircuitException, UnknownComponent {
@@ -255,7 +253,7 @@ public class SimulationTest {
 	}
 
 	//SCiE 9 - układ z img doUkładu17.jpg
-	@Disabled // until propagation fix
+	@Disabled // sprawdz poprawnosc ukladu
 	@Test
 	void testNoThrowExceptionExampleFromDoUkladu17_simulation01() throws UnknownChip,
 			UnknownComponent, UnknownPin, ShortCircuitException, UnknownStateException{

@@ -164,14 +164,14 @@ public class StationaryStateTest {
 
 
 	@Test
-	void testSetMomentZero(){
+	void testSetHeadersInPins() throws UnknownStateException{
 		int chipId1 = simulation.createInputPinHeader(2);
 
 		Set<ComponentPinState> states0 = new HashSet<>();
 		states0.add(new ComponentPinState(chipId1, 1, PinState.HIGH));
 		states0.add(new ComponentPinState(chipId1, 2, PinState.LOW));
 
-		simulation.simulationManager.setMomentZero(states0);
+		simulation.simulationManager.setHeadersInPins(states0);
 
 		Assertions.assertEquals(PinState.HIGH, simulation.getChips().get(chipId1).getPinMap().get(1).getPinState());
 	}
