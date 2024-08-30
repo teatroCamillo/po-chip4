@@ -50,15 +50,6 @@ public abstract class Chip implements Component {
 		throw new UnsupportedOperationException("Method not implemented");
 	}
 
-//	public void subscribe(Subscriber subscriber){
-//		publisher.subscribe(subscriber);
-//	}
-//
-//	public Integer report(){
-//		if (hasPinOutNotChanged()) return publisher.report(this);
-//		return null;
-//	}
-
 	protected Map<Integer, AbstractPin> clonePinMap(){
 		Map<Integer, AbstractPin> newPinMap = new HashMap<>();
 		for (Map.Entry<Integer, AbstractPin> entry : this.pinMap.entrySet()) {
@@ -66,18 +57,6 @@ public abstract class Chip implements Component {
 		}
 		return newPinMap;
 	}
-
-//	public boolean hasPinOutNotChanged() {
-//		return pinMap.entrySet().stream()
-//				.filter(entry -> entry.getValue() instanceof PinOut) // dodja  żeby były tylko podłączone
-//				// !!! piny
-//				.anyMatch(entry -> {
-//					Integer pinId = entry.getKey();
-//					Pin currentPin = entry.getValue();
-//					Pin previousPin = previousPinMap.get(pinId);
-//					return previousPin != null && pinComparator.compare(currentPin, previousPin);
-//				});
-//	}
 
 	@Override
 	public String toString() {

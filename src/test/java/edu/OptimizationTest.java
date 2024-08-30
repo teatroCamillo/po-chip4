@@ -2,13 +2,10 @@ package edu;
 
 import edu.uj.po.simulation.interfaces.*;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -22,12 +19,8 @@ public class OptimizationTest{
 	}
 
 	// T1
-	@ParameterizedTest
-	@CsvSource({
-			"2, HIGH, LOW, '1'"
-	})
-	void testFromTaskDescription(int tick, String headerOutInputPin1State, String headerOutInputPin2State,
-								 String setElements) throws UnknownChip, UnknownStateException, UnknownPin,
+	@Test
+	void testFromTaskDescription() throws UnknownChip, UnknownStateException, UnknownPin,
 			ShortCircuitException,
 			UnknownComponent{
 		// 1. Deklaracja chipów
@@ -72,9 +65,8 @@ public class OptimizationTest{
 		states0.add(new ComponentPinState(chipIn1, 4, PinState.HIGH));
 
 		// 6. Optymalizacja
-		Set<Integer> expected = Arrays.stream(setElements.split(","))
-				.map(Integer::valueOf)
-				.collect(Collectors.toSet());
+		int tick = 2;
+		Set<Integer> expected = Set.of(1);
 		System.out.println("Expected set: " + expected);
 
 		Set<Integer> actual = simulation.optimize(states0, tick);

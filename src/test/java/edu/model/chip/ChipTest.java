@@ -12,10 +12,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class ChipTest {
 
-	// Test ze stanem UNKNOWN dla Headerów nie są wykonywane poniewż są one sprawdzane i leci wyjątek podczasa
-	// stationaryState()
-	//
-
 	private Simulation simulation;
 
 	@BeforeEach
@@ -55,8 +51,6 @@ class ChipTest {
 		Pin in = simulation.getChips().get(headerOut).getPinMap().get(1);
 		in.setPinState(PinState.HIGH);
 
-		// Weryfikacja logiki wykonania, specyficzna dla implementacji HeaderOut
-		// Sprawdzenie, czy stan pinu wyjściowego (2) został ustawiony zgodnie z logiką headerCalculation (tożsamościową)
 		assertEquals(PinState.HIGH, in.getPinState(),
 					 "PinIn powinien mieć stan LOW po wywołaniu execute w HeaderOut.");
 	}

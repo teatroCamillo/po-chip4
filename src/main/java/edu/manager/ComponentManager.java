@@ -1,7 +1,5 @@
 package edu.manager;
 
-import edu.model.Pin;
-import edu.model.chip.HeaderOut;
 import edu.model.pin.AbstractPin;
 import edu.model.pin.PinOut;
 import edu.uj.po.simulation.interfaces.*;

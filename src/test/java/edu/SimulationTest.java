@@ -58,7 +58,6 @@ public class SimulationTest {
 	}
 
 	// T2
-	//@Disabled // until propagation fix
 	@Test
 	void testSimulationComplexCircuit() throws UnknownChip,
 			UnknownStateException,	UnknownPin,

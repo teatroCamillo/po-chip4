@@ -146,12 +146,12 @@ class Chip7404Test {
 		Chip chip7404 = simulation.getChips().get(chip7404Id);
 
 		// Set inputs: LOW, HIGH, UNKNOWN, LOW, HIGH, UNKNOWN
-		chip7404.getPinMap().get(1).setPinState(PinState.LOW);      // Input for first NOT gate
-		chip7404.getPinMap().get(3).setPinState(PinState.HIGH);     // Input for second NOT gate
-		chip7404.getPinMap().get(5).setPinState(PinState.UNKNOWN);  // Input for third NOT gate
-		chip7404.getPinMap().get(9).setPinState(PinState.LOW);      // Input for fourth NOT gate
-		chip7404.getPinMap().get(11).setPinState(PinState.HIGH);    // Input for fifth NOT gate
-		chip7404.getPinMap().get(13).setPinState(PinState.UNKNOWN); // Input for sixth NOT gate
+		chip7404.getPinMap().get(1).setPinState(PinState.LOW);
+		chip7404.getPinMap().get(3).setPinState(PinState.HIGH);
+		chip7404.getPinMap().get(5).setPinState(PinState.UNKNOWN);
+		chip7404.getPinMap().get(9).setPinState(PinState.LOW);
+		chip7404.getPinMap().get(11).setPinState(PinState.HIGH);
+		chip7404.getPinMap().get(13).setPinState(PinState.UNKNOWN);
 
 		chip7404.simulate();
 

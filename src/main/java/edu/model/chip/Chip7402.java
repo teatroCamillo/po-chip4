@@ -27,7 +27,6 @@ public class Chip7402 extends Chip {
 	@Override
 	public void simulate(){
 		if(isOn){
-			//this.previousPinMap = clonePinMap();
 			ChipLogicCalculation.chip7402Calculation(this);
 		}
 	}

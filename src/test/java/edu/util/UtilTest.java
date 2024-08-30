@@ -86,7 +86,6 @@ public class UtilTest {
 		assertEquals(expectedState, actualState, "The circuit state was not saved correctly for a single chip.");
 	}
 
-	//TODO: poniżej testy dla saveCircuitHeaderOutState()
 	@Test
 	public void testSaveCircuitHeaderOutState_WithMultipleOutputHeaders() throws UnknownChip, UnknownPin, ShortCircuitException, UnknownComponent, UnknownStateException {
 		int chipId1 = simulation.createOutputPinHeader(2);
@@ -164,7 +163,6 @@ public class UtilTest {
 		int chipId7404 = simulation.createChip(7404);
 		int chipIdOut = simulation.createOutputPinHeader(3);
 
-		// Ustawienie stanów na pinach
 		simulation.getChips().get(chipIdIn).getPinMap().get(1).setPinState(PinState.HIGH);
 		simulation.getChips().get(chipIdIn).getPinMap().get(2).setPinState(PinState.LOW);
 		simulation.getChips().get(chipId7400).getPinMap().get(3).setPinState(PinState.HIGH);

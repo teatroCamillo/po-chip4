@@ -56,9 +56,9 @@ class Chip7482Test {
 		int chip7482Id = simulation.createChip(7482);
 		Chip chip7482 = simulation.getChips().get(chip7482Id);
 
-		chip7482.getPinMap().get(2).setPinState(PinState.HIGH); // A1
-		chip7482.getPinMap().get(14).setPinState(PinState.LOW);  // A2
-		chip7482.getPinMap().get(3).setPinState(PinState.LOW);   // B1
+		chip7482.getPinMap().get(2).setPinState(PinState.LOW); // A1
+		chip7482.getPinMap().get(14).setPinState(PinState.HIGH);  // A2
+		chip7482.getPinMap().get(3).setPinState(PinState.HIGH);   // B1
 		chip7482.getPinMap().get(13).setPinState(PinState.HIGH); // B2
 		chip7482.getPinMap().get(5).setPinState(PinState.LOW);   // C0
 
@@ -66,9 +66,9 @@ class Chip7482Test {
 
 		assertEquals(PinState.HIGH, chip7482.getPinMap().get(1).getPinState(),
 					 "Pin S1 should be HIGH after simulation.");
-		assertEquals(PinState.HIGH, chip7482.getPinMap().get(12).getPinState(),
+		assertEquals(PinState.LOW, chip7482.getPinMap().get(12).getPinState(),
 					 "Pin S2 should be HIGH after simulation.");
-		assertEquals(PinState.LOW, chip7482.getPinMap().get(10).getPinState(),
+		assertEquals(PinState.HIGH, chip7482.getPinMap().get(10).getPinState(),
 					 "Pin C2 should be LOW after simulation.");
 	}
 
