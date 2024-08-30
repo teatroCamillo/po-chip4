@@ -13,11 +13,12 @@ public class Util{
 	public static final String PIN_OUT = "PinOut";
 	public static final String HEADER_IN = "HeaderIn";
 	public static final String HEADER_OUT = "HeaderOut";
+	public static boolean isCurrentFlowAllow = true;
 
 	//to TURN ON/OFF between methods propagateSignal() and observer
 	// propagate = true
 	// observer = false
-	public static final boolean SWITCH_BETWEEN_PO = true;
+	public static final boolean SWITCH_BETWEEN_PO = false;
 
 	// zbiera stan listew wyjściowych
 	public static Set<ComponentPinState> saveCircuitHeaderOutState(Map<Integer, Chip> chips){

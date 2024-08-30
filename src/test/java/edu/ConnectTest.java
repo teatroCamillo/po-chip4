@@ -66,7 +66,7 @@ public class ConnectTest{
 	}
 
 	@Test
-	@Description("Two same connect() given size 1 form directConnection.")
+	@Description("Two same connect() given size 2 form directConnection.")
 	void testConnect2SameConnectGiven1DirectConnection() throws UnknownComponent, UnknownPin,
 			ShortCircuitException,
 			UnknownChip{
@@ -87,6 +87,34 @@ public class ConnectTest{
 		componentManager.connect(chipId1, 3, chipId1, 1);
 
 		assertThrows(ShortCircuitException.class, () -> { componentManager.connect(chipId2, 1, chipId1, 1); },
+					 "Should throw ShortCircuitException when multiple outputs connect to the same input.");
+	}
+
+	//shortCircutInDirectConnectionManyChips - to jest dobry test ale spróbuj pokombinować z kolejnością podpinania
+	@Test
+	void testConnectThrowsShortCircuitExceptionOnMultipleOutputsToSameInputV2() throws UnknownChip, UnknownComponent,
+			UnknownPin, ShortCircuitException{
+		int chipId0 = componentManager.createInputPinHeader(7);
+		int chipId1 = componentManager.createChip(7402);
+		int chipId2 = componentManager.createChip(74152);
+		int chipId3 = componentManager.createChip(74138);
+		int chipId4 = componentManager.createChip(7482);
+		int chipId5 = componentManager.createChip(7444);
+
+		componentManager.connect(chipId0, 3, chipId1, 2);
+
+		assertThrows(ShortCircuitException.class, () -> { componentManager.connect(chipId0, 5, chipId1, 2); },
+					 "Should throw ShortCircuitException when multiple outputs connect to the same input.");
+		assertThrows(ShortCircuitException.class, () -> { componentManager.connect(chipId1, 2, chipId0, 5); },
+					 "Should throw ShortCircuitException when multiple outputs connect to the same input.");
+
+		assertThrows(ShortCircuitException.class, () -> { componentManager.connect(chipId2, 6, chipId1, 2); },
+					 "Should throw ShortCircuitException when multiple outputs connect to the same input.");
+		assertThrows(ShortCircuitException.class, () -> { componentManager.connect(chipId3, 12, chipId1, 2); },
+					 "Should throw ShortCircuitException when multiple outputs connect to the same input.");
+		assertThrows(ShortCircuitException.class, () -> { componentManager.connect(chipId4, 1, chipId1, 2); },
+					 "Should throw ShortCircuitException when multiple outputs connect to the same input.");
+		assertThrows(ShortCircuitException.class, () -> { componentManager.connect(chipId5, 4, chipId1, 2); },
 					 "Should throw ShortCircuitException when multiple outputs connect to the same input.");
 	}
 
@@ -356,5 +384,108 @@ public class ConnectTest{
 					 "");
 	}
 
+	//SCiE 6
+	@Test
+	void testThrowsShortCircuitExceptionWhenInputIsConnectedToOutputAndWhenThatInputHasSignalFromOtherOutputMoreComplexV4() throws UnknownChip, UnknownComponent, UnknownPin, ShortCircuitException{
+		int chipId0 = componentManager.createInputPinHeader(2);
+		int chipId1 = componentManager.createChip(7400);
+		int chipId2 = componentManager.createChip(7400);
+		int chipId3 = componentManager.createChip(7400);
 
+		componentManager.connect(chipId0, 1, chipId1, 1);
+		componentManager.connect(chipId0, 2, chipId1, 2);
+
+		componentManager.connect(chipId1, 3, chipId2, 4);
+		componentManager.connect(chipId1, 3, chipId2, 5);
+		componentManager.connect(chipId1, 3, chipId3, 10);
+
+		componentManager.connect(chipId2, 5, chipId3, 9);
+
+		assertThrows(ShortCircuitException.class, () -> componentManager.connect(chipId1, 6, chipId2, 5),
+					 "");
+		assertThrows(ShortCircuitException.class, () -> componentManager.connect(chipId2, 5, chipId1, 6),
+					 "");
+
+	}
+
+	//SCiE 7 - wariacja SCiE 6
+	@Test
+	void testThrowsShortCircuitExceptionWhenInputIsConnectedToOutputAndWhenThatInputHasSignalFromOtherOutputMoreComplexV5() throws UnknownChip, UnknownComponent, UnknownPin, ShortCircuitException{
+		int chipId0 = componentManager.createInputPinHeader(2);
+		int chipId1 = componentManager.createChip(7400);
+		int chipId2 = componentManager.createChip(7400);
+		int chipId3 = componentManager.createChip(7400);
+
+		componentManager.connect(chipId0, 1, chipId1, 1);
+		componentManager.connect(chipId0, 2, chipId1, 2);
+
+		componentManager.connect(chipId1, 3, chipId2, 4);
+		componentManager.connect(chipId1, 3, chipId2, 5);
+		componentManager.connect(chipId1, 3, chipId3, 10);
+
+		componentManager.connect(chipId2, 5, chipId3, 9);
+
+		assertThrows(ShortCircuitException.class, () -> componentManager.connect(chipId2, 6, chipId2, 5),
+					 "");
+		assertThrows(ShortCircuitException.class, () -> componentManager.connect(chipId2, 5, chipId2, 6),
+					 "");
+
+	}
+
+	//SCiE 8 - wariacja SCiE 6
+	@Test
+	void testThrowsShortCircuitExceptionWhenInputIsConnectedToOutputAndWhenThatInputHasSignalFromOtherOutputMoreComplexV6() throws UnknownChip, UnknownComponent, UnknownPin, ShortCircuitException{
+		int chipId0 = componentManager.createInputPinHeader(2);
+		int chipId1 = componentManager.createChip(7400);
+		int chipId2 = componentManager.createChip(7400);
+		int chipId3 = componentManager.createChip(7400);
+
+		componentManager.connect(chipId0, 1, chipId1, 1);
+		componentManager.connect(chipId0, 2, chipId1, 2);
+
+		componentManager.connect(chipId1, 3, chipId2, 4);
+		componentManager.connect(chipId1, 3, chipId2, 5);
+		componentManager.connect(chipId1, 3, chipId3, 10);
+
+		componentManager.connect(chipId2, 5, chipId3, 9);
+
+		assertThrows(ShortCircuitException.class, () -> componentManager.connect(chipId3, 8, chipId2, 5),
+					 "");
+		assertThrows(ShortCircuitException.class, () -> componentManager.connect(chipId2, 5, chipId3, 8),
+					 "");
+
+		assertThrows(ShortCircuitException.class, () -> componentManager.connect(chipId3, 8, chipId3, 9),
+					 "");
+		assertThrows(ShortCircuitException.class, () -> componentManager.connect(chipId3, 9, chipId3, 8),
+					 "");
+
+	}
+
+	//SCiE 9 - układ z img doUkładu17.jpg
+	@Test
+	void testNoThrowExceptionExampleFromDoUkladu17_simulation01() throws UnknownChip, UnknownComponent, UnknownPin,
+			ShortCircuitException{
+		int chipId0 = componentManager.createInputPinHeader(2);
+		int chipId1 = componentManager.createChip(7431);
+		int chipId2 = componentManager.createChip(7404);
+		int chipId3 = componentManager.createOutputPinHeader(4);
+
+
+		componentManager.connect(chipId0, 1, chipId1, 11);
+		componentManager.connect(chipId0, 2, chipId1, 10);
+
+		componentManager.connect(chipId1, 9, chipId3, 1);
+		componentManager.connect(chipId1, 9, chipId2, 13);
+
+		//componentManager.connect(chipId2, 12, chipId2, 11);
+
+		//componentManager.connect(chipId2, 11, chipId3, 2);
+
+		componentManager.connect(chipId2, 10, chipId3, 3);
+		componentManager.connect(chipId2, 10, chipId1, 1);
+
+		componentManager.connect(chipId1, 2, chipId3, 4);
+		assertDoesNotThrow(() -> componentManager.connect(chipId2, 12, chipId2, 11));
+		assertDoesNotThrow(() -> componentManager.connect(chipId2, 11, chipId3, 2));
+	}
 }

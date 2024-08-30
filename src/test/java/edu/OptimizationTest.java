@@ -2,7 +2,6 @@ package edu;
 
 import edu.uj.po.simulation.interfaces.*;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
@@ -23,7 +22,6 @@ public class OptimizationTest{
 	}
 
 	// T1
-	@Disabled
 	@ParameterizedTest
 	@CsvSource({
 			"2, HIGH, LOW, '1'"

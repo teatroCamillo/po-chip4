@@ -1,6 +1,9 @@
 package edu.manager;
 
 import edu.model.Pin;
+import edu.model.chip.HeaderOut;
+import edu.model.pin.AbstractPin;
+import edu.model.pin.PinOut;
 import edu.uj.po.simulation.interfaces.*;
 import edu.model.Chip;
 import edu.model.Connection;
@@ -28,13 +31,12 @@ public class ComponentManager implements Component, CircuitDesign {
 		this.creator = new ChipCreator();
 	}
 
-	public boolean isPinConnected(int chipId, int pinId){
-		// Sprawdź, czy pin jest źródłem lub celem w jakimkolwiek połączeniu
+	public boolean isPinConnected(AbstractPin pin){
 		return directConnections
 				.stream()
 				.anyMatch(connection ->
-								  (connection.sourceChipId() == chipId && connection.sourcePinId() == pinId) ||
-										  (connection.targetChipId() == chipId && connection.targetPinId() == pinId)
+								  (connection.sourceChipId() == pin.getChipId() && connection.sourcePinId() == pin.getId()) ||
+										  (connection.targetChipId() == pin.getChipId() && connection.targetPinId() == pin.getId())
 		);
 	}
 
@@ -45,9 +47,20 @@ public class ComponentManager implements Component, CircuitDesign {
 							  int pin2){
 		Chip chip1 = chips.get(component1);
 		Chip chip2 = chips.get(component2);
+		AbstractPin p1 = chip1.getPinMap().get(pin1);
+		AbstractPin p2 = chip2.getPinMap().get(pin2);
 
-		//chip2.getPinMap().get(pin2).subscribe(chip1.getPinMap().get(pin1));
-		chip1.getPinMap().get(pin1).subscribe(chip2.getPinMap().get(pin2));
+		// kierunek propagacji - subskrybentami sa tylko PinIn a PinOut są Publisherami
+		if(p1 instanceof PinOut) chip1.getPinMap().get(pin1).subscribe(chip2.getPinMap().get(pin2));
+		else if(p2 instanceof PinOut) chip2.getPinMap().get(pin2).subscribe(chip1.getPinMap().get(pin1));
+		else {
+			// tu powinien być subskrybentem ten co już pisiada połączenie
+			System.out.println("******************************* Both are PinIn class " +
+									   "********************************");
+			if(isPinConnected(p1))
+				chip1.getPinMap().get(pin1).subscribe(chip2.getPinMap().get(pin2));
+			else chip2.getPinMap().get(pin2).subscribe(chip1.getPinMap().get(pin1));
+		}
 	}
 
 	public void addNewConnection(int sourceChipId, int sourcePinId, int targetChipId, int targetPinId) {
@@ -56,8 +69,8 @@ public class ComponentManager implements Component, CircuitDesign {
 		this.directConnections.add(new Connection(targetChipId, targetPinId, sourceChipId, sourcePinId));
 		// zestawienie subskrypcji
 		if(!SWITCH_BETWEEN_PO){
-			setSubscribe(sourceChipId, sourcePinId, targetChipId, targetPinId);
 			System.out.println("ustawiam subskrybcję...");
+			setSubscribe(sourceChipId, sourcePinId, targetChipId, targetPinId);
 		}
 	}
 
@@ -81,19 +94,34 @@ public class ComponentManager implements Component, CircuitDesign {
 	public void propagateSignal(){
 		// 1. przechodze po wszystkich połączeniach
 		// 2. mapuje stan pinu docelowego na źródłowy
+		//System.out.println("\nPropagate --- START");
 		if(SWITCH_BETWEEN_PO){
-			directConnections.forEach(connection -> {
+			// HeaderOut nie  przesyła  sygnału nigdzie
+			directConnections
+					.stream().filter(connection -> !(chips.get(connection.sourceChipId()) instanceof HeaderOut))
+			.forEach(connection -> {
+
+				System.out.println(connection);
+
 				int sourceChipId = connection.sourceChipId();
-				int sourceId = connection.sourcePinId();
+				int sourcePinId = connection.sourcePinId();
 				int targetChipId = connection.targetChipId();
 				int targetPinId = connection.targetPinId();
 
-				Pin sourcePin = chips.get(sourceChipId).getPinMap().get(sourceId);
+				Pin sourcePin = chips.get(sourceChipId).getPinMap().get(sourcePinId);
 				// 0. sprawdź czy outputPin biezącego componentu jest w odpowiednim stanie - != UNKNOWN
-				if(sourcePin.getPinState() != PinState.UNKNOWN)
+				if(sourcePin.getPinState() != PinState.UNKNOWN){
+					if(sourceChipId == 2 || sourceChipId == 6){
+						System.out.println(
+								"Propaguję... : Z source Chip: " + sourceChipId + ", pin: " + sourcePinId + ", stan:" + sourcePin.getPinState());
+						System.out.println("Na       			    Chip: " + targetChipId + ", pin: " + targetPinId);
+					}
 					chips.get(targetChipId).getPinMap().get(targetPinId).setPinState(sourcePin.getPinState());
+
+				}
 			});
 		}
+		//System.out.println("\nPropagate --- END \n");
 	}
 
 	@Override
