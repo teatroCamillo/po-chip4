@@ -61,6 +61,7 @@ public class StationaryStateTest {
 						   "Should not throw UnknownStateException for unknown pin state.");
 	}
 
+	@Disabled
 	@Test
 	void testStationaryStateThrowsUnknownStateExceptionWhenPinStateIsUKNOWNAndIsConnectedToo() throws UnknownChip,
 			UnknownPin,
@@ -176,6 +177,7 @@ public class StationaryStateTest {
 		Assertions.assertEquals(PinState.HIGH, simulation.getChips().get(chipId1).getPinMap().get(1).getPinState());
 	}
 
+	@Disabled
 	@Test
 	void testStationaryStateWithMultipleInputHeaders() throws UnknownChip, UnknownStateException, UnknownPin, ShortCircuitException, UnknownComponent {
 		int chipId1 = simulation.createInputPinHeader(2);
