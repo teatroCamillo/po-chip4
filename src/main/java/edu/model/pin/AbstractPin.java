@@ -96,6 +96,9 @@ public class AbstractPin implements Pin, Publisher, Subscriber {
 	public void setChipId(int chipId){
 		this.chipId = chipId;
 	}
+	public int getSubscribersSize(){
+		return subscribers.size();
+	}
 
 	@Override
 	public String toString(){

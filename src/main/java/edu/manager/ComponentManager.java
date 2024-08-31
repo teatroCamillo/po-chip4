@@ -53,13 +53,22 @@ public class ComponentManager implements Component, CircuitDesign {
 		else if(p2 instanceof PinOut) chip2.getPinMap().get(pin2).subscribe(chip1.getPinMap().get(pin1));
 		else {
 			// tu powinien być subskrybentem ten co już pisiada połączenie
-			System.out.println("******************************* Both are PinIn class " +
-									   "********************************");
-			// chyb powinno być isPinConnected(p1) && isConnectedToPinOutRecursive
+			//System.out.println("******************************* Both are PinIn class " +
+									//   "********************************");
+
 			// lub isPinConnectedToPinOut || isConnectedToPinOutRecursive
-			if(isPinConnected(p1))
-				chip1.getPinMap().get(pin1).subscribe(chip2.getPinMap().get(pin2));
-			else chip2.getPinMap().get(pin2).subscribe(chip1.getPinMap().get(pin1));
+			//v0
+			//if(isPinConnected(p1)) chip1.getPinMap().get(pin1).subscribe(chip2.getPinMap().get(pin2));
+			chip1.getPinMap().get(pin1).subscribe(chip2.getPinMap().get(pin2));
+			//brak tego nie wpływa na wynik - bez tego mam 9 błędów
+			//else chip2.getPinMap().get(pin2).subscribe(chip1.getPinMap().get(pin1));
+
+			//v1 - lepsza jest v0
+//			if(canReachOutputThroughAnotherInput(chip1.getChipId(), p1.getId()))
+//				chip1.getPinMap().get(pin1).subscribe(chip2.getPinMap().get(pin2));
+//			else chip2.getPinMap().get(pin2).subscribe(chip1.getPinMap().get(pin1));
+
+
 		}
 	}
 

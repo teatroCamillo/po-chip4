@@ -61,24 +61,22 @@ public class StationaryStateTest {
 						   "Should not throw UnknownStateException for unknown pin state.");
 	}
 
-	@Disabled
 	@Test
-	void testStationaryStateThrowsUnknownStateExceptionWhenPinStateIsUKNOWNAndIsConnectedToo() throws UnknownChip,
-			UnknownPin,
-			ShortCircuitException,
-			UnknownComponent{
+	void testStationaryState() throws UnknownChip, UnknownPin, ShortCircuitException, UnknownComponent, UnknownStateException{
+		int chipId0 = simulation.createInputPinHeader(2);
 		int chipId1 = simulation.createChip(7400);
-		int chipId2 = simulation.createInputPinHeader(2);
+
 
 		Set<ComponentPinState> states = new HashSet<>();
-		states.add(new ComponentPinState(chipId2, 1, PinState.HIGH));
-		states.add(new ComponentPinState(chipId2, 2, PinState.UNKNOWN));
+		states.add(new ComponentPinState(chipId0, 1, PinState.HIGH));
+		states.add(new ComponentPinState(chipId0, 2, PinState.HIGH));
 
-		simulation.connect(chipId2, 1, chipId1, 1);
-		simulation.connect(chipId2, 2, chipId1, 2);
+		simulation.connect(chipId0, 1, chipId1, 1);
+		simulation.connect(chipId0, 2, chipId1, 2);
 
-		assertThrows(UnknownStateException.class, () -> simulation.stationaryState(states),
-					 "Should throw UnknownStateException for unknown pin state which is connected also.");
+		simulation.stationaryState(states);
+
+		Assertions.assertEquals(PinState.LOW, simulation.getChips().get(chipId1).getPinMap().get(3).getPinState());
 	}
 
 	@Test
@@ -165,7 +163,7 @@ public class StationaryStateTest {
 
 
 	@Test
-	void testSetHeadersInPins() throws UnknownStateException{
+	void testSetHeadersInPins(){
 		int chipId1 = simulation.createInputPinHeader(2);
 
 		Set<ComponentPinState> states0 = new HashSet<>();
@@ -177,27 +175,25 @@ public class StationaryStateTest {
 		Assertions.assertEquals(PinState.HIGH, simulation.getChips().get(chipId1).getPinMap().get(1).getPinState());
 	}
 
-	@Disabled
+	// ST 0
 	@Test
 	void testStationaryStateWithMultipleInputHeaders() throws UnknownChip, UnknownStateException, UnknownPin, ShortCircuitException, UnknownComponent {
-		int chipId1 = simulation.createInputPinHeader(2);
-		int chipId2 = simulation.createInputPinHeader(2);
-		int chipId3 = simulation.createChip(7400);
-		int chipId4 = simulation.createOutputPinHeader(1);
+		int chipId0 = simulation.createInputPinHeader(1);
+		int chipId1 = simulation.createInputPinHeader(1);
+		int chipId2 = simulation.createChip(7400);
+		int chipId3 = simulation.createOutputPinHeader(1);
 
 		Set<ComponentPinState> states = new HashSet<>();
-		states.add(new ComponentPinState(chipId1, 1, PinState.HIGH));
-		states.add(new ComponentPinState(chipId1, 2, PinState.HIGH));
-		states.add(new ComponentPinState(chipId2, 1, PinState.LOW));
-		states.add(new ComponentPinState(chipId2, 2, PinState.LOW));
+		states.add(new ComponentPinState(chipId0, 1, PinState.HIGH));
+		states.add(new ComponentPinState(chipId1, 1, PinState.LOW));
 
-		simulation.connect(chipId1, 1, chipId3, 1);
-		simulation.connect(chipId2, 2, chipId3, 2);
-		simulation.connect(chipId3, 3, chipId4, 1);
+		simulation.connect(chipId0, 1, chipId2, 1);
+		simulation.connect(chipId1, 1, chipId2, 2);
+		simulation.connect(chipId2, 3, chipId3, 1);
 
 		simulation.stationaryState(states);
 
-		Assertions.assertEquals(PinState.HIGH, simulation.getChips().get(chipId4).getPinMap().get(1).getPinState());
+		Assertions.assertEquals(PinState.HIGH, simulation.getChips().get(chipId3).getPinMap().get(1).getPinState());
 	}
 
 	@Test
@@ -342,5 +338,48 @@ public class StationaryStateTest {
 		Assertions.assertEquals(PinState.HIGH, simulation.getChips().get(chipOut0).getPinMap().get(1).getPinState());
 		Assertions.assertEquals(PinState.HIGH, simulation.getChips().get(chipOut1).getPinMap().get(1).getPinState());
 		Assertions.assertEquals(PinState.LOW, simulation.getChips().get(chipOut1).getPinMap().get(2).getPinState());
+	}
+
+	@Test
+	void testStationaryStateWithDelayV0() throws UnknownChip, UnknownStateException, UnknownPin, ShortCircuitException,
+			UnknownComponent {
+		int chipId0 = simulation.createInputPinHeader(2);
+		int chipId1 = simulation.createChip(7431);
+		int chipId2 = simulation.createOutputPinHeader(1);
+
+		Set<ComponentPinState> states = new HashSet<>();
+		states.add(new ComponentPinState(chipId0, 1, PinState.HIGH));
+		states.add(new ComponentPinState(chipId0, 2, PinState.HIGH));
+
+		simulation.connect(chipId0, 1, chipId1, 1);
+		simulation.connect(chipId0, 2, chipId1, 5);
+		simulation.connect(chipId1, 2, chipId1, 6);
+		simulation.connect(chipId1, 7, chipId2, 1);
+
+		simulation.stationaryState(states);
+
+		Assertions.assertEquals(PinState.HIGH, simulation.getChips().get(chipId2).getPinMap().get(1).getPinState());
+	}
+
+
+	@Test
+	void testStationaryStateWithDelayV1() throws UnknownChip, UnknownStateException, UnknownPin, ShortCircuitException,
+			UnknownComponent {
+		int chipId0 = simulation.createInputPinHeader(2);
+		int chipId1 = simulation.createChip(7431);
+		int chipId2 = simulation.createOutputPinHeader(1);
+
+		Set<ComponentPinState> states = new HashSet<>();
+		states.add(new ComponentPinState(chipId0, 1, PinState.LOW));
+		states.add(new ComponentPinState(chipId0, 2, PinState.HIGH));
+
+		simulation.connect(chipId0, 1, chipId1, 1);
+		simulation.connect(chipId0, 2, chipId1, 5);
+		simulation.connect(chipId1, 2, chipId1, 6);
+		simulation.connect(chipId1, 7, chipId2, 1);
+
+		simulation.stationaryState(states);
+
+		Assertions.assertEquals(PinState.LOW, simulation.getChips().get(chipId2).getPinMap().get(1).getPinState());
 	}
 }

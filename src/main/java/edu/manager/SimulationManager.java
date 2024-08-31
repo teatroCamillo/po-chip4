@@ -58,6 +58,9 @@ public class SimulationManager implements Component, SimulationAndOptimization {
 		Set<ComponentPinState> currentState;
 		currentState = Util.saveCircuitState(componentManager.chips);
 		//currentState = Util.saveCircuitHeaderOutState(componentManager.chips);
+//		System.out.println("Sprawdzam stan układu przed petla");
+//		currentState.forEach(System.out::println);
+//		System.out.println("\n");
 		do {
 			//System.out.println("\n");
 			previousState = new HashSet<>(currentState);
@@ -68,7 +71,9 @@ public class SimulationManager implements Component, SimulationAndOptimization {
 			currentState.clear();
 			currentState = Util.saveCircuitState(componentManager.chips);
 			//currentState = Util.saveCircuitHeaderOutState(componentManager.chips);
-
+//			System.out.println("Sprawdzam stan układu PO simulate i propagate");
+//			currentState.forEach(System.out::println);
+//			System.out.println("\n");
 		} while (!previousState.equals(currentState));
 
 		boolean isHeaderOut = componentManager.chips.values()
@@ -122,13 +127,26 @@ public class SimulationManager implements Component, SimulationAndOptimization {
 			for (Map.Entry<Integer, AbstractPin> entryPin : chip.getPinMap().entrySet()) {
 				int pinId = entryPin.getKey();
 				AbstractPin pin = entryPin.getValue();
+				// jakie są warianty dla HeaderIn?
+				// 1. PinOut PinState != UNKNOWN i są połączone - TO jest OK
+				// 2. PinOut connected but UNKNOWN - to powinien byc USE ?
+				// 3. Someone Pin not connected and pin.getPinState() != PinState.UNKNOWN
 
-				//pin.getPinState() == PinState.UNKNOWN && isPinOutConnected(pin) - całkiem ok
-				// !isPinOutConnected(pin) - better !
-				//isPinInConnected(pin) - nie tutaj bo rzuca Runtimy
+				//Próby:
+				// pin.getPinState() == PinState.UNKNOWN && isPinOutConnected(pin) - całkiem ok
+				// !isPinOutConnected(pin) - better ! - TimeoutExc-czasami sie pojawia z  test7408connectionsB(
+				// !isPinOutConnected(pin) && pin.getPinState() != PinState.UNKNOWN - jak wyżej
+				// isPinInConnected(pin) - nie tutaj bo rzuca Runtimy
+				// !(isPinOutConnected(pin) && pin.getPinState() != PinState.UNKNOWN) - dodaje błąd TimeoutExc
 				if (!isPinOutConnected(pin)) {
 					throw new UnknownStateException(new ComponentPinState(chipId, pinId, pin.getPinState()));
 				}
+
+				//2. PinOut connected but UNKNOWN - to powinien byc USE ? - to wydaje się niepotrzebne, nie zmienia
+				// wyniku
+//				if (isPinOutConnected(pin) && pin.getPinState() == PinState.UNKNOWN) {
+//					throw new UnknownStateException(new ComponentPinState(chipId, pinId, pin.getPinState()));
+//				}
 
 				// sam ten warunek jest za dużo generuje extra USEx ale pokrywa te które pojawiają się przy
 				// połączeniu z  && isPinOutConnected(pin)
@@ -173,9 +191,19 @@ public class SimulationManager implements Component, SimulationAndOptimization {
 		return componentManager.isPinConnected(pin);
 	}
 
+	// upewij się że nie propagujesz 2 raz czegoś bo na propagacji zmienił się przeciez czyjś stan!
+	// czy wynik mógł się zmienić podczas propagacji?
+	// wykonaj tylko na połączonych pinach ?
+	// sprawdzam jeszcze setSubscribe()
+
+	//.filter(pin -> pin.getPinState() != PinState.UNKNOWN) //  to psuje wyniki
+	//.filter(pin -> pin.getSubscribersSize() > 0) // nie pomaga i nie przeszkadza
+	// wykonaj tylko na połączonych pinach - to jest podobne do filtra z sizem
 	private void propagateSignal(){
 		componentManager.chips.values().forEach(chip -> {
-			chip.getPinMap().values().forEach(AbstractPin::notifySubscribers);
+			chip.getPinMap().values()
+					.stream()
+					.forEach(AbstractPin::notifySubscribers);
 		});
 	}
 
