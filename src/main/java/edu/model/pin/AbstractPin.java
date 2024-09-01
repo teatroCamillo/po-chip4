@@ -32,7 +32,6 @@ public class AbstractPin implements Pin, Publisher, Subscriber {
 		return state;
 	}
 
-
 	@Override
 	public AbstractPin clone() {
 		try {

@@ -195,6 +195,12 @@ public class SimulationManager implements Component, SimulationAndOptimization {
 	// czy wynik mógł się zmienić podczas propagacji?
 	// wykonaj tylko na połączonych pinach ?
 	// sprawdzam jeszcze setSubscribe()
+	// a może propagacja powinna być wykonana zaraz po zmianie stanu dla danego chipu ?
+
+	//directConnection
+	//	spróbuj przemyśleć dircect connection aby był jeden wpis a nie dwa - moze uda się zmieniając kolejność na
+	//			podstawie tego czy to PinIn czy PinOut - spróbuj
+	// PAMIETAJ aby zmienić w kilku miejscach: addNewConnection(),
 
 	//.filter(pin -> pin.getPinState() != PinState.UNKNOWN) //  to psuje wyniki
 	//.filter(pin -> pin.getSubscribersSize() > 0) // nie pomaga i nie przeszkadza
@@ -202,7 +208,6 @@ public class SimulationManager implements Component, SimulationAndOptimization {
 	private void propagateSignal(){
 		componentManager.chips.values().forEach(chip -> {
 			chip.getPinMap().values()
-					.stream()
 					.forEach(AbstractPin::notifySubscribers);
 		});
 	}

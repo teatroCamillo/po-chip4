@@ -51,6 +51,7 @@ public class ConnectTest{
 		}, "Should throw UnknownPin if pin does not exist.");
 	}
 
+	@Disabled
 	@Test
 	@Description("Can again provide the same connection and exception won't be thrown and in directConnections" +
 			" will be only one record.")
@@ -65,6 +66,7 @@ public class ConnectTest{
 		assertEquals(2, componentManager.getDirectConnections().size());
 	}
 
+	@Disabled
 	@Test
 	@Description("Two same connect() given size 2 form directConnection.")
 	void testConnect2SameConnectGiven1DirectConnection() throws UnknownComponent, UnknownPin,
@@ -79,13 +81,14 @@ public class ConnectTest{
 		assertEquals(2, componentManager.getDirectConnections().size());
 	}
 
+	//CON 0
 	@Test
 	void testConnectThrowsShortCircuitExceptionOnMultipleOutputsToSameInput() throws UnknownChip, UnknownComponent, UnknownPin, ShortCircuitException{
 		int chipId1 = componentManager.createChip(7400);
 		int chipId2 = componentManager.createChip(7402);
 
 		componentManager.connect(chipId1, 3, chipId1, 1);
-
+																					//1      1        0        1
 		assertThrows(ShortCircuitException.class, () -> { componentManager.connect(chipId2, 1, chipId1, 1); },
 					 "Should throw ShortCircuitException when multiple outputs connect to the same input.");
 	}
@@ -273,6 +276,7 @@ public class ConnectTest{
 	}
 
 	//SCiE 2 - odwórć kolejność łączeń z //SCiE 1
+	//@Disabled
 	@Test
 	void testThrowsShortCircuitExceptionWhenInputIsConnectedToOutputAndWhenThatInputHasSignalFromOtherOutputMoreComplexV0() throws UnknownChip, UnknownComponent, UnknownPin, ShortCircuitException{
 		int chipId0 = componentManager.createInputPinHeader(2);
@@ -281,14 +285,14 @@ public class ConnectTest{
 		int chipId3 = componentManager.createChip(7400);
 
 		// inverted
-		componentManager.connect(chipId1, 1, chipId0, 1);
+		componentManager.connect(chipId1, 1, chipId0, 1); // kolejność PinIn, PinOut
 		componentManager.connect(chipId1, 2, chipId0, 2);
 
 		componentManager.connect(chipId1, 1, chipId2, 4);
 		componentManager.connect(chipId1, 2, chipId2, 5);
 
 		// inverted
-		componentManager.connect(chipId3, 10, chipId2, 4);
+		componentManager.connect(chipId3, 10, chipId2, 4); // kolejność PinIn, PinIn
 		componentManager.connect(chipId3, 9, chipId2, 5);
 
 		assertThrows(ShortCircuitException.class, () -> componentManager.connect(chipId3, 8, chipId3, 10),

@@ -29,15 +29,10 @@ public class ComponentManager implements Component, CircuitDesign {
 		this.creator = new ChipCreator();
 	}
 
-	public boolean isPinConnected(AbstractPin pin){
-		return directConnections
-				.stream()
-				.anyMatch(connection ->
-								  (connection.sourceChipId() == pin.getChipId() && connection.sourcePinId() == pin.getId()) ||
-										  (connection.targetChipId() == pin.getChipId() && connection.targetPinId() == pin.getId())
-		);
-	}
-
+	// Connection to Connection nie ma znaczenie musi być tylko jeden wpis
+	// *********** TO JEST BARDZO WAŻNE- TEST IT ******
+	// Ważniejsze jest właściwy kierunek subskrypcji aby sygnał był poprawnie przesyłany
+	// ****************************************************
 	// z poziomu managera ustawiam subskrypcję miedzy pinami
 	private void setSubscribe(int component1,
 							  int pin1,
@@ -48,39 +43,47 @@ public class ComponentManager implements Component, CircuitDesign {
 		AbstractPin p1 = chip1.getPinMap().get(pin1);
 		AbstractPin p2 = chip2.getPinMap().get(pin2);
 
+		//1. jeśli any is PinOut - to on jest publiszerem
+		//2. jeśli component1 i component2 są PinIn ?
+
 		// kierunek propagacji - subskrybentami sa tylko PinIn a PinOut są Publisherami
 		if(p1 instanceof PinOut) chip1.getPinMap().get(pin1).subscribe(chip2.getPinMap().get(pin2));
 		else if(p2 instanceof PinOut) chip2.getPinMap().get(pin2).subscribe(chip1.getPinMap().get(pin1));
 		else {
-			// tu powinien być subskrybentem ten co już pisiada połączenie
+			// tu powinien być subskrybentem ten co już pisiada połączenie z PinOut
 			//System.out.println("******************************* Both are PinIn class " +
 									//   "********************************");
 
 			// lub isPinConnectedToPinOut || isConnectedToPinOutRecursive
 			//v0
 			//if(isPinConnected(p1)) chip1.getPinMap().get(pin1).subscribe(chip2.getPinMap().get(pin2));
-			chip1.getPinMap().get(pin1).subscribe(chip2.getPinMap().get(pin2));
+			//chip1.getPinMap().get(pin1).subscribe(chip2.getPinMap().get(pin2));
 			//brak tego nie wpływa na wynik - bez tego mam 9 błędów
 			//else chip2.getPinMap().get(pin2).subscribe(chip1.getPinMap().get(pin1));
 
 			//v1 - lepsza jest v0
-//			if(canReachOutputThroughAnotherInput(chip1.getChipId(), p1.getId()))
-//				chip1.getPinMap().get(pin1).subscribe(chip2.getPinMap().get(pin2));
-//			else chip2.getPinMap().get(pin2).subscribe(chip1.getPinMap().get(pin1));
-
-
+			if(canReachOutputThroughAnotherInput(chip1.getChipId(), p1.getId())){
+				chip1.getPinMap().get(pin1).subscribe(chip2.getPinMap().get(pin2));
+			}
+			else if(canReachOutputThroughAnotherInput(chip2.getChipId(), p2.getId()))
+				chip2.getPinMap().get(pin2).subscribe(chip1.getPinMap().get(pin1));
 		}
 	}
 
+	// Connection to Connection nie ma znaczenie musi być tylko jeden wpis
+	// *********** TO JEST BARDZO WAŻNE- TEST IT ******
+	// Ważniejsze jest właściwy kierunek subskrypcji aby sygnał był poprawnie przesyłany
+	// ****************************************************
+	// należy zadbać zdublowanie w obie strony aby było jednoznaczne że jest połączenie między dwoma pinami
+	// przed utworzeniem połączenia zidentyfikuj który Pin jest In a który Out
 	public void addNewConnection(int sourceChipId, int sourcePinId, int targetChipId, int targetPinId) {
-		// zdublowanie w obie strony aby było jednoznaczne że jest połączenie między dwoma pinami
-		this.directConnections.add(new Connection(sourceChipId, sourcePinId, targetChipId, targetPinId));
-		this.directConnections.add(new Connection(targetChipId, targetPinId, sourceChipId, sourcePinId));
+		//if(isOutputPin(sourceChipId, sourcePinId))
+		this.directConnections.add(new Connection(sourceChipId,sourcePinId, targetChipId, targetPinId));
+		//else this.directConnections.add(new Connection(targetChipId, targetPinId, sourceChipId, sourcePinId));
+
 		// zestawienie subskrypcji
-		if(!SWITCH_BETWEEN_PO){
-			System.out.println("ustawiam subskrybcję...");
-			setSubscribe(sourceChipId, sourcePinId, targetChipId, targetPinId);
-		}
+		System.out.println("ustawiam subskrybcję...");
+		setSubscribe(sourceChipId, sourcePinId, targetChipId, targetPinId);
 	}
 
 	private int putToChipsMap(Chip newChip){
@@ -279,17 +282,7 @@ public class ComponentManager implements Component, CircuitDesign {
 		}
 
 		// Sprawdź, czy takie połączenie już istnieje
-		if (directConnections
-				.stream()
-				.anyMatch(connection ->
-								  (connection.sourceChipId() == component1 &&
-										  connection.sourcePinId() == pin1 &&
-										  connection.targetChipId() == component2 &&
-										  connection.targetPinId() == pin2) ||
-										  (connection.sourceChipId() == component2 &&
-												  connection.sourcePinId() == pin2 &&
-												  connection.targetChipId() == component1 &&
-												  connection.targetPinId() == pin1))) {
+		if (isConnectionExist(component1, pin1, component2, pin2)) {
 			return;
 		}
 
@@ -308,7 +301,35 @@ public class ComponentManager implements Component, CircuitDesign {
 		addNewConnection(component1, pin1, component2, pin2);
 	}
 
-	// dla przykładu: chipId1, 1, chipId2, 4
+	public boolean isConnectionExist(int component1,
+									 int pin1,
+									 int component2,
+									 int pin2){
+		return directConnections
+				.stream()
+				.anyMatch(connection ->
+								  (connection.sourceChipId() == component1 &&
+										  connection.sourcePinId() == pin1 &&
+										  connection.targetChipId() == component2 &&
+										  connection.targetPinId() == pin2) ||
+										  (connection.sourceChipId() == component2 &&
+												  connection.sourcePinId() == pin2 &&
+												  connection.targetChipId() == component1 &&
+												  connection.targetPinId() == pin1));
+	}
+
+	public boolean isPinConnected(AbstractPin pin){
+		return directConnections
+				.stream()
+				.anyMatch(connection ->
+								  (connection.sourceChipId() == pin.getChipId() &&
+										  connection.sourcePinId() == pin.getId()) ||
+										  (connection.targetChipId() == pin.getChipId() &&
+												  connection.targetPinId() == pin.getId())
+				);
+	}
+
+	// dla przykładu: 1, 1, 0, 1
 	private boolean isCreatingIndirectShortCircuit(int component1, int pin1, int component2, int pin2) {
 		// isOutputPin() - jest chyba bez sensu bo jak łączone są 2 PinIn to jak to się ma?
 //		return (isOutputPin(component1, pin1) && canReachOutputThroughAnotherInput(component2, pin2)) ||
@@ -330,7 +351,7 @@ public class ComponentManager implements Component, CircuitDesign {
 	}
 
 	private boolean isConnectedToOutputRecursive(int chipId, int pinId, Set<String> visited) {
-		String key = chipId + ":" + pinId; // 2 : 4
+		String key = chipId + ":" + pinId; // 3 : 10
 		if (visited.contains(key)) {
 			return false;
 		}
@@ -349,6 +370,17 @@ public class ComponentManager implements Component, CircuitDesign {
 					}
 				}
 			}
+			else if(connection.targetChipId() == chipId && connection.targetPinId() == pinId) {
+				if (isOutputPin(connection.sourceChipId(), connection.sourcePinId())) {
+					return true;
+				}
+				if (isInputPin(connection.sourceChipId(), connection.sourcePinId())) {
+					if (isConnectedToOutputRecursive(connection.sourceChipId(), connection.sourcePinId(), visited)) {
+						return true;
+					}
+				}
+			}
+
 		}
 
 		return false;
