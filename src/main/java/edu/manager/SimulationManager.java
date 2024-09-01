@@ -53,6 +53,7 @@ public class SimulationManager implements Component, SimulationAndOptimization {
 
 		validateHeadersIn();
 		propagateSignal();
+		propagateSignal();
 
 		Set<ComponentPinState> previousState;
 		Set<ComponentPinState> currentState;
@@ -66,6 +67,7 @@ public class SimulationManager implements Component, SimulationAndOptimization {
 			previousState = new HashSet<>(currentState);
 
 			componentManager.chips.values().forEach(Chip::simulate);
+			propagateSignal();
 			propagateSignal();
 
 			currentState.clear();
@@ -207,6 +209,7 @@ public class SimulationManager implements Component, SimulationAndOptimization {
 														   int ticks) throws UnknownStateException{
 		setHeadersInPins(states0);
 		propagateSignal();
+		propagateSignal();
 
 		Map<Integer, Set<ComponentPinState>> resultMap = new HashMap<>();
 		Set<ComponentPinState> currentState;
@@ -216,6 +219,9 @@ public class SimulationManager implements Component, SimulationAndOptimization {
 
 		for(int i=1; i<=ticks; i++){
 			componentManager.chips.values().forEach(Chip::simulate);
+			propagateSignal();
+			// zdublowana propagacja w takiej prostej formie pomaga na przypadki z symulacją
+			// ale psuje na błędach z chip<>
 			propagateSignal();
 
 			currentState.clear();

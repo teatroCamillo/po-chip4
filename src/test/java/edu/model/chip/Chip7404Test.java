@@ -1,11 +1,11 @@
 package edu.model.chip;
 
 import edu.Simulation;
-import edu.uj.po.simulation.interfaces.PinState;
-import edu.uj.po.simulation.interfaces.UnknownChip;
+import edu.uj.po.simulation.interfaces.*;
 import edu.model.Chip;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class Chip7404Test {
@@ -33,7 +33,7 @@ class Chip7404Test {
 		int chip7404Id = simulation.createChip(7404);
 		Chip chip7404 = simulation.getChips().get(chip7404Id);
 
-		chip7404.getPinMap().get(1).setPinState(PinState.LOW);  // A (input)
+		chip7404.getPinMap().get(1).setPinState(PinState.LOW);
 
 		chip7404.simulate();
 
@@ -46,7 +46,7 @@ class Chip7404Test {
 		int chip7404Id = simulation.createChip(7404);
 		Chip chip7404 = simulation.getChips().get(chip7404Id);
 
-		chip7404.getPinMap().get(1).setPinState(PinState.HIGH);  // A (input)
+		chip7404.getPinMap().get(1).setPinState(PinState.HIGH);
 
 		chip7404.simulate();
 

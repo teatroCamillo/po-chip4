@@ -213,6 +213,7 @@ public class StationaryStateTest {
 		Assertions.assertEquals(PinState.HIGH, simulation.getChips().get(chipId4).getPinMap().get(1).getPinState());
 	}
 
+	//SCiE 9
 	@Test
 	void testNoThrowExceptionExampleFromDoUkladu17_simulation01() throws UnknownChip,
 			UnknownComponent, UnknownPin, ShortCircuitException, UnknownStateException{
@@ -376,5 +377,50 @@ public class StationaryStateTest {
 		simulation.stationaryState(states);
 
 		Assertions.assertEquals(PinState.LOW, simulation.getChips().get(chipId2).getPinMap().get(1).getPinState());
+	}
+
+
+	@Test
+	void testTransitionalSignal7404() throws UnknownChip, UnknownPin, ShortCircuitException, UnknownComponent,
+			UnknownStateException{
+		int chipIn0 = simulation.createInputPinHeader(1);
+		int chip7404Id = simulation.createChip(7404);
+		int chipOut0 = simulation.createOutputPinHeader(1);
+
+		simulation.connect(chipIn0, 1, chip7404Id, 1);
+		simulation.connect(chip7404Id, 2, chip7404Id, 3);
+		simulation.connect(chip7404Id, 4, chip7404Id, 5);
+		simulation.connect(chip7404Id, 6, chip7404Id, 9);
+		simulation.connect(chip7404Id, 8, chip7404Id, 11);
+		simulation.connect(chip7404Id, 10, chip7404Id, 13);
+		simulation.connect(chip7404Id, 12, chipOut0, 1);
+
+		Set<ComponentPinState> states = new HashSet<>();
+		states.add(new ComponentPinState(chipIn0, 1, PinState.LOW));
+		simulation.stationaryState(states);
+
+		Assertions.assertEquals(PinState.LOW, simulation.getChips().get(chipOut0).getPinMap().get(1).getPinState());
+	}
+
+	@Test
+	void testTransitionalSignal7434() throws UnknownChip, UnknownPin, ShortCircuitException, UnknownComponent,
+			UnknownStateException{
+		int chipIn0 = simulation.createInputPinHeader(1);
+		int chip7434Id = simulation.createChip(7434);
+		int chipOut0 = simulation.createOutputPinHeader(1);
+
+		simulation.connect(chipIn0, 1, chip7434Id, 1);
+		simulation.connect(chip7434Id, 2, chip7434Id, 3);
+		simulation.connect(chip7434Id, 4, chip7434Id, 5);
+		simulation.connect(chip7434Id, 6, chip7434Id, 9);
+		simulation.connect(chip7434Id, 8, chip7434Id, 11);
+		simulation.connect(chip7434Id, 10, chip7434Id, 13);
+		simulation.connect(chip7434Id, 12, chipOut0, 1);
+
+		Set<ComponentPinState> states = new HashSet<>();
+		states.add(new ComponentPinState(chipIn0, 1, PinState.LOW));
+		simulation.stationaryState(states);
+
+		Assertions.assertEquals(PinState.LOW, simulation.getChips().get(chipOut0).getPinMap().get(1).getPinState());
 	}
 }

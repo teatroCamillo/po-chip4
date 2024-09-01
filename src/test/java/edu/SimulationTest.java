@@ -282,6 +282,7 @@ public class SimulationTest {
 		states.add(new ComponentPinState(chipId0, 1, PinState.HIGH));
 		states.add(new ComponentPinState(chipId0, 2, PinState.HIGH));
 
+		// if HH -> ST: LHLH
 		simulation.stationaryState(states);
 
 		Set<ComponentPinState> states0 = new HashSet<>();
