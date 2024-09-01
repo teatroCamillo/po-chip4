@@ -25,14 +25,12 @@ public class AbstractPin implements Pin, Publisher, Subscriber {
 		System.out.println("[" + chipId + "][id: " + this.id + " " + this.getClass().getSimpleName() + "] : new pinState was set, " +
 								   "actual: " + pinState + ", previous: " + this.state);
 		this.state = pinState;
-		//notifySubscribers();
 	}
 
 	@Override
 	public PinState getPinState(){
 		return state;
 	}
-
 
 	@Override
 	public AbstractPin clone() {
@@ -76,7 +74,6 @@ public class AbstractPin implements Pin, Publisher, Subscriber {
 
 	@Override
 	public void update(PinState state){
-		// Sprawdzenie, czy stan faktycznie się zmienił
 		if (!this.state.equals(state)) {
 			System.out.println("[" + chipId + "][id: " + this.id + " " + this.getClass().getSimpleName() + "] : I'm updating...");
 			setPinState(state);
@@ -97,6 +94,9 @@ public class AbstractPin implements Pin, Publisher, Subscriber {
 
 	public void setChipId(int chipId){
 		this.chipId = chipId;
+	}
+	public int getSubscribersSize(){
+		return subscribers.size();
 	}
 
 	@Override

@@ -78,23 +78,12 @@ class CreateChipTest{
 		}, "Should throw UnknownChip if the chip code is not supported.");
 	}
 
-//	@Test
-//	void testCreateChipThrowsUnknownChipFor7442() {
-//		int unsupportedChipCode = 7442;
-//
-//
-//
-//		assertThrows(UnknownChip.class, () -> {
-//			componentManager.createChip(unsupportedChipCode);
-//		}, "Should throw UnknownChip if the chip code 7442 is not supported.");
-//	}
-//
-//	@Test
-//	void testCreateChipThrowsUnknownChipFor7434() {
-//		int unsupportedChipCode = 7434;
-//
-//		assertThrows(UnknownChip.class, () -> {
-//			componentManager.createChip(unsupportedChipCode);
-//		}, "Should throw UnknownChip if the chip code 7434 is not supported.");
-//	}
+	@Test
+	void testCreateChipThrowsUnknownChipFor4442() {
+		int unsupportedChipCode = 4442;
+
+		assertThrows(UnknownChip.class, () -> {
+			componentManager.createChip(unsupportedChipCode);
+		}, "Should throw UnknownChip if the chip code 7442 is not supported.");
+	}
 }

@@ -10,5 +10,4 @@ public class PinOut extends AbstractPin {
 	public PinOut clone(){
 		return (PinOut) super.clone();
 	}
-
 }

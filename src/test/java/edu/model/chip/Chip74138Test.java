@@ -23,7 +23,6 @@ class Chip74138Test {
 		int chip74138Id = simulation.createChip(74138);
 		Chip chip74138 = simulation.getChips().get(chip74138Id);
 
-		// Sprawdzenie początkowego stanu wszystkich pinów
 		for (int i = 1; i <= 15; i++) {
 			if(i==8) continue;
 			assertEquals(PinState.UNKNOWN, chip74138.getPinMap().get(i).getPinState(),
@@ -47,7 +46,6 @@ class Chip74138Test {
 
 		chip74138.simulate();
 
-		// Wszystkie wyjścia powinny być HIGH
 		for (int i = 7; i <= 15; i++) {
 			if(i==8) continue;
 			assertEquals(PinState.HIGH, chip74138.getPinMap().get(i).getPinState(),
@@ -71,7 +69,6 @@ class Chip74138Test {
 
 		chip74138.simulate();
 
-		// Wszystkie wyjścia powinny być HIGH
 		for (int i = 7; i <= 15; i++) {
 			if(i==8) continue;
 			assertEquals(PinState.HIGH, chip74138.getPinMap().get(i).getPinState(),

@@ -10,5 +10,4 @@ public class PinIn extends AbstractPin {
 	public PinIn clone(){
 		return (PinIn) super.clone();
 	}
-
 }

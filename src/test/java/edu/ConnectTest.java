@@ -62,11 +62,11 @@ public class ConnectTest{
 		componentManager.connect(chipId1, 3, chipId2, 1);
 		componentManager.connect(chipId1, 3, chipId2, 1);
 
-		assertEquals(2, componentManager.getDirectConnections().size());
+		assertEquals(1, componentManager.getDirectConnections().size());
 	}
 
 	@Test
-	@Description("Two same connect() given size 2 form directConnection.")
+	@Description("Two same connect() given size 1 form directConnection.")
 	void testConnect2SameConnectGiven1DirectConnection() throws UnknownComponent, UnknownPin,
 			ShortCircuitException,
 			UnknownChip{
@@ -76,16 +76,17 @@ public class ConnectTest{
 		componentManager.connect(chipId1, 3, chipId2, 1);
 		componentManager.connect(chipId1, 3, chipId2, 1);
 
-		assertEquals(2, componentManager.getDirectConnections().size());
+		assertEquals(1, componentManager.getDirectConnections().size());
 	}
 
+	//CON 0
 	@Test
 	void testConnectThrowsShortCircuitExceptionOnMultipleOutputsToSameInput() throws UnknownChip, UnknownComponent, UnknownPin, ShortCircuitException{
 		int chipId1 = componentManager.createChip(7400);
 		int chipId2 = componentManager.createChip(7402);
 
 		componentManager.connect(chipId1, 3, chipId1, 1);
-
+																					//1      1        0        1
 		assertThrows(ShortCircuitException.class, () -> { componentManager.connect(chipId2, 1, chipId1, 1); },
 					 "Should throw ShortCircuitException when multiple outputs connect to the same input.");
 	}
@@ -273,6 +274,7 @@ public class ConnectTest{
 	}
 
 	//SCiE 2 - odwórć kolejność łączeń z //SCiE 1
+	//@Disabled
 	@Test
 	void testThrowsShortCircuitExceptionWhenInputIsConnectedToOutputAndWhenThatInputHasSignalFromOtherOutputMoreComplexV0() throws UnknownChip, UnknownComponent, UnknownPin, ShortCircuitException{
 		int chipId0 = componentManager.createInputPinHeader(2);
@@ -281,14 +283,14 @@ public class ConnectTest{
 		int chipId3 = componentManager.createChip(7400);
 
 		// inverted
-		componentManager.connect(chipId1, 1, chipId0, 1);
+		componentManager.connect(chipId1, 1, chipId0, 1); // kolejność PinIn, PinOut
 		componentManager.connect(chipId1, 2, chipId0, 2);
 
 		componentManager.connect(chipId1, 1, chipId2, 4);
 		componentManager.connect(chipId1, 2, chipId2, 5);
 
 		// inverted
-		componentManager.connect(chipId3, 10, chipId2, 4);
+		componentManager.connect(chipId3, 10, chipId2, 4); // kolejność PinIn, PinIn
 		componentManager.connect(chipId3, 9, chipId2, 5);
 
 		assertThrows(ShortCircuitException.class, () -> componentManager.connect(chipId3, 8, chipId3, 10),
@@ -325,7 +327,7 @@ public class ConnectTest{
 	//SCiE 4 - zamieniona kolejność połączenia w stosunku do //SCiE 3 - najpierw out potem in
 	// ten przypadek ze zmiana kolejności łączenia trudno spełnić i nie mam pewności ze on jest wymagany
 	// odpuszczam póki co i rozważam inny przypadek
-	@Disabled
+	//@Disabled
 	@Test
 	void testThrowsShortCircuitExceptionWhenInputIsConnectedToOutputAndWhenThatInputHasSignalFromOtherOutputMoreComplexV2() throws UnknownChip, UnknownComponent, UnknownPin, ShortCircuitException{
 		int chipId0 = componentManager.createInputPinHeader(2);
@@ -347,11 +349,13 @@ public class ConnectTest{
 		//w tej kolejności łaczenie chip 1 z 2 - tu powinien być wyjątek
 		componentManager.connect(chipId1, 2, chipId2, 5);
 
+
 		assertThrows(ShortCircuitException.class, () -> componentManager.connect(chipId1, 1, chipId2, 4),
 					 "");
 
 		assertThrows(ShortCircuitException.class, () -> componentManager.connect(chipId2, 4, chipId1, 1),
 					 "");
+
 	}
 
 	//SCiE 5
