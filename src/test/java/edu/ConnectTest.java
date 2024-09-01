@@ -51,7 +51,6 @@ public class ConnectTest{
 		}, "Should throw UnknownPin if pin does not exist.");
 	}
 
-	@Disabled
 	@Test
 	@Description("Can again provide the same connection and exception won't be thrown and in directConnections" +
 			" will be only one record.")
@@ -63,12 +62,11 @@ public class ConnectTest{
 		componentManager.connect(chipId1, 3, chipId2, 1);
 		componentManager.connect(chipId1, 3, chipId2, 1);
 
-		assertEquals(2, componentManager.getDirectConnections().size());
+		assertEquals(1, componentManager.getDirectConnections().size());
 	}
 
-	@Disabled
 	@Test
-	@Description("Two same connect() given size 2 form directConnection.")
+	@Description("Two same connect() given size 1 form directConnection.")
 	void testConnect2SameConnectGiven1DirectConnection() throws UnknownComponent, UnknownPin,
 			ShortCircuitException,
 			UnknownChip{
@@ -78,7 +76,7 @@ public class ConnectTest{
 		componentManager.connect(chipId1, 3, chipId2, 1);
 		componentManager.connect(chipId1, 3, chipId2, 1);
 
-		assertEquals(2, componentManager.getDirectConnections().size());
+		assertEquals(1, componentManager.getDirectConnections().size());
 	}
 
 	//CON 0

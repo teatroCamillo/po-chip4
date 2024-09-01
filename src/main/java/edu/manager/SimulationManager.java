@@ -137,22 +137,12 @@ public class SimulationManager implements Component, SimulationAndOptimization {
 				// !isPinOutConnected(pin) - better ! - TimeoutExc-czasami sie pojawia z  test7408connectionsB(
 				// !isPinOutConnected(pin) && pin.getPinState() != PinState.UNKNOWN - jak wyżej
 				// isPinInConnected(pin) - nie tutaj bo rzuca Runtimy
+				// pin.getPinState() == PinState.UNKNOWN - pokrywa za dużo
 				// !(isPinOutConnected(pin) && pin.getPinState() != PinState.UNKNOWN) - dodaje błąd TimeoutExc
+				// !isPinOutConnected(pin) && pin.getPinState() == PinState.UNKNOWN - pokrywa za dużo + TimeoutEx
 				if (!isPinOutConnected(pin)) {
 					throw new UnknownStateException(new ComponentPinState(chipId, pinId, pin.getPinState()));
 				}
-
-				//2. PinOut connected but UNKNOWN - to powinien byc USE ? - to wydaje się niepotrzebne, nie zmienia
-				// wyniku
-//				if (isPinOutConnected(pin) && pin.getPinState() == PinState.UNKNOWN) {
-//					throw new UnknownStateException(new ComponentPinState(chipId, pinId, pin.getPinState()));
-//				}
-
-				// sam ten warunek jest za dużo generuje extra USEx ale pokrywa te które pojawiają się przy
-				// połączeniu z  && isPinOutConnected(pin)
-//				if (pin.getPinState() == PinState.UNKNOWN) {
-//					throw new UnknownStateException(new ComponentPinState(chipId, pinId, pin.getPinState()));
-//				}
 			}
 		}
 	}

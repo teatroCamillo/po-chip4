@@ -78,12 +78,13 @@ public class ComponentManager implements Component, CircuitDesign {
 	// przed utworzeniem połączenia zidentyfikuj który Pin jest In a który Out
 	public void addNewConnection(int sourceChipId, int sourcePinId, int targetChipId, int targetPinId) {
 		//if(isOutputPin(sourceChipId, sourcePinId))
+		// zestawienie subskrypcji
+		System.out.println("Sprawdzam i ustawiam subskrybcję... oraz dodaję połączenie");
+		setSubscribe(sourceChipId, sourcePinId, targetChipId, targetPinId);
 		this.directConnections.add(new Connection(sourceChipId,sourcePinId, targetChipId, targetPinId));
 		//else this.directConnections.add(new Connection(targetChipId, targetPinId, sourceChipId, sourcePinId));
 
-		// zestawienie subskrypcji
-		System.out.println("ustawiam subskrybcję...");
-		setSubscribe(sourceChipId, sourcePinId, targetChipId, targetPinId);
+
 	}
 
 	private int putToChipsMap(Chip newChip){
