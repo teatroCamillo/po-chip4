@@ -6,6 +6,9 @@ import edu.model.Chip;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class Chip7404Test {
@@ -26,6 +29,27 @@ class Chip7404Test {
 					 "Initial state of Pin A (input) should be UNKNOWN.");
 		assertEquals(PinState.UNKNOWN, chip7404.getPinMap().get(2).getPinState(),
 					 "Initial state of Pin Y (output) should be UNKNOWN.");
+	}
+
+	@Test
+	void testExecuteChip7404WithNoConnectedOut2ConnectedPins() throws UnknownChip, UnknownPin, ShortCircuitException, UnknownComponent, UnknownStateException{
+		int in = simulation.createInputPinHeader(1);
+		int chip7404Id = simulation.createChip(7404);
+		int out = simulation.createOutputPinHeader(2);
+
+		simulation.connect(in, 1, chip7404Id, 11);
+		simulation.connect(chip7404Id, 11, chip7404Id, 9);
+		simulation.connect(chip7404Id, 10, out, 1);
+		simulation.connect(chip7404Id, 8, out, 2);
+
+		Set<ComponentPinState> states = new HashSet<>();
+		states.add(new ComponentPinState(in, 1, PinState.LOW));
+
+		simulation.stationaryState(states);
+
+		assertEquals(PinState.HIGH, simulation.getChips().get(out).getPinMap().get(1).getPinState());
+		assertEquals(PinState.HIGH, simulation.getChips().get(out).getPinMap().get(2).getPinState());
+
 	}
 
 	@Test

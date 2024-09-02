@@ -52,8 +52,7 @@ public class SimulationManager implements Component, SimulationAndOptimization {
 		setHeadersInPins(states);
 
 		validateHeadersIn();
-		propagateSignal();
-		propagateSignal();
+		componentManager.propagateSignal();
 
 		Set<ComponentPinState> previousState;
 		Set<ComponentPinState> currentState;
@@ -67,8 +66,7 @@ public class SimulationManager implements Component, SimulationAndOptimization {
 			previousState = new HashSet<>(currentState);
 
 			componentManager.chips.values().forEach(Chip::simulate);
-			propagateSignal();
-			propagateSignal();
+			componentManager.propagateSignal();
 
 			currentState.clear();
 			currentState = Util.saveCircuitState(componentManager.chips);
@@ -80,7 +78,8 @@ public class SimulationManager implements Component, SimulationAndOptimization {
 
 		boolean isHeaderOut = componentManager.chips.values()
 				.stream()
-				.anyMatch(chip -> chip.getClass().getSimpleName().equals(Util.HEADER_OUT));
+				.anyMatch(chip -> chip instanceof HeaderOut);
+				//.anyMatch(chip -> chip.getClass().getSimpleName().equals(Util.HEADER_OUT));
 		//System.out.println("Sprawdzam stan układu przed validacja HeaderOur");
 		//currentState.forEach(System.out::println);
 		if(isHeaderOut) validateHeadersOut();
@@ -119,7 +118,8 @@ public class SimulationManager implements Component, SimulationAndOptimization {
 	// HeaderOut
 	private void validateHeadersIn() throws UnknownStateException {
 		Map<Integer, Chip> headerChips = componentManager.chips.entrySet().stream()
-				.filter(entry -> entry.getValue().getClass().getSimpleName().equals(Util.HEADER_IN))
+				.filter(entry -> entry.getValue() instanceof HeaderIn)
+				//.filter(entry -> entry.getValue().getClass().getSimpleName().equals(Util.HEADER_IN))
 				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
 		for (Map.Entry<Integer, Chip> entry : headerChips.entrySet()) {
@@ -164,6 +164,7 @@ public class SimulationManager implements Component, SimulationAndOptimization {
 
 				//pin.getPinState() == PinState.UNKNOWN || isPinInConnected(pin) - wykluczone, ściana USEx
 				//pin.getPinState() == PinState.UNKNOWN && isPinInConnected(pin) pojawiają się extra UnSEx
+				//!isPinInConnected(pin) || pin.getPinState() == PinState.UNKNOWN - stationaryState wygenerowała niespodziewany wyjątek:  UnknownStateException
 				// pin.getPinState() == PinState.UNKNOWN też pojawiają się extra UnSEx
 				//!isPinInConnected(pin) - najlepszy wariant
 				if (!isPinInConnected(pin)) {
@@ -197,19 +198,15 @@ public class SimulationManager implements Component, SimulationAndOptimization {
 	//.filter(pin -> pin.getPinState() != PinState.UNKNOWN) //  to psuje wyniki
 	//.filter(pin -> pin.getSubscribersSize() > 0) // nie pomaga i nie przeszkadza
 	// wykonaj tylko na połączonych pinach - to jest podobne do filtra z sizem
-	private void propagateSignal(){
-		componentManager.chips.values().forEach(chip -> {
-			chip.getPinMap().values()
-					.forEach(AbstractPin::notifySubscribers);
-		});
-	}
 
+
+	// zdublowana propagacja w takiej prostej formie pomaga na przypadki z symulacją
+	// ale psuje na błędach z chip<>
 	@Override
 	public Map<Integer, Set<ComponentPinState>> simulation(Set<ComponentPinState> states0,
 														   int ticks) throws UnknownStateException{
 		setHeadersInPins(states0);
-		propagateSignal();
-		propagateSignal();
+		componentManager.propagateSignal();
 
 		Map<Integer, Set<ComponentPinState>> resultMap = new HashMap<>();
 		Set<ComponentPinState> currentState;
@@ -219,10 +216,7 @@ public class SimulationManager implements Component, SimulationAndOptimization {
 
 		for(int i=1; i<=ticks; i++){
 			componentManager.chips.values().forEach(Chip::simulate);
-			propagateSignal();
-			// zdublowana propagacja w takiej prostej formie pomaga na przypadki z symulacją
-			// ale psuje na błędach z chip<>
-			propagateSignal();
+			componentManager.propagateSignal();
 
 			currentState.clear();
 			currentState = Util.saveCircuitHeaderOutState(componentManager.chips);
@@ -263,8 +257,8 @@ public class SimulationManager implements Component, SimulationAndOptimization {
 			// K2. Wyłącznie Chipu - to znaczy ze Chip nie przetwarza sygnałów - natomiast propagacja sygnału
 			// działa dalej bo piny mają ustawione stany. Tak więc dodaję ze wyłączenie również ustawia piny
 			// w stan UNKNOWN
-			System.out.println("Chip is turned OFF: ");
-			System.out.println(component);
+			//System.out.println("Chip is turned OFF: ");
+			//System.out.println(component);
 			component.setOn(false);
 
 
@@ -278,7 +272,7 @@ public class SimulationManager implements Component, SimulationAndOptimization {
 
 			// Compare the baseline and modified simulations
 			if (normalSimulationResul.get(ticks).equals(modifiedSimulation.get(ticks))) {
-				System.out.println("ADDED!");
+				//System.out.println("ADDED!");
 				// If the results are the same, this component can be removed
 				componentsToRemove.add(component.getChipId());
 			}

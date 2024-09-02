@@ -67,9 +67,11 @@ public class AbstractPin implements Pin, Publisher, Subscriber {
 	public void notifySubscribers(){
 		System.out.println("[" + chipId + "][id: " + this.id + " " + this.getClass().getSimpleName() + "] : notifySubscribers");
 		//subscribers.forEach(subscriber -> subscriber.update(this.state));
-		for (Subscriber subscriber : subscribers) {
-			subscriber.update(this.state);
-		}
+//		if(!subscribers.isEmpty()){
+			for(Subscriber subscriber : subscribers){
+				subscriber.update(this.state);
+			}
+//		}
 	}
 
 	@Override
@@ -77,6 +79,17 @@ public class AbstractPin implements Pin, Publisher, Subscriber {
 		if (!this.state.equals(state)) {
 			System.out.println("[" + chipId + "][id: " + this.id + " " + this.getClass().getSimpleName() + "] : I'm updating...");
 			setPinState(state);
+			// Próba nr.1 - no może trochę lepszy rezultat niż bez
+//			if(this instanceof PinIn && !subscribers.isEmpty()){
+//				for (Subscriber subscriber : subscribers) {
+//					subscriber.update(this.state);
+//				}
+//			}
+			if(!subscribers.isEmpty()){
+				for (Subscriber subscriber : subscribers) {
+					subscriber.update(this.state);
+				}
+			}
 		}
 	}
 
