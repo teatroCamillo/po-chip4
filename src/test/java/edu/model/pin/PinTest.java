@@ -36,22 +36,4 @@ class PinTest {
 		assertEquals(PinState.HIGH, pinIn.getPinState(), "PinIn state should be set to HIGH.");
 		assertEquals(PinState.LOW, pinOut.getPinState(), "PinOut state should be set to LOW.");
 	}
-
-	@Test
-	void testClonePinIn() {
-		pinIn.setPinState(PinState.HIGH);
-		AbstractPin clonedPin = pinIn.clone();
-
-		assertNotSame(pinIn, clonedPin, "Cloned PinIn should be a different object.");
-		assertEquals(pinIn.getPinState(), clonedPin.getPinState(), "Cloned PinIn should have the same state as the original.");
-	}
-
-	@Test
-	void testClonePinOut() {
-		pinOut.setPinState(PinState.LOW);
-		AbstractPin clonedPin = pinOut.clone();
-
-		assertNotSame(pinOut, clonedPin, "Cloned PinOut should be a different object.");
-		assertEquals(pinOut.getPinState(), clonedPin.getPinState(), "Cloned PinOut should have the same state as the original.");
-	}
 }

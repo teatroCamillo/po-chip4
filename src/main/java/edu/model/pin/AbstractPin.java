@@ -31,18 +31,6 @@ public class AbstractPin implements Pin, Publisher, Subscriber {
 	}
 
 	@Override
-	public AbstractPin clone() {
-		try {
-			AbstractPin cloned = (AbstractPin) super.clone();
-			cloned.setId(-1); // Proforma so that it has a different number than the original/clone.
-			cloned.subscribers = new HashSet<>();
-			return cloned;
-		} catch (CloneNotSupportedException e) {
-			throw new AssertionError(); // This should never happen since the Cloneable is implemented.
-		}
-	}
-
-	@Override
 	public void subscribe(Subscriber subscriber){
 		if(!this.equals(subscriber)) subscribers.add(subscriber);
 	}

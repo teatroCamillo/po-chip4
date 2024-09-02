@@ -12,7 +12,7 @@ public abstract class Chip implements Component {
 	protected Integer chipId;
 	protected boolean isOn;
 	protected Map<Integer, AbstractPin> pinMap;
-	protected Map<Integer, AbstractPin> previousPinMap;
+	protected Map<Integer, AbstractPin> previousPinMap; // Do I need this?
 
 	public Chip() {
 		this.chipId = -1;
