@@ -8,14 +8,11 @@ import edu.model.Chip;
 import edu.model.Connection;
 import edu.model.Creator;
 import edu.model.creator.ChipCreator;
-import edu.util.Util;
 
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-
-import static edu.util.Util.SWITCH_BETWEEN_PO;
 
 public class ComponentManager implements Component, CircuitDesign {
 
@@ -27,6 +24,13 @@ public class ComponentManager implements Component, CircuitDesign {
 		this.chips = new HashMap<>();
 		this.directConnections = new HashSet<>();
 		this.creator = new ChipCreator();
+	}
+
+	protected void propagateSignal(){
+		chips.values().forEach(chip -> {
+			chip.getPinMap().values()
+					.forEach(AbstractPin::notifySubscribers);
+		});
 	}
 
 	// Connection to Connection nie ma znaczenie musi być tylko jeden wpis
@@ -61,12 +65,16 @@ public class ComponentManager implements Component, CircuitDesign {
 			//brak tego nie wpływa na wynik - bez tego mam 9 błędów
 			//else chip2.getPinMap().get(pin2).subscribe(chip1.getPinMap().get(pin1));
 
-			//v1 - lepsza jest v0
+			//v1 - jest ok na tym wszystko przechodzi
 			if(canReachOutputThroughAnotherInput(chip1.getChipId(), p1.getId())){
 				chip1.getPinMap().get(pin1).subscribe(chip2.getPinMap().get(pin2));
 			}
 			else if(canReachOutputThroughAnotherInput(chip2.getChipId(), p2.getId()))
 				chip2.getPinMap().get(pin2).subscribe(chip1.getPinMap().get(pin1));
+
+			else chip1.getPinMap().get(pin1).subscribe(chip2.getPinMap().get(pin2));
+			// to z canReach... nie pomaga
+			//else chip2.getPinMap().get(pin2).subscribe(chip1.getPinMap().get(pin1));
 		}
 	}
 
@@ -82,8 +90,12 @@ public class ComponentManager implements Component, CircuitDesign {
 		System.out.println("Sprawdzam i ustawiam subskrybcję... oraz dodaję połączenie");
 		setSubscribe(sourceChipId, sourcePinId, targetChipId, targetPinId);
 		this.directConnections.add(new Connection(sourceChipId,sourcePinId, targetChipId, targetPinId));
-		//else this.directConnections.add(new Connection(targetChipId, targetPinId, sourceChipId, sourcePinId));
+		//this.directConnections.add(new Connection(targetChipId, targetPinId, sourceChipId, sourcePinId));
 
+		// przetestowano warianty
+		//1. z dwoma wpisami i zmienioną kolejnością - brak większego wpływu
+		//this.directConnections.add(new Connection(sourceChipId,sourcePinId, targetChipId, targetPinId));
+		//this.directConnections.add(new Connection(targetChipId, targetPinId, sourceChipId, sourcePinId));
 
 	}
 
@@ -178,85 +190,6 @@ public class ComponentManager implements Component, CircuitDesign {
 	//A(id:2259)> Kabelki nie mają kierunku, czyli to program musi ustalić co z czym jest łączone.
 	// Przy czym można sobie wyobrazić połączenie dwóch wejść ze sobą. Niekoniecznie jeden pin musi być
 	// wejściem a drugi wyjściem.
-//	@Override
-//	public void connect(int component1,
-//						int pin1,
-//						int component2,
-//						int pin2) throws UnknownComponent, UnknownPin, ShortCircuitException{
-//
-//		// Sprawdź, czy komponenty istnieją
-//		if(!chips.containsKey(component1)){
-//			throw new UnknownComponent(component1);
-//		}
-//		if(!chips.containsKey(component2)){
-//			throw new UnknownComponent(component2);
-//		}
-//
-//		// Sprawdź, czy piny istnieją w odpowiednich komponentach
-//		Chip chip1 = chips.get(component1);
-//		Chip chip2 = chips.get(component2);
-//
-//		if(!chip1.getPinMap().containsKey(pin1)){
-//			throw new UnknownPin(component1, pin1);
-//		}
-//		if(!chip2.getPinMap().containsKey(pin2)){
-//			throw new UnknownPin(component2, pin2);
-//		}
-//
-//		// TODO: przypadki zwarc
-//		// 1. Dwa piny nie mogą być połączone ze sobą więcej niż raz - czyli dwa lub więcej takich samych rekordów
-//		// 2. Sprawdzenie, czy połączenie nie powoduje zwarcia (wiele wyjścia do jednego wejścia)
-//		// 3. Sprawdzenie, czy nie ma połączenia wyjścia układu z wejściami użytkownika (HeaderIn)
-//		// 4. Sprawdz czy nie ma połączenia wyjście do wyjścia.
-//		// -
-//		// Note:
-//		// Czy lepszym sposobme byłoby dodanie stanu na każdy Pin np. CONNECTED żeby to określić, niż sprawdzać w
-//		// pętli. Co więcje teraz directConnections są unidirectional wiec tylko jedna strona ma info o połączeniu.
-//		// To generuje problem że gdy PinOut z C1 jest aktualnie połączony z PinIn z C2, to dane zapisane są u C1. Wiec
-//		// pojawia się błąd gdy PinOut z C3 będzie próbować połączyć się z tym samym PinIn z C2.
-//		// - Gdzie przechowywać dane o połączeniach żeby łatwo było tworzyć nowe, usówać, przeszukiwać i wykrywać błędy?
-//		// Naiwnie dodana na chwilę obecną do obecnej klasy: directConnections, addNewConnection i propagateSignal
-//		// to rozwiązuje problem:
-//		// 		- Set - unikatowe rekordy - czyli nie trzeba sprawdzać warunku nr.1
-//		//		- wszystkie połączenia w jednym miejscu - łatwy dostęp, przeszukiwanie, dodawanie etc
-//		//		- nie ma porblemu bi-/uni- directional na Chip'ach
-//		// -
-//		// Inny problem:
-//		// Czy recordy Connection(1,1,2,2) i Connection(2,2,1,1) to to samo połączenie?
-//		// Czy powinienem ustlaić że gdy dodaję pierwszy rekord do setu to dodaję też drugi żeby było jasne?
-//
-//		// TODO: OK - przetestowane
-//		// 2. Sprawdzenie, czy połączenie nie powoduje zwarcia (wiele wyjścia do jednego wejścia)
-//		if(directConnections.stream()
-//				.anyMatch(connection -> connection.targetChipId() == component2 && connection.targetPinId() == pin2 && (connection.sourceChipId() != component1 || connection.sourcePinId() != pin1))){
-//			//System.out.println("Cannot connect this pin: " + pin2 + " in component "
-//			//						   + component2 + ". It is already connected.");
-//			throw new ShortCircuitException();
-//		}
-//
-//		// TODO: OK - przetestowane
-//		// 3. Sprawdzenie, czy nie ma połączenia wyjścia układu z wejściami użytkownika (HeaderIn)
-//		if(chip2.getClass().getSimpleName().equals(Util.HEADER_IN) && chip1.getPinMap()
-//				.get(pin1)
-//				.getClass()
-//				.getSimpleName()
-//				.equals(Util.PIN_OUT)){
-//			//System.out.println("Cannot connect an output pin to a HeaderIn input pin: " + pin2 + " in component " +
-//			// component2);
-//			throw new ShortCircuitException();
-//		}
-//
-//		// TODO: OK - przetestowane
-//		// 4. Sprawdz czy nie ma połączenia wyjście do wyjścia.
-//		if(isOutputPin(component1, pin1) && isOutputPin(component2, pin2)){
-//			//System.out.println("Cannot connect two output pins!");
-//			throw new ShortCircuitException();
-//		}
-//
-//
-//		addNewConnection(component1, pin1, component2, pin2);
-//	}
-
 	@Override
 	public void connect(int component1,
 						int pin1,
