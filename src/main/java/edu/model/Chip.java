@@ -1,13 +1,12 @@
 package edu.model;
 
-import edu.manager.Component;
 import edu.model.pin.AbstractPin;
 import edu.uj.po.simulation.interfaces.PinState;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public abstract class Chip implements Component {
+public abstract class Chip {
 
 	protected Integer chipId;
 	protected boolean isOn;
@@ -30,6 +29,8 @@ public abstract class Chip implements Component {
 		}
 	}
 
+	public void simulate(){}
+
 	public Map<Integer, AbstractPin> getPinMap() {
 		return pinMap;
 	}
@@ -38,9 +39,6 @@ public abstract class Chip implements Component {
 		pin.setId(id);
 		pinMap.put(id, pin);
 	}
-
-	@Override
-	public void simulate(){}
 
 	public Chip clone(){
 		throw new UnsupportedOperationException("Method not implemented");

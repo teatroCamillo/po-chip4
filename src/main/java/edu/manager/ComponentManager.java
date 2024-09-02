@@ -6,7 +6,7 @@ import edu.model.pin.PinOut;
 import edu.uj.po.simulation.interfaces.*;
 import edu.model.Chip;
 import edu.model.Connection;
-import edu.model.Creator;
+import edu.model.creator.Creator;
 import edu.model.creator.ChipCreator;
 
 import java.util.HashMap;
@@ -14,11 +14,11 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-public class ComponentManager implements Component, CircuitDesign {
+public class ComponentManager implements CircuitDesign {
 
-	final Map<Integer, Chip> chips;
-	final Set<Connection> directConnections;
-	private final Creator creator;
+	protected final Map<Integer, Chip> chips;
+	protected final Set<Connection> directConnections;
+	protected final Creator<Chip> creator;
 
 	public ComponentManager(){
 		this.chips = new HashMap<>();
@@ -60,15 +60,6 @@ public class ComponentManager implements Component, CircuitDesign {
 		this.directConnections.add(new Connection(sourceChipId,sourcePinId, targetChipId, targetPinId));
 	}
 
-	private int putToChipsMap(Chip newChip){
-		int newChipId = newChip.getChipId();
-		chips.put(newChipId, newChip);
-		return newChipId;
-	}
-
-	@Override
-	public void simulate() {}
-
 	public Map<Integer, Chip> getChips(){
 		return chips;
 	}
@@ -78,7 +69,13 @@ public class ComponentManager implements Component, CircuitDesign {
 
 	@Override
 	public int createChip(int code) throws UnknownChip {
-		return putToChipsMap(creator.create(code));
+		return putToChipsMap((Chip)creator.create(code));
+	}
+
+	private int putToChipsMap(Chip newChip){
+		int newChipId = newChip.getChipId();
+		chips.put(newChipId, newChip);
+		return newChipId;
 	}
 
 	@Override

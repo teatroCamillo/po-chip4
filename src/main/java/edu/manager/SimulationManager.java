@@ -17,17 +17,12 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class SimulationManager implements Component, SimulationAndOptimization {
+public class SimulationManager implements SimulationAndOptimization {
 
 	private final ComponentManager componentManager;
 
 	public SimulationManager(ComponentManager componentManager) {
 		this.componentManager = componentManager;
-	}
-
-	@Override
-	public void simulate() {
-		System.out.println("simulate from SimulationManager");
 	}
 
 	@Override
