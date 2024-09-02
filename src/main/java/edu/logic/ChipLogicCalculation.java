@@ -111,7 +111,6 @@ public class ChipLogicCalculation {
 		grayDecoderLogicFunction(chip, 11);
 	}
 
-	//improved
 	public static void chip7482Calculation(Chip chip) {
 		Map<Integer, AbstractPin> pins = chip.getPinMap();
 
@@ -258,7 +257,6 @@ public class ChipLogicCalculation {
 		_74138DecoderLogicFunction(chip, 15);
 	}
 
-	//improved
 	public static void chip74152Calculation(Chip chip) {
 		Map<Integer, AbstractPin> pins = chip.getPinMap();
 
@@ -303,8 +301,6 @@ public class ChipLogicCalculation {
 			default -> UNKNOWN;
 		};
 	}
-
-
 
 	private static void nandGateLogicFunction(Chip chip, Set<Integer> inputPinIds, int outputPinId) {
 		Map<Integer, AbstractPin> pins = chip.getPinMap();
@@ -565,16 +561,13 @@ public class ChipLogicCalculation {
 			return;
 		}
 
-		// Sprawdź, czy G2 jest aktywne
 		boolean G2 = G2A.getPinState() == HIGH || G2B.getPinState() == HIGH;
 
-		// Jeśli G1 jest niski lub G2 jest wysoki, wyjścia są nieaktywne (wysokie)
 		if (G1.getPinState() == LOW || G2) {
 			outputPin.setPinState(HIGH);
 			return;
 		}
 
-		// Logika dekodera
 		boolean A_High = A.getPinState() == HIGH;
 		boolean B_High = B.getPinState() == HIGH;
 		boolean C_High = C.getPinState() == HIGH;
