@@ -275,41 +275,34 @@ public class ChipLogicCalculation {
 
 		Pin W = pins.get(6);
 
-		if (Set.of(A, B, C).stream().allMatch(pin -> pin.getPinState() == LOW)) {
-			W.setPinState(invertState(D0.getPinState()));
-		} else if (Set.of(B, C).stream().allMatch(pin -> pin.getPinState() == LOW)
-				&& Set.of(A).stream().allMatch(pin -> pin.getPinState() == HIGH)) {
-			W.setPinState(invertState(D1.getPinState()));
-		} else if (Set.of(A, C).stream().allMatch(pin -> pin.getPinState() == LOW)
-				&& Set.of(B).stream().allMatch(pin -> pin.getPinState() == HIGH)) {
-			W.setPinState(invertState(D2.getPinState()));
-		} else if (Set.of(C).stream().allMatch(pin -> pin.getPinState() == LOW)
-				&& Set.of(A, B).stream().allMatch(pin -> pin.getPinState() == HIGH)) {
-			W.setPinState(invertState(D3.getPinState()));
-		} else if (Set.of(A, B).stream().allMatch(pin -> pin.getPinState() == LOW)
-				&& Set.of(C).stream().allMatch(pin -> pin.getPinState() == HIGH)) {
-			W.setPinState(invertState(D4.getPinState()));
-		} else if (Set.of(B).stream().allMatch(pin -> pin.getPinState() == LOW)
-				&& Set.of(A, C).stream().allMatch(pin -> pin.getPinState() == HIGH)) {
-			W.setPinState(invertState(D5.getPinState()));
-		} else if (Set.of(A).stream().allMatch(pin -> pin.getPinState() == LOW)
-				&& Set.of(B, C).stream().allMatch(pin -> pin.getPinState() == HIGH)) {
-			W.setPinState(invertState(D6.getPinState()));
-		} else if (Set.of(A, B, C).stream().allMatch(pin -> pin.getPinState() == HIGH)) {
-			W.setPinState(invertState(D7.getPinState()));
+		int selector = (A.getPinState() == HIGH ? 1 : 0) |
+				(B.getPinState() == HIGH ? 2 : 0) |
+				(C.getPinState() == HIGH ? 4 : 0);
+
+		Pin selectedPin;
+		switch (selector) {
+			case 0 -> selectedPin = D0;
+			case 1 -> selectedPin = D1;
+			case 2 -> selectedPin = D2;
+			case 3 -> selectedPin = D3;
+			case 4 -> selectedPin = D4;
+			case 5 -> selectedPin = D5;
+			case 6 -> selectedPin = D6;
+			case 7 -> selectedPin = D7;
+			default -> throw new IllegalStateException("Unexpected selector value: " + selector);
 		}
 
+		W.setPinState(invertState(selectedPin.getPinState()));
 	}
 
 	private static PinState invertState(PinState pinState) {
-		if (pinState == HIGH) {
-			return LOW;
-		} else if (pinState == UNKNOWN) {
-			return UNKNOWN;
-		} else {
-			return HIGH;
-		}
+		return switch (pinState) {
+			case HIGH -> LOW;
+			case LOW -> HIGH;
+			default -> UNKNOWN;
+		};
 	}
+
 
 
 	private static void nandGateLogicFunction(Chip chip, Set<Integer> inputPinIds, int outputPinId) {
