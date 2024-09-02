@@ -111,6 +111,7 @@ public class ChipLogicCalculation {
 		grayDecoderLogicFunction(chip, 11);
 	}
 
+	//improved
 	public static void chip7482Calculation(Chip chip) {
 		Map<Integer, AbstractPin> pins = chip.getPinMap();
 
@@ -124,7 +125,6 @@ public class ChipLogicCalculation {
 		Pin S2 = pins.get(12);
 		Pin C2 = pins.get(10);
 
-		// Sprawdzamy, czy którykolwiek z pinów ma stan UNKNOWN
 		if (Set.of(A1, A2, B1, B2, C0).stream().anyMatch(pin -> pin.getPinState() == UNKNOWN)) {
 			S1.setPinState(UNKNOWN);
 			S2.setPinState(UNKNOWN);
@@ -132,7 +132,6 @@ public class ChipLogicCalculation {
 			return;
 		}
 
-		// Kolejne warunki odpowiadają kolejności w oryginalnym kodzie
 		if (arePinsLow(A1, B1, A2, B2, C0)) {
 			S1.setPinState(LOW);
 			S2.setPinState(LOW);
