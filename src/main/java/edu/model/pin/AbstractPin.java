@@ -22,8 +22,6 @@ public class AbstractPin implements Pin, Publisher, Subscriber {
 
 	@Override
 	public void setPinState(PinState pinState){
-		System.out.println("[" + chipId + "][id: " + this.id + " " + this.getClass().getSimpleName() + "] : new pinState was set, " +
-								   "actual: " + pinState + ", previous: " + this.state);
 		this.state = pinState;
 	}
 
@@ -36,26 +34,17 @@ public class AbstractPin implements Pin, Publisher, Subscriber {
 	public AbstractPin clone() {
 		try {
 			AbstractPin cloned = (AbstractPin) super.clone();
-			cloned.setId(-1); // proforma żeby był inny numer niż w orginale
+			cloned.setId(-1); // Proforma so that it has a different number than the original/clone.
 			cloned.subscribers = new HashSet<>();
 			return cloned;
 		} catch (CloneNotSupportedException e) {
-			throw new AssertionError(); // Nigdy nie powinno się zdarzyć, ponieważ implementujemy Cloneable
+			throw new AssertionError(); // This should never happen since the Cloneable is implemented.
 		}
 	}
 
 	@Override
 	public void subscribe(Subscriber subscriber){
-		if(!this.equals(subscriber)){
-			System.out.println("[" + chipId + "][id: " + this.id + " " + this.getClass().getSimpleName() + "]" +
-									   " : dodaję " +
-									   "nowego " +
-									   "subskrybenta: " + subscriber);
-			subscribers.add(subscriber);
-
-			System.out.println("\nLista subskrybetów: ");
-			subscribers.forEach(System.out::println);
-		}
+		if(!this.equals(subscriber)) subscribers.add(subscriber);
 	}
 
 	@Override
@@ -65,31 +54,31 @@ public class AbstractPin implements Pin, Publisher, Subscriber {
 
 	@Override
 	public void notifySubscribers(){
-		System.out.println("[" + chipId + "][id: " + this.id + " " + this.getClass().getSimpleName() + "] : notifySubscribers");
+		//v3 - 6 attempts were made on the tester, the result was 6x 100% passed tests - average time: 2656ms
+//		if(!subscribers.isEmpty())
+//			subscribers.forEach(subscriber -> subscriber.update(this.state));
+
+		//v2 - 6 attempts were made on the tester, the result was 6x 100% passed tests - average time: 2665ms
 		//subscribers.forEach(subscriber -> subscriber.update(this.state));
-//		if(!subscribers.isEmpty()){
-			for(Subscriber subscriber : subscribers){
-				subscriber.update(this.state);
-			}
-//		}
+
+		//v1 - 6 attempts were made on the tester, the result was 6x 100% passed tests - average time: 2661ms
+//		if(!subscribers.isEmpty())
+//			for(Subscriber subscriber : subscribers)
+//				subscriber.update(this.state);
+
+		//v0 - 6 attempts were made on the tester, the result was 6x 100% passed tests - average time: 2601ms
+		for(Subscriber subscriber : subscribers){
+			subscriber.update(this.state);
+		}
 	}
 
 	@Override
 	public void update(PinState state){
 		if (!this.state.equals(state)) {
-			System.out.println("[" + chipId + "][id: " + this.id + " " + this.getClass().getSimpleName() + "] : I'm updating...");
 			setPinState(state);
-			// Próba nr.1 - no może trochę lepszy rezultat niż bez
-//			if(this instanceof PinIn && !subscribers.isEmpty()){
-//				for (Subscriber subscriber : subscribers) {
-//					subscriber.update(this.state);
-//				}
-//			}
-			if(!subscribers.isEmpty()){
-				for (Subscriber subscriber : subscribers) {
+			if(!subscribers.isEmpty())
+				for (Subscriber subscriber : subscribers)
 					subscriber.update(this.state);
-				}
-			}
 		}
 	}
 
@@ -107,9 +96,6 @@ public class AbstractPin implements Pin, Publisher, Subscriber {
 
 	public void setChipId(int chipId){
 		this.chipId = chipId;
-	}
-	public int getSubscribersSize(){
-		return subscribers.size();
 	}
 
 	@Override
