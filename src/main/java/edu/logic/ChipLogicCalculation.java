@@ -258,6 +258,7 @@ public class ChipLogicCalculation {
 		_74138DecoderLogicFunction(chip, 15);
 	}
 
+	//improved
 	public static void chip74152Calculation(Chip chip) {
 		Map<Integer, AbstractPin> pins = chip.getPinMap();
 
@@ -411,97 +412,38 @@ public class ChipLogicCalculation {
 
 		Pin outputPin = pins.get(outputPinId);
 
-		if (Set.of(A, B, C, D).stream().anyMatch(pin -> pin.getPinState() == UNKNOWN)) {
+		PinState aState = A.getPinState();
+		PinState bState = B.getPinState();
+		PinState cState = C.getPinState();
+		PinState dState = D.getPinState();
+
+		if (aState == UNKNOWN || bState == UNKNOWN || cState == UNKNOWN || dState == UNKNOWN) {
 			return;
 		}
 
+		int selector = (aState == HIGH ? 1 : 0) |
+				(bState == HIGH ? 2 : 0) |
+				(cState == HIGH ? 4 : 0) |
+				(dState == HIGH ? 8 : 0);
+
+		boolean outputLow = false;
+
 		switch (outputPinId) {
-			// 0
-			case 1:
-				if (Set.of(A, B, C, D).stream().allMatch(pin -> pin.getPinState() == LOW)) {
-					outputPin.setPinState(LOW);
-				} else {
-					outputPin.setPinState(HIGH);
-				}
-				break;
-			// 1
-			case 2:
-				if (Set.of(B, C, D).stream().allMatch(p -> p.getPinState() == LOW) && A.getPinState() == HIGH) {
-					outputPin.setPinState(LOW);
-				} else {
-					outputPin.setPinState(HIGH);
-				}
-				break;
-			// 2
-			case 3:
-				if (Set.of(A, C, D).stream().allMatch(p -> p.getPinState() == LOW) && B.getPinState() == HIGH) {
-					outputPin.setPinState(LOW);
-				} else {
-					outputPin.setPinState(HIGH);
-				}
-				break;
-			// 3
-			case 4:
-				if (Set.of(C, D).stream().allMatch(p -> p.getPinState() == LOW) &&
-						Set.of(A, B).stream().allMatch(p -> p.getPinState() == HIGH)) {
-					outputPin.setPinState(LOW);
-				} else {
-					outputPin.setPinState(HIGH);
-				}
-				break;
-			// 4
-			case 5:
-				if (Set.of(A, B, D).stream().allMatch(p -> p.getPinState() == LOW) && C.getPinState() == HIGH) {
-					outputPin.setPinState(LOW);
-				} else {
-					outputPin.setPinState(HIGH);
-				}
-				break;
-			// 5
-			case 6:
-				if (Set.of(B, D).stream().allMatch(p -> p.getPinState() == LOW) &&
-						Set.of(A, C).stream().allMatch(p -> p.getPinState() == HIGH)) {
-					outputPin.setPinState(LOW);
-				} else {
-					outputPin.setPinState(HIGH);
-				}
-				break;
-			// 6
-			case 7:
-				if (Set.of(A, D).stream().allMatch(p -> p.getPinState() == LOW) &&
-						Set.of(B, C).stream().allMatch(p -> p.getPinState() == HIGH)) {
-					outputPin.setPinState(LOW);
-				} else {
-					outputPin.setPinState(HIGH);
-				}
-				break;
-			// 7
-			case 9:
-				if (Set.of(A, B, C).stream().allMatch(p -> p.getPinState() == HIGH) && D.getPinState() == LOW) {
-					outputPin.setPinState(LOW);
-				} else {
-					outputPin.setPinState(HIGH);
-				}
-				break;
-			// 8
-			case 10:
-				if (Set.of(A, B, C).stream().allMatch(p -> p.getPinState() == LOW) && D.getPinState() == HIGH) {
-					outputPin.setPinState(LOW);
-				} else {
-					outputPin.setPinState(HIGH);
-				}
-				break;
-			// 9
-			case 11:
-				if (Set.of(B, C).stream().allMatch(p -> p.getPinState() == LOW) &&
-						Set.of(A, D).stream().allMatch(p -> p.getPinState() == HIGH)) {
-					outputPin.setPinState(LOW);
-				} else {
-					outputPin.setPinState(HIGH);
-				}
-				break;
+			case 1 -> outputLow = (selector == 0b0000); // 0
+			case 2 -> outputLow = (selector == 0b0001); // 1
+			case 3 -> outputLow = (selector == 0b0010); // 2
+			case 4 -> outputLow = (selector == 0b0011); // 3
+			case 5 -> outputLow = (selector == 0b0100); // 4
+			case 6 -> outputLow = (selector == 0b0101); // 5
+			case 7 -> outputLow = (selector == 0b0110); // 6
+			case 9 -> outputLow = (selector == 0b0111); // 7
+			case 10 -> outputLow = (selector == 0b1000); // 8
+			case 11 -> outputLow = (selector == 0b1001); // 9
 		}
+
+		outputPin.setPinState(outputLow ? LOW : HIGH);
 	}
+
 
 	private static void grayDecoderLogicFunction(Chip chip, int outputPinId) {
 		Map<Integer, AbstractPin> pins = chip.getPinMap();
