@@ -26,9 +26,7 @@ public class Chip7408 extends Chip {
 
 	@Override
 	public void simulate(){
-		if(isOn){
-			ChipLogicCalculation.chip7408Calculation(this);
-		}
+		if(isOn) ChipLogicCalculation.chip7408Calculation(this);
 	}
 
 	@Override

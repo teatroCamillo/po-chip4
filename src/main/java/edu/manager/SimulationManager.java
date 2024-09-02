@@ -84,7 +84,7 @@ public class SimulationManager implements Component, SimulationAndOptimization {
 
 	private void validateHeadersOut() throws UnknownStateException {
 		Map<Integer, Chip> headerChips = componentManager.chips.entrySet().stream()
-				.filter(entry -> entry.getValue().getClass().getSimpleName().equals(Util.HEADER_OUT))
+				.filter(entry -> entry.getValue() instanceof HeaderOut)
 				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
 		for (Map.Entry<Integer, Chip> entry : headerChips.entrySet()) {

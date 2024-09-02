@@ -50,17 +50,9 @@ public abstract class Chip implements Component {
 		throw new UnsupportedOperationException("Method not implemented");
 	}
 
-	protected Map<Integer, AbstractPin> clonePinMap(){
-		Map<Integer, AbstractPin> newPinMap = new HashMap<>();
-		for (Map.Entry<Integer, AbstractPin> entry : this.pinMap.entrySet()) {
-			newPinMap.put(entry.getKey(), entry.getValue().clone());
-		}
-		return newPinMap;
-	}
-
 	@Override
-	public String toString() {
-		return "Chip{ pinMap=" + pinMap + "}\n";
+	public String toString(){
+		return "Chip{" + "chipId=" + chipId + ", isOn=" + isOn + ", pinMap=" + pinMap + ", previousPinMap=" + previousPinMap + '}';
 	}
 
 	public void setChipId(Integer uniqueChipId){
