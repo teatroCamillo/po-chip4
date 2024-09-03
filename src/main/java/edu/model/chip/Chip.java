@@ -1,4 +1,4 @@
-package edu.model;
+package edu.model.chip;
 
 import edu.model.pin.AbstractPin;
 import edu.uj.po.simulation.interfaces.PinState;
@@ -11,13 +11,11 @@ public abstract class Chip {
 	protected Integer chipId;
 	protected boolean isOn;
 	protected Map<Integer, AbstractPin> pinMap;
-	protected Map<Integer, AbstractPin> previousPinMap; // Do I need this?
 
 	public Chip() {
 		this.chipId = -1;
 		this.pinMap = new HashMap<>();
 		this.isOn = true;
-		this.previousPinMap = new HashMap<>();
 	}
 
 	public Chip(Chip target){
@@ -25,7 +23,6 @@ public abstract class Chip {
 			this.chipId = -1;
 			this.pinMap = new HashMap<>();
 			this.isOn = true;
-			this.previousPinMap = new HashMap<>();
 		}
 	}
 
@@ -50,7 +47,7 @@ public abstract class Chip {
 
 	@Override
 	public String toString(){
-		return "Chip{" + "chipId=" + chipId + ", isOn=" + isOn + ", pinMap=" + pinMap + ", previousPinMap=" + previousPinMap + '}';
+		return "Chip{" + "chipId=" + chipId + ", isOn=" + isOn + ", pinMap=" + pinMap + '}';
 	}
 
 	public void setChipId(Integer uniqueChipId){

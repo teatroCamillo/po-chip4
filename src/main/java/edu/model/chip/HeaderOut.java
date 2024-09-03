@@ -1,6 +1,5 @@
 package edu.model.chip;
 
-import edu.model.Chip;
 import edu.model.pin.PinIn;
 
 public class HeaderOut extends Chip {

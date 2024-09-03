@@ -1,7 +1,6 @@
 package edu.model.pin;
 
 import edu.uj.po.simulation.interfaces.PinState;
-import edu.model.Pin;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

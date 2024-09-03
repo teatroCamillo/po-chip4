@@ -1,7 +1,7 @@
 package edu.logic;
 
-import edu.model.Chip;
-import edu.model.Pin;
+import edu.model.chip.Chip;
+import edu.model.pin.Pin;
 import edu.model.pin.AbstractPin;
 import edu.uj.po.simulation.interfaces.PinState;
 

@@ -4,8 +4,8 @@ import edu.model.pin.AbstractPin;
 import edu.model.pin.PinIn;
 import edu.model.pin.PinOut;
 import edu.uj.po.simulation.interfaces.*;
-import edu.model.Chip;
-import edu.model.Connection;
+import edu.model.chip.Chip;
+import edu.model.connection.Connection;
 import edu.model.creator.Creator;
 import edu.model.creator.ChipCreator;
 

@@ -1,8 +1,5 @@
 package edu.model.pin;
 
-import edu.model.Pin;
-import edu.model.Publisher;
-import edu.model.Subscriber;
 import edu.uj.po.simulation.interfaces.PinState;
 
 import java.util.HashSet;
@@ -42,19 +39,6 @@ public class AbstractPin implements Pin, Publisher, Subscriber {
 
 	@Override
 	public void notifySubscribers(){
-		//v3 - 6 attempts were made on the tester, the result was 6x 100% passed tests - average time: 2656ms
-//		if(!subscribers.isEmpty())
-//			subscribers.forEach(subscriber -> subscriber.update(this.state));
-
-		//v2 - 6 attempts were made on the tester, the result was 6x 100% passed tests - average time: 2665ms
-		//subscribers.forEach(subscriber -> subscriber.update(this.state));
-
-		//v1 - 6 attempts were made on the tester, the result was 6x 100% passed tests - average time: 2661ms
-//		if(!subscribers.isEmpty())
-//			for(Subscriber subscriber : subscribers)
-//				subscriber.update(this.state);
-
-		//v0 - 6 attempts were made on the tester, the result was 6x 100% passed tests - average time: 2601ms
 		for(Subscriber subscriber : subscribers){
 			subscriber.update(this.state);
 		}

@@ -2,7 +2,7 @@ package edu;
 
 import edu.manager.CircuitManager;
 import edu.uj.po.simulation.interfaces.UnknownChip;
-import edu.model.Chip;
+import edu.model.chip.Chip;
 import edu.model.chip.HeaderIn;
 import edu.model.chip.HeaderOut;
 import org.junit.jupiter.api.BeforeEach;

@@ -6,7 +6,7 @@ import edu.model.pin.PinOut;
 import edu.uj.po.simulation.interfaces.ComponentPinState;
 import edu.uj.po.simulation.interfaces.SimulationAndOptimization;
 import edu.uj.po.simulation.interfaces.UnknownStateException;
-import edu.model.Chip;
+import edu.model.chip.Chip;
 import edu.model.chip.HeaderIn;
 import edu.model.chip.HeaderOut;
 import edu.util.Util;

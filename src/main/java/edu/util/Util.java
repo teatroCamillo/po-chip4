@@ -2,7 +2,7 @@ package edu.util;
 
 import edu.model.chip.HeaderOut;
 import edu.uj.po.simulation.interfaces.ComponentPinState;
-import edu.model.Chip;
+import edu.model.chip.Chip;
 
 import java.util.HashSet;
 import java.util.Map;

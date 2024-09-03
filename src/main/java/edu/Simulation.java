@@ -1,7 +1,7 @@
 package edu;
 
 import edu.manager.SystemFacade;
-import edu.model.Chip;
+import edu.model.chip.Chip;
 import edu.uj.po.simulation.interfaces.*;
 
 import java.util.*;

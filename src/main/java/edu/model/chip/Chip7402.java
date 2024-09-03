@@ -1,7 +1,6 @@
 package edu.model.chip;
 
 import edu.logic.ChipLogicCalculation;
-import edu.model.Chip;
 import edu.model.pin.PinOut;
 import edu.model.pin.PinIn;
 

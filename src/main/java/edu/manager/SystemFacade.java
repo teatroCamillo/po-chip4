@@ -1,6 +1,6 @@
 package edu.manager;
 
-import edu.model.Chip;
+import edu.model.chip.Chip;
 import edu.uj.po.simulation.interfaces.*;
 import java.util.Map;
 import java.util.Set;
