@@ -8,26 +8,26 @@ import java.util.Set;
 public class SystemFacade implements UserInterface {
 
 	protected final SimulationManager simulationManager;
-	protected final ComponentManager componentManager;
+	protected final CircuitManager circuitManager;
 
 	public SystemFacade(){
-		this.componentManager = new ComponentManager();
-		this.simulationManager = new SimulationManager(this.componentManager);
+		this.circuitManager = new CircuitManager();
+		this.simulationManager = new SimulationManager(this.circuitManager);
 	}
 
 	@Override
 	public int createChip(int code) throws UnknownChip {
-		return componentManager.createChip(code);
+		return circuitManager.createChip(code);
 	}
 
 	@Override
 	public int createInputPinHeader(int size){
-		return componentManager.createInputPinHeader(size);
+		return circuitManager.createInputPinHeader(size);
 	}
 
 	@Override
 	public int createOutputPinHeader(int size){
-		return componentManager.createOutputPinHeader(size);
+		return circuitManager.createOutputPinHeader(size);
 	}
 
 	@Override
@@ -35,7 +35,7 @@ public class SystemFacade implements UserInterface {
 						int pin1,
 						int component2,
 						int pin2) throws UnknownComponent, UnknownPin, ShortCircuitException{
-		componentManager.connect(component1, pin1, component2, pin2);
+		circuitManager.connect(component1, pin1, component2, pin2);
 	}
 
 	@Override
@@ -55,6 +55,6 @@ public class SystemFacade implements UserInterface {
 	}
 
 	public Map<Integer, Chip> getChips(){
-		return componentManager.getChips();
+		return circuitManager.getChips();
 	}
 }

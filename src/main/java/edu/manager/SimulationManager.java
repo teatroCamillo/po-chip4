@@ -19,10 +19,10 @@ import java.util.stream.Collectors;
 
 public class SimulationManager implements SimulationAndOptimization {
 
-	private final ComponentManager componentManager;
+	private final CircuitManager circuitManager;
 
-	public SimulationManager(ComponentManager componentManager) {
-		this.componentManager = componentManager;
+	public SimulationManager(CircuitManager componentManager) {
+		this.circuitManager = componentManager;
 	}
 
 	@Override
@@ -30,22 +30,22 @@ public class SimulationManager implements SimulationAndOptimization {
 		setHeadersInPins(states);
 
 		validateHeadersIn();
-		componentManager.propagateSignal();
+		circuitManager.propagateSignal();
 
 		Set<ComponentPinState> previousState;
 		Set<ComponentPinState> currentState;
-		currentState = Util.saveCircuitState(componentManager.chips);
+		currentState = Util.saveCircuitState(circuitManager.chips);
 		do {
 			previousState = new HashSet<>(currentState);
 
-			componentManager.chips.values().forEach(Chip::simulate);
-			componentManager.propagateSignal();
+			circuitManager.chips.values().forEach(Chip::simulate);
+			circuitManager.propagateSignal();
 
 			currentState.clear();
-			currentState = Util.saveCircuitState(componentManager.chips);
+			currentState = Util.saveCircuitState(circuitManager.chips);
 		} while (!previousState.equals(currentState));
 
-		boolean isHeaderOut = componentManager.chips.values()
+		boolean isHeaderOut = circuitManager.chips.values()
 				.stream()
 				.anyMatch(chip -> chip instanceof HeaderOut);
 		if(isHeaderOut) validateHeadersOut();
@@ -53,14 +53,14 @@ public class SimulationManager implements SimulationAndOptimization {
 
 	public void setHeadersInPins(Set<ComponentPinState> states) {
 		for (ComponentPinState state : states) {
-			Chip chip = componentManager.chips.get(state.componentId());
+			Chip chip = circuitManager.chips.get(state.componentId());
 			AbstractPin pin = chip.getPinMap().get(state.pinId());
 			pin.setPinState(state.state());
 		}
 	}
 
 	private void validateHeadersIn() throws UnknownStateException {
-		Map<Integer, Chip> headerChips = componentManager.chips.entrySet().stream()
+		Map<Integer, Chip> headerChips = circuitManager.chips.entrySet().stream()
 				.filter(entry -> entry.getValue() instanceof HeaderIn)
 				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
@@ -78,7 +78,7 @@ public class SimulationManager implements SimulationAndOptimization {
 	}
 
 	private void validateHeadersOut() throws UnknownStateException {
-		Map<Integer, Chip> headerChips = componentManager.chips.entrySet().stream()
+		Map<Integer, Chip> headerChips = circuitManager.chips.entrySet().stream()
 				.filter(entry -> entry.getValue() instanceof HeaderOut)
 				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
@@ -97,31 +97,31 @@ public class SimulationManager implements SimulationAndOptimization {
 
 	private boolean isPinInConnected(AbstractPin pin) {
 		if(pin instanceof PinOut) throw new RuntimeException();
-		return componentManager.isPinConnected(pin);
+		return circuitManager.isPinConnected(pin);
 	}
 
 	private boolean isPinOutConnected(AbstractPin pin) {
 		if(pin instanceof PinIn) throw new RuntimeException();
-		return componentManager.isPinConnected(pin);
+		return circuitManager.isPinConnected(pin);
 	}
 
 	@Override
 	public Map<Integer, Set<ComponentPinState>> simulation(Set<ComponentPinState> states0,
 														   int ticks) throws UnknownStateException{
 		setHeadersInPins(states0);
-		componentManager.propagateSignal();
+		circuitManager.propagateSignal();
 
 		Map<Integer, Set<ComponentPinState>> resultMap = new HashMap<>();
 		Set<ComponentPinState> currentState;
-		currentState = Util.saveCircuitHeaderOutState(componentManager.chips);
+		currentState = Util.saveCircuitHeaderOutState(circuitManager.chips);
 		resultMap.put(0, new HashSet<>(currentState));
 
 		for(int i=1; i<=ticks; i++){
-			componentManager.chips.values().forEach(Chip::simulate);
-			componentManager.propagateSignal();
+			circuitManager.chips.values().forEach(Chip::simulate);
+			circuitManager.propagateSignal();
 
 			currentState.clear();
-			currentState = Util.saveCircuitHeaderOutState(componentManager.chips);
+			currentState = Util.saveCircuitHeaderOutState(circuitManager.chips);
 			resultMap.put(i, new HashSet<>(currentState));
 		}
 		return resultMap;
@@ -130,7 +130,7 @@ public class SimulationManager implements SimulationAndOptimization {
 	@Override
 	public Set<Integer> optimize(Set<ComponentPinState> states0, int ticks) throws UnknownStateException {
 		Set<Integer> componentsToRemove = new HashSet<>();
-		Set<ComponentPinState> stationaryInput = componentManager.chips.entrySet().stream()
+		Set<ComponentPinState> stationaryInput = circuitManager.chips.entrySet().stream()
 				.filter(entry -> entry.getValue() instanceof HeaderIn)
 				.flatMap(entry -> entry.getValue().getPinMap().entrySet().stream()
 						.map(pinEntry -> new ComponentPinState(entry.getKey(), pinEntry.getKey(), pinEntry.getValue().getPinState()))
@@ -141,7 +141,7 @@ public class SimulationManager implements SimulationAndOptimization {
 		stationaryState(stationaryInput);
 
 		for (Chip component :
-				componentManager.chips.values().stream().filter(chip -> !(chip instanceof HeaderIn || chip instanceof HeaderOut)).collect(
+				circuitManager.chips.values().stream().filter(chip -> !(chip instanceof HeaderIn || chip instanceof HeaderOut)).collect(
 						Collectors.toSet())) {
 			component.setOn(false);
 
