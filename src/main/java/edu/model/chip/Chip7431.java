@@ -1,6 +1,6 @@
 package edu.model.chip;
 
-import edu.logic.ChipLogicCalculation;
+import edu.logic.ChipLogic;
 import edu.model.pin.PinIn;
 import edu.model.pin.PinOut;
 
@@ -27,7 +27,7 @@ public class Chip7431 extends Chip {
 
 	@Override
 	public void simulate(){
-		if(isOn) ChipLogicCalculation.chip7431Calculation(this);
+		if(isOn) ChipLogic.chip7431Logic(this);
 	}
 
 	@Override
