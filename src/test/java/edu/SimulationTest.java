@@ -149,8 +149,7 @@ public class SimulationTest {
 		int chip7410 = simulation.createChip(7410);
 		int chipOut0 = simulation.createOutputPinHeader(1);
 		int chipOut1 = simulation.createOutputPinHeader(2);
-		System.out.println("chipIn2 : " + chipIn2);
-		System.out.println("chipOut1 : " + chipOut1);
+
 		simulation.connect(chipIn0, 1, chip7410, 9);
 
 		simulation.connect(chipIn1, 1, chip7410, 10);
@@ -191,12 +190,7 @@ public class SimulationTest {
 		states0.add(new ComponentPinState(chipIn2, 3, PinState.LOW));
 
 		int tick = 3;
-		System.out.println("SIMULATON ****************");
 		Map<Integer, Set<ComponentPinState>> result = simulation.simulation(states0, tick);
-		result.forEach((key, value) -> {
-			System.out.println("Key: " + key);
-			for(ComponentPinState c : value) if(c.state() != PinState.UNKNOWN) System.out.println(c);
-		});
 
 		for(int i=0; i<=tick; i++){
 			if(i==0){
@@ -516,7 +510,6 @@ public class SimulationTest {
 				assertEquals(PinState.LOW , result.get(i).stream()
 						.filter(state -> state.componentId() == chipId3 && state.pinId() == 4)
 						.findFirst().orElseThrow().state());
-
 			}
 
 		}

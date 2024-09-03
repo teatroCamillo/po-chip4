@@ -1,8 +1,5 @@
 package edu.model.pin;
 
-import edu.model.Pin;
-import edu.model.Publisher;
-import edu.model.Subscriber;
 import edu.uj.po.simulation.interfaces.PinState;
 
 import java.util.HashSet;
@@ -22,8 +19,6 @@ public class AbstractPin implements Pin, Publisher, Subscriber {
 
 	@Override
 	public void setPinState(PinState pinState){
-		System.out.println("[" + chipId + "][id: " + this.id + " " + this.getClass().getSimpleName() + "] : new pinState was set, " +
-								   "actual: " + pinState + ", previous: " + this.state);
 		this.state = pinState;
 	}
 
@@ -33,29 +28,8 @@ public class AbstractPin implements Pin, Publisher, Subscriber {
 	}
 
 	@Override
-	public AbstractPin clone() {
-		try {
-			AbstractPin cloned = (AbstractPin) super.clone();
-			cloned.setId(-1); // proforma żeby był inny numer niż w orginale
-			cloned.subscribers = new HashSet<>();
-			return cloned;
-		} catch (CloneNotSupportedException e) {
-			throw new AssertionError(); // Nigdy nie powinno się zdarzyć, ponieważ implementujemy Cloneable
-		}
-	}
-
-	@Override
 	public void subscribe(Subscriber subscriber){
-		if(!this.equals(subscriber)){
-			System.out.println("[" + chipId + "][id: " + this.id + " " + this.getClass().getSimpleName() + "]" +
-									   " : dodaję " +
-									   "nowego " +
-									   "subskrybenta: " + subscriber);
-			subscribers.add(subscriber);
-
-			System.out.println("\nLista subskrybetów: ");
-			subscribers.forEach(System.out::println);
-		}
+		if(!this.equals(subscriber)) subscribers.add(subscriber);
 	}
 
 	@Override
@@ -65,31 +39,18 @@ public class AbstractPin implements Pin, Publisher, Subscriber {
 
 	@Override
 	public void notifySubscribers(){
-		System.out.println("[" + chipId + "][id: " + this.id + " " + this.getClass().getSimpleName() + "] : notifySubscribers");
-		//subscribers.forEach(subscriber -> subscriber.update(this.state));
-//		if(!subscribers.isEmpty()){
-			for(Subscriber subscriber : subscribers){
-				subscriber.update(this.state);
-			}
-//		}
+		for(Subscriber subscriber : subscribers){
+			subscriber.update(this.state);
+		}
 	}
 
 	@Override
 	public void update(PinState state){
 		if (!this.state.equals(state)) {
-			System.out.println("[" + chipId + "][id: " + this.id + " " + this.getClass().getSimpleName() + "] : I'm updating...");
 			setPinState(state);
-			// Próba nr.1 - no może trochę lepszy rezultat niż bez
-//			if(this instanceof PinIn && !subscribers.isEmpty()){
-//				for (Subscriber subscriber : subscribers) {
-//					subscriber.update(this.state);
-//				}
-//			}
-			if(!subscribers.isEmpty()){
-				for (Subscriber subscriber : subscribers) {
+			if(!subscribers.isEmpty())
+				for (Subscriber subscriber : subscribers)
 					subscriber.update(this.state);
-				}
-			}
 		}
 	}
 
@@ -107,9 +68,6 @@ public class AbstractPin implements Pin, Publisher, Subscriber {
 
 	public void setChipId(int chipId){
 		this.chipId = chipId;
-	}
-	public int getSubscribersSize(){
-		return subscribers.size();
 	}
 
 	@Override

@@ -1,24 +1,21 @@
-package edu.model;
+package edu.model.chip;
 
-import edu.manager.Component;
 import edu.model.pin.AbstractPin;
 import edu.uj.po.simulation.interfaces.PinState;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public abstract class Chip implements Component {
+public abstract class Chip {
 
 	protected Integer chipId;
 	protected boolean isOn;
 	protected Map<Integer, AbstractPin> pinMap;
-	protected Map<Integer, AbstractPin> previousPinMap;
 
 	public Chip() {
 		this.chipId = -1;
 		this.pinMap = new HashMap<>();
 		this.isOn = true;
-		this.previousPinMap = new HashMap<>();
 	}
 
 	public Chip(Chip target){
@@ -26,9 +23,10 @@ public abstract class Chip implements Component {
 			this.chipId = -1;
 			this.pinMap = new HashMap<>();
 			this.isOn = true;
-			this.previousPinMap = new HashMap<>();
 		}
 	}
+
+	public void simulate(){}
 
 	public Map<Integer, AbstractPin> getPinMap() {
 		return pinMap;
@@ -39,9 +37,6 @@ public abstract class Chip implements Component {
 		pinMap.put(id, pin);
 	}
 
-	@Override
-	public void simulate(){}
-
 	public Chip clone(){
 		throw new UnsupportedOperationException("Method not implemented");
 	}
@@ -50,17 +45,9 @@ public abstract class Chip implements Component {
 		throw new UnsupportedOperationException("Method not implemented");
 	}
 
-	protected Map<Integer, AbstractPin> clonePinMap(){
-		Map<Integer, AbstractPin> newPinMap = new HashMap<>();
-		for (Map.Entry<Integer, AbstractPin> entry : this.pinMap.entrySet()) {
-			newPinMap.put(entry.getKey(), entry.getValue().clone());
-		}
-		return newPinMap;
-	}
-
 	@Override
-	public String toString() {
-		return "Chip{ pinMap=" + pinMap + "}\n";
+	public String toString(){
+		return "Chip{" + "chipId=" + chipId + ", isOn=" + isOn + ", pinMap=" + pinMap + '}';
 	}
 
 	public void setChipId(Integer uniqueChipId){

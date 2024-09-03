@@ -1,4 +1,4 @@
-package edu.model;
+package edu.model.pin;
 
 import edu.uj.po.simulation.interfaces.PinState;
 

@@ -1,35 +1,32 @@
 package edu;
 
-import edu.model.Chip;
+import edu.manager.SystemFacade;
+import edu.model.chip.Chip;
 import edu.uj.po.simulation.interfaces.*;
-import edu.manager.ComponentManager;
-import edu.manager.SimulationManager;
 
 import java.util.*;
 
 public class Simulation implements UserInterface {
 
-	protected final ComponentManager componentManager;
-	protected final SimulationManager simulationManager;
+	protected final SystemFacade systemFacade;
 
 	public Simulation(){
-		this.componentManager = new ComponentManager();
-		this.simulationManager = new SimulationManager(this.componentManager);
+		this.systemFacade = new SystemFacade();
 	}
 
 	@Override
 	public int createChip(int code) throws UnknownChip {
-		return componentManager.createChip(code);
+		return systemFacade.createChip(code);
 	}
 
 	@Override
 	public int createInputPinHeader(int size){
-		return componentManager.createInputPinHeader(size);
+		return systemFacade.createInputPinHeader(size);
 	}
 
 	@Override
 	public int createOutputPinHeader(int size){
-		return componentManager.createOutputPinHeader(size);
+		return systemFacade.createOutputPinHeader(size);
 	}
 
 	@Override
@@ -37,26 +34,26 @@ public class Simulation implements UserInterface {
 						int pin1,
 						int component2,
 						int pin2) throws UnknownComponent, UnknownPin, ShortCircuitException {
-		componentManager.connect(component1, pin1, component2, pin2);
+		systemFacade.connect(component1, pin1, component2, pin2);
 	}
 
 	@Override
 	public void stationaryState(Set<ComponentPinState> states) throws UnknownStateException {
-		simulationManager.stationaryState(states);
+		systemFacade.stationaryState(states);
 	}
 
 	@Override
 	public Map<Integer, Set<ComponentPinState>> simulation(Set<ComponentPinState> states0,
 														   int ticks) throws UnknownStateException {
-		return simulationManager.simulation(states0, ticks);
+		return systemFacade.simulation(states0, ticks);
 	}
 
 	@Override
 	public Set<Integer> optimize(Set<ComponentPinState> states0, int ticks) throws UnknownStateException {
-		return simulationManager.optimize(states0, ticks);
+		return systemFacade.optimize(states0, ticks);
 	}
 
 	public Map<Integer, Chip> getChips(){
-		return componentManager.getChips();
+		return systemFacade.getChips();
 	}
 }

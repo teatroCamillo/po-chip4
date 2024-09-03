@@ -156,20 +156,6 @@ public class StationaryStateTest {
 		Assertions.assertEquals(PinState.HIGH, simulation.getChips().get(chipId3).getPinMap().get(1).getPinState());
 	}
 
-
-	@Test
-	void testSetHeadersInPins(){
-		int chipId1 = simulation.createInputPinHeader(2);
-
-		Set<ComponentPinState> states0 = new HashSet<>();
-		states0.add(new ComponentPinState(chipId1, 1, PinState.HIGH));
-		states0.add(new ComponentPinState(chipId1, 2, PinState.LOW));
-
-		simulation.simulationManager.setHeadersInPins(states0);
-
-		Assertions.assertEquals(PinState.HIGH, simulation.getChips().get(chipId1).getPinMap().get(1).getPinState());
-	}
-
 	// ST 0
 	@Test
 	void testStationaryStateWithMultipleInputHeaders() throws UnknownChip, UnknownStateException, UnknownPin, ShortCircuitException, UnknownComponent {

@@ -2,7 +2,6 @@ package edu.model.chip;
 
 import edu.Simulation;
 import edu.uj.po.simulation.interfaces.*;
-import edu.model.Chip;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

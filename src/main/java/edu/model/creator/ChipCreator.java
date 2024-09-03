@@ -1,17 +1,16 @@
 package edu.model.creator;
 
-import edu.model.Chip;
-import edu.model.Creator;
+import edu.model.chip.Chip;
 import edu.model.chip.*;
 import edu.uj.po.simulation.interfaces.UnknownChip;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class ChipCreator extends Creator {
+public class ChipCreator implements Creator<Chip> {
 
 	private final Map<Integer, Chip> chipCodeMap;
-	protected Integer uniqueChipIdGenerator;
+	private Integer uniqueChipIdGenerator;
 
 	public ChipCreator(){
 		this.chipCodeMap = new HashMap<>();
