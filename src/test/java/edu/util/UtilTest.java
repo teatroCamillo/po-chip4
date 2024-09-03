@@ -18,7 +18,7 @@ public class UtilTest {
 
 	@BeforeEach
 	public void setUp() {
-		simulation = new Simulation();
+		simulation = new edu.Simulation();
 	}
 
 	@Test

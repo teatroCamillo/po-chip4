@@ -9,7 +9,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class Chip7482Test {
 
-	private Simulation simulation;
+	private edu.Simulation simulation;
 
 	@BeforeEach
 	void setUp() {
