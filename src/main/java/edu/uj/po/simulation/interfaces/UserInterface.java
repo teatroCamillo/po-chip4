@@ -1,7 +1,7 @@
 package edu.uj.po.simulation.interfaces;
 
 /**
- * Kompletny interfejs użytkownika aplikacji do symulacji układów cyfrowych.
+ * The complete user interface for the digital circuit simulation application.
  */
 public interface UserInterface extends CircuitDesign, SimulationAndOptimization {
 }

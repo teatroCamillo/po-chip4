@@ -1,8 +1,7 @@
 package edu.uj.po.simulation.interfaces;
 
 /**
- * Wyjątek używany w przypadku wskazania pinu nieistniejącego w danym
- * komponencie.
+ * Exception used when a specified pin does not exist in the given component.
  */
 public class UnknownPin extends Exception {
 	private static final long serialVersionUID = 3834350553925476176L;
@@ -15,18 +14,18 @@ public class UnknownPin extends Exception {
 	}
 
 	/**
-	 * Identyfikator komponentu, w którym pin o podanym numerze nie istnieje.
-	 * 
-	 * @return identyfikator komponentu
+	 * The identifier of the component in which the pin with the specified number does not exist.
+	 *
+	 * @return the identifier of the component
 	 */
 	public int getComponentId() {
 		return componentId;
 	}
 
 	/**
-	 * Wskazany, błędny numer pinu.
-	 * 
-	 * @return błędny numer pinu
+	 * The specified invalid pin number.
+	 *
+	 * @return the invalid pin number
 	 */
 	public int getPin() {
 		return pin;

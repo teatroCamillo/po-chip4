@@ -11,104 +11,106 @@ import java.util.Set;
 import static edu.logic.GateLogic.*;
 import static edu.uj.po.simulation.interfaces.PinState.*;
 
-public class ChipLogic{
+public class ChipLogic {
+
+	private final static GateLogic gateLogic = new GateLogic();
 
 	public static void chip7400Logic(Chip chip) {
-		nandGateLogic(chip, Set.of(1, 2), 3);
-		nandGateLogic(chip, Set.of(4, 5), 6);
-		nandGateLogic(chip, Set.of(9, 10), 8);
-		nandGateLogic(chip, Set.of(12, 13), 11);
+		gateLogic.nandGateLogic(chip, Set.of(1, 2), 3);
+		gateLogic.nandGateLogic(chip, Set.of(4, 5), 6);
+		gateLogic.nandGateLogic(chip, Set.of(9, 10), 8);
+		gateLogic.nandGateLogic(chip, Set.of(12, 13), 11);
 	}
 
 	public static void chip7402Logic(Chip chip) {
-		norGateLogic(chip, Set.of(2, 3), 1);
-		norGateLogic(chip, Set.of(5, 6), 4);
-		norGateLogic(chip, Set.of(8, 9), 10);
-		norGateLogic(chip, Set.of(11, 12), 13);
+		gateLogic.norGateLogic(chip, Set.of(2, 3), 1);
+		gateLogic.norGateLogic(chip, Set.of(5, 6), 4);
+		gateLogic.norGateLogic(chip, Set.of(8, 9), 10);
+		gateLogic.norGateLogic(chip, Set.of(11, 12), 13);
 	}
 
 	public static void chip7404Logic(Chip chip) {
-		notGateLogic(chip, 1, 2);
-		notGateLogic(chip, 3, 4);
-		notGateLogic(chip, 5, 6);
-		notGateLogic(chip, 9, 8);
-		notGateLogic(chip, 11, 10);
-		notGateLogic(chip, 13, 12);
+		gateLogic.notGateLogic(chip, 1, 2);
+		gateLogic.notGateLogic(chip, 3, 4);
+		gateLogic.notGateLogic(chip, 5, 6);
+		gateLogic.notGateLogic(chip, 9, 8);
+		gateLogic.notGateLogic(chip, 11, 10);
+		gateLogic.notGateLogic(chip, 13, 12);
 	}
 
 	public static void chip7408Logic(Chip chip) {
-		andGateLogic(chip, Set.of(1, 2), 3);
-		andGateLogic(chip, Set.of(4, 5), 6);
-		andGateLogic(chip, Set.of(9, 10), 8);
-		andGateLogic(chip, Set.of(12, 13), 11);
+		gateLogic.andGateLogic(chip, Set.of(1, 2), 3);
+		gateLogic.andGateLogic(chip, Set.of(4, 5), 6);
+		gateLogic.andGateLogic(chip, Set.of(9, 10), 8);
+		gateLogic.andGateLogic(chip, Set.of(12, 13), 11);
 	}
 
 	public static void chip7410Logic(Chip chip) {
-		nandGateLogic(chip, Set.of(1, 2, 13), 12);
-		nandGateLogic(chip, Set.of(3, 4, 5), 6);
-		nandGateLogic(chip, Set.of(9, 10, 11), 8);
+		gateLogic.nandGateLogic(chip, Set.of(1, 2, 13), 12);
+		gateLogic.nandGateLogic(chip, Set.of(3, 4, 5), 6);
+		gateLogic.nandGateLogic(chip, Set.of(9, 10, 11), 8);
 	}
 
 	public static void chip7411Logic(Chip chip) {
-		andGateLogic(chip, Set.of(1, 2, 13), 12);
-		andGateLogic(chip, Set.of(3, 4, 5), 6);
-		andGateLogic(chip, Set.of(9, 10, 11), 8);
+		gateLogic.andGateLogic(chip, Set.of(1, 2, 13), 12);
+		gateLogic.andGateLogic(chip, Set.of(3, 4, 5), 6);
+		gateLogic.andGateLogic(chip, Set.of(9, 10, 11), 8);
 	}
 
 	public static void chip7420Logic(Chip chip) {
-		nandGateLogic(chip, Set.of(1, 2, 4, 5), 6);
-		nandGateLogic(chip, Set.of(9, 10, 12, 13), 8);
+		gateLogic.nandGateLogic(chip, Set.of(1, 2, 4, 5), 6);
+		gateLogic.nandGateLogic(chip, Set.of(9, 10, 12, 13), 8);
 	}
 
 	public static void chip7431Logic(Chip chip) {
-		notGateLogic(chip, 1, 2);
-		identityGateLogic(chip, 3, 4);
-		nandGateLogic(chip, Set.of(5, 6), 7);
-		nandGateLogic(chip, Set.of(10, 11), 9);
-		identityGateLogic(chip, 13, 12);
-		notGateLogic(chip, 15, 14);
+		gateLogic.notGateLogic(chip, 1, 2);
+		gateLogic.identityGateLogic(chip, 3, 4);
+		gateLogic.nandGateLogic(chip, Set.of(5, 6), 7);
+		gateLogic.nandGateLogic(chip, Set.of(10, 11), 9);
+		gateLogic.identityGateLogic(chip, 13, 12);
+		gateLogic.notGateLogic(chip, 15, 14);
 	}
 
 	public static void chip7432Logic(Chip chip) {
-		orGateLogic(chip, Set.of(1, 2), 3);
-		orGateLogic(chip, Set.of(4, 5), 6);
-		orGateLogic(chip, Set.of(9, 10), 8);
-		orGateLogic(chip, Set.of(12, 13), 11);
+		gateLogic.orGateLogic(chip, Set.of(1, 2), 3);
+		gateLogic.orGateLogic(chip, Set.of(4, 5), 6);
+		gateLogic.orGateLogic(chip, Set.of(9, 10), 8);
+		gateLogic.orGateLogic(chip, Set.of(12, 13), 11);
 	}
 
 	public static void chip7434Logic(Chip chip) {
-		identityGateLogic(chip, 1, 2);
-		identityGateLogic(chip, 3, 4);
-		identityGateLogic(chip, 5, 6);
-		identityGateLogic(chip, 9, 8);
-		identityGateLogic(chip, 11, 10);
-		identityGateLogic(chip, 13, 12);
+		gateLogic.identityGateLogic(chip, 1, 2);
+		gateLogic.identityGateLogic(chip, 3, 4);
+		gateLogic.identityGateLogic(chip, 5, 6);
+		gateLogic.identityGateLogic(chip, 9, 8);
+		gateLogic.identityGateLogic(chip, 11, 10);
+		gateLogic.identityGateLogic(chip, 13, 12);
 	}
 
 	public static void chip7442Logic(Chip chip) {
-		bcdDecoderLogic(chip, 1);
-		bcdDecoderLogic(chip, 2);
-		bcdDecoderLogic(chip, 3);
-		bcdDecoderLogic(chip, 4);
-		bcdDecoderLogic(chip, 5);
-		bcdDecoderLogic(chip, 6);
-		bcdDecoderLogic(chip, 7);
-		bcdDecoderLogic(chip, 9);
-		bcdDecoderLogic(chip, 10);
-		bcdDecoderLogic(chip, 11);
+		gateLogic.bcdDecoderLogic(chip, 1);
+		gateLogic.bcdDecoderLogic(chip, 2);
+		gateLogic.bcdDecoderLogic(chip, 3);
+		gateLogic.bcdDecoderLogic(chip, 4);
+		gateLogic.bcdDecoderLogic(chip, 5);
+		gateLogic.bcdDecoderLogic(chip, 6);
+		gateLogic.bcdDecoderLogic(chip, 7);
+		gateLogic.bcdDecoderLogic(chip, 9);
+		gateLogic.bcdDecoderLogic(chip, 10);
+		gateLogic.bcdDecoderLogic(chip, 11);
 	}
 
 	public static void chip7444Logic(Chip chip) {
-		grayDecoderLogic(chip, 1);
-		grayDecoderLogic(chip, 2);
-		grayDecoderLogic(chip, 3);
-		grayDecoderLogic(chip, 4);
-		grayDecoderLogic(chip, 5);
-		grayDecoderLogic(chip, 6);
-		grayDecoderLogic(chip, 7);
-		grayDecoderLogic(chip, 9);
-		grayDecoderLogic(chip, 10);
-		grayDecoderLogic(chip, 11);
+		gateLogic.grayDecoderLogic(chip, 1);
+		gateLogic.grayDecoderLogic(chip, 2);
+		gateLogic.grayDecoderLogic(chip, 3);
+		gateLogic.grayDecoderLogic(chip, 4);
+		gateLogic.grayDecoderLogic(chip, 5);
+		gateLogic.grayDecoderLogic(chip, 6);
+		gateLogic.grayDecoderLogic(chip, 7);
+		gateLogic.grayDecoderLogic(chip, 9);
+		gateLogic.grayDecoderLogic(chip, 10);
+		gateLogic.grayDecoderLogic(chip, 11);
 	}
 
 	public static void chip7482Logic(Chip chip) {
@@ -247,14 +249,14 @@ public class ChipLogic{
 	}
 
 	public static void chip74138Logic(Chip chip) {
-		_74138DecoderLogic(chip, 7);
-		_74138DecoderLogic(chip, 9);
-		_74138DecoderLogic(chip, 10);
-		_74138DecoderLogic(chip, 11);
-		_74138DecoderLogic(chip, 12);
-		_74138DecoderLogic(chip, 13);
-		_74138DecoderLogic(chip, 14);
-		_74138DecoderLogic(chip, 15);
+		gateLogic._74138DecoderLogic(chip, 7);
+		gateLogic._74138DecoderLogic(chip, 9);
+		gateLogic._74138DecoderLogic(chip, 10);
+		gateLogic._74138DecoderLogic(chip, 11);
+		gateLogic._74138DecoderLogic(chip, 12);
+		gateLogic._74138DecoderLogic(chip, 13);
+		gateLogic._74138DecoderLogic(chip, 14);
+		gateLogic._74138DecoderLogic(chip, 15);
 	}
 
 	public static void chip74152Logic(Chip chip) {
@@ -290,6 +292,6 @@ public class ChipLogic{
 			case 7 -> selectedPin = D7;
 			default -> throw new IllegalStateException("Unexpected selector value: " + selector);
 		}
-		W.setPinState(invertState(selectedPin.getPinState()));
+		W.setPinState(gateLogic.invertState(selectedPin.getPinState()));
 	}
 }

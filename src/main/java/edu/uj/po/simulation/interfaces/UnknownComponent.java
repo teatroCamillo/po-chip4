@@ -1,7 +1,7 @@
 package edu.uj.po.simulation.interfaces;
 
 /**
- * Komponent o wskazanym identyfikatorze nie istnieje.
+ * The component with the specified identifier does not exist.
  */
 public class UnknownComponent extends Exception {
 
@@ -13,9 +13,9 @@ public class UnknownComponent extends Exception {
 	}
 
 	/**
-	 * Błędny identyfikator elementu układu.
-	 * 
-	 * @return wartość błędnego identyfikatora
+	 * Invalid circuit component identifier.
+	 *
+	 * @return the value of the invalid identifier
 	 */
 	public int getComponentId() {
 		return componentId;

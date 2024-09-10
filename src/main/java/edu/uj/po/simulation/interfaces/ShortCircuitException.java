@@ -1,8 +1,8 @@
 package edu.uj.po.simulation.interfaces;
 
 /**
- * Wyjątek używany dla wskazania zaistnienia problemu błędnego połączenia.
- * Typowym błędem połączenia jest zwarcie ze sobą dwóch wyjść.
+ * Exception used to indicate an issue with an incorrect connection.
+ * A typical connection error is the shorting of two outputs.
  */
 public class ShortCircuitException extends Exception {
 

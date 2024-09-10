@@ -13,7 +13,7 @@ import static edu.uj.po.simulation.interfaces.PinState.*;
 
 public class GateLogic{
 
-	static PinState invertState(PinState pinState) {
+	PinState invertState(PinState pinState) {
 		return switch (pinState) {
 			case HIGH -> LOW;
 			case LOW -> HIGH;
@@ -21,7 +21,7 @@ public class GateLogic{
 		};
 	}
 
-	static void nandGateLogic(Chip chip, Set<Integer> inputPinIds, int outputPinId) {
+	void nandGateLogic(Chip chip, Set<Integer> inputPinIds, int outputPinId) {
 		Map<Integer, AbstractPin> pins = chip.getPinMap();
 
 		Set<Pin> inputPins = inputPinIds.stream()
@@ -35,7 +35,7 @@ public class GateLogic{
 		else outputPin.setPinState(UNKNOWN);
 	}
 
-	static void norGateLogic(Chip chip, Set<Integer> inputPinIds, int outputPinId) {
+	void norGateLogic(Chip chip, Set<Integer> inputPinIds, int outputPinId) {
 		Map<Integer, AbstractPin> pins = chip.getPinMap();
 
 		Set<Pin> inputPins = inputPinIds.stream()
@@ -49,7 +49,7 @@ public class GateLogic{
 		else outputPin.setPinState(UNKNOWN);
 	}
 
-	static void andGateLogic(Chip chip, Set<Integer> inputPinIds, int outputPinId) {
+	void andGateLogic(Chip chip, Set<Integer> inputPinIds, int outputPinId) {
 		Map<Integer, AbstractPin> pins = chip.getPinMap();
 
 		Set<Pin> inputPins = inputPinIds.stream()
@@ -63,7 +63,7 @@ public class GateLogic{
 		else outputPin.setPinState(UNKNOWN);
 	}
 
-	static void orGateLogic(Chip chip, Set<Integer> inputPinIds, int outputPinId) {
+	void orGateLogic(Chip chip, Set<Integer> inputPinIds, int outputPinId) {
 		Map<Integer, AbstractPin> pins = chip.getPinMap();
 
 		Set<Pin> inputPins = inputPinIds.stream()
@@ -78,7 +78,7 @@ public class GateLogic{
 
 	}
 
-	static void notGateLogic(Chip chip, int inputPinId, int outputPinId) {
+	void notGateLogic(Chip chip, int inputPinId, int outputPinId) {
 		Map<Integer, AbstractPin> pins = chip.getPinMap();
 
 		Pin inputPin = pins.get(inputPinId);
@@ -89,7 +89,7 @@ public class GateLogic{
 		else outputPin.setPinState(UNKNOWN);
 	}
 
-	static void identityGateLogic(Chip chip, int inputPinId, int outputPinId) {
+	void identityGateLogic(Chip chip, int inputPinId, int outputPinId) {
 		Map<Integer, AbstractPin> pins = chip.getPinMap();
 
 		Pin inputPin = pins.get(inputPinId);
@@ -98,7 +98,7 @@ public class GateLogic{
 		outputPin.setPinState(inputPin.getPinState());
 	}
 
-	static void bcdDecoderLogic(Chip chip, int outputPinId) {
+	void bcdDecoderLogic(Chip chip, int outputPinId) {
 		Map<Integer, AbstractPin> pins = chip.getPinMap();
 
 		Pin A = pins.get(15);
@@ -138,7 +138,7 @@ public class GateLogic{
 	}
 
 
-	static void grayDecoderLogic(Chip chip, int outputPinId) {
+	void grayDecoderLogic(Chip chip, int outputPinId) {
 		Map<Integer, AbstractPin> pins = chip.getPinMap();
 
 		Pin A = pins.get(15);
@@ -241,7 +241,7 @@ public class GateLogic{
 		}
 	}
 
-	static void _74138DecoderLogic(Chip chip, int outputPinId) {
+	void _74138DecoderLogic(Chip chip, int outputPinId) {
 		Map<Integer, AbstractPin> pins = chip.getPinMap();
 
 		Pin A = pins.get(1);

@@ -1,8 +1,8 @@
 package edu.uj.po.simulation.interfaces;
 
 /**
- * Możliwe stany pinów. Stan UNKNOWN zarezerwowany jest dla pinów, których stan
- * nie może zostać ustalony.
+ * Possible pin states. The state UNKNOWN is reserved for pins whose state
+ * cannot be determined.
  */
 public enum PinState {
 	HIGH, LOW, UNKNOWN;

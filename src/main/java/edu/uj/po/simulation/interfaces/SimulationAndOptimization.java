@@ -4,54 +4,47 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Interfejs dla funkcjonalności Symulacji. 
- * Podstawowa funkcjonalność to Symulacja układu. Optymalizacja to jednak także symulacja, 
- * ale przeprowadzona w nieco innym celu, którym tu jest usunięcie niepotrzebnych
- * elementów.
+ * Interface for Simulation functionality.
+ * The primary functionality is the simulation of a circuit. Optimization is also a form of simulation,
+ * but conducted with a slightly different goal, which here is the removal of unnecessary components.
  */
 public interface SimulationAndOptimization {
 	/**
-	 * Metoda ustanawia stany wejściowych listw kołkowych. Wykonanie symulacji
-	 * układu prowadzi do ustalenia stanu wszystkich istotnych wejść/wyjść układu.
-	 * 
-	 * @param states zbiór stanów wejściowych listw kołkowych
-	 * @throws UnknownStateException pin używany w symulacji jest w stanie
-	 *                               nieokreślonym
+	 * The method sets the states of input pin headers. Running the simulation
+	 * of the circuit leads to determining the state of all relevant inputs/outputs of the circuit.
+	 *
+	 * @param states a set of states for the input pin headers
+	 * @throws UnknownStateException if a pin used in the simulation is in an undefined state
 	 */
 	public void stationaryState(Set<ComponentPinState> states) throws UnknownStateException;
 
 	/**
-	 * Metoda zleca wykonanie symulacji obwodu poprzez wskazanie stanu wejściowych
-	 * listew kołkowych w chwili 0 oraz liczby kroków czasowych do wykonania.
-	 * Wynikiem symulacji jest mapa zawierająca dla kolejnych kroków czasowych (od 0
-	 * do ticks włącznie) zbiory zawierające informacje o stanie wszystkich pinów
-	 * wyjściowych listw kołkowych. Niepodłączone piny list wyjściowych są w stanie
-	 * UNKNOWN.
-	 * 
-	 * @param states0 zbiór stanów wejściowych listw kołkowych w chwili 0
-	 * @param ticks   liczba kroków symulacji
-	 * @return mapa, której kluczem jest numer kroku czasowego (od stanu w chwili 0
-	 *         po ticks włącznie).
-	 * @throws UnknownStateException pin używany w symulacji jest w stanie
-	 *                               nieokreślonym
+	 * The method initiates the circuit simulation by specifying the state of the input pin headers at time 0
+	 * and the number of time steps to execute. The result of the simulation is a map containing,
+	 * for each time step (from 0 to the specified number of ticks inclusive), sets that provide
+	 * information on the state of all output pins of the pin headers. Unconnected output pins
+	 * will be in the UNKNOWN state.
+	 *
+	 * @param states0 the set of input pin header states at time 0
+	 * @param ticks   the number of simulation steps
+	 * @return a map where the key is the time step number (from time 0 to the specified ticks, inclusive).
+	 * @throws UnknownStateException if a pin used in the simulation is in an undefined state
 	 */
 	public Map<Integer, Set<ComponentPinState>> simulation(Set<ComponentPinState> states0, int ticks)
 			throws UnknownStateException;
 
 	/**
-	 * Metoda optymalizuje układ wykrywając te elementy, których brak nie wpłynie na
-	 * wynik działania układu. Stan wejściowych listw kołkowych w chwili zero oraz
-	 * liczba kroków czasowych, przez którą należy przeanalizować działanie układu
-	 * jest podawana przez użytkownika. Jeśli usunięcie jakiegoś elementu układu nie
-	 * wpłynie na żaden ze stanów listwy wyjściowej, to element taki dodawany jest
-	 * do wynikowego zbioru identyfikatorów elementów możliwych do usunięcia.
-	 * 
-	 * @param states0 zbiór stanów wejściowych listw kołkowych w chwili 0
-	 * @param ticks   liczba kroków symulacji
-	 * @return zbiór identyfikatorów elementów, których usunięcie nie wpłynie na
-	 *         obserwowane w trakcie symulacji stany wyjściowych listw kołkowych
-	 * @throws UnknownStateException pin używany w symulacji jest w stanie
-	 *                               nieokreślonym
+	 * The method optimizes the circuit by detecting components whose absence would not affect
+	 * the circuit's behavior. The initial state of the input pin headers at time zero and the number
+	 * of time steps for analyzing the circuit's operation are provided by the user. If removing a component
+	 * does not affect any of the output pin header states, the component is added to the resulting
+	 * set of component identifiers that can be removed.
+	 *
+	 * @param states0 the set of input pin header states at time 0
+	 * @param ticks   the number of simulation steps
+	 * @return a set of component identifiers whose removal will not affect the observed states
+	 *         of the output pin headers during the simulation
+	 * @throws UnknownStateException if a pin used in the simulation is in an undefined state
 	 */
 	public Set<Integer> optimize(Set<ComponentPinState> states0, int ticks) throws UnknownStateException;
 
